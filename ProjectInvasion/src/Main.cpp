@@ -1,6 +1,13 @@
-#include <iostream>
+﻿#ifdef PLATFORM_WINDOWS
+#include "Application.h"
 
 int main()
 {
-	std::cout << "hello" << std::endl;
+	Application* app=new Application;
+	app->Run();
+	delete app;
 }
+#endif
+
+
+
