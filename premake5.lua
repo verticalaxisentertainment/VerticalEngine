@@ -52,7 +52,8 @@ project "ProjectInvasion"
 		systemversion "latest"
 
 		defines{
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"PLATFORM_WINDOWS"
 		}
 
 		filter "configurations:Debug"
