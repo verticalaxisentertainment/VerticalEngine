@@ -1,4 +1,5 @@
-﻿#ifdef PLATFORM_WINDOWS
+﻿#include "pch.h"
+#ifdef PLATFORM_WINDOWS
 #include "Application.h"
 
 int main()

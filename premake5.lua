@@ -29,6 +29,9 @@ project "ProjectInvasion"
 	targetdir("bin/" .. outputdir .."/%{prj.name}")
 	objdir("bin-int/" .. outputdir .."/%{prj.name}")
 
+	pchheader "pch.h"
+	pchsource "ProjectInvasion/src/pch.cpp"
+
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
@@ -36,7 +39,8 @@ project "ProjectInvasion"
 
 	includedirs{
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{prj.name}/src"
 	}
 
 	links

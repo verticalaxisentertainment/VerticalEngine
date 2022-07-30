@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include "Layer/LayerStack.h"
 
 class Application
 {
@@ -11,10 +11,16 @@ public:
 	~Application();
 	void Run();
 
-	//TODO: making layer system is a must before implementing IMGUI
+	void PushLayer(Layer* layer);
+	void PushOverlay(Layer* overlay);
+
+	inline static Application& Get() { return *s_Instance; }
 
 private:
 	GLFWwindow* m_Window;
+	LayerStack m_LayerStack;
+
+	static Application* s_Instance;
 };
 
 
