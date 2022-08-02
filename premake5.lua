@@ -13,10 +13,12 @@ workspace "ProjectInvasion"
 IncludeDir={}
 IncludeDir["GLFW"]="ProjectInvasion/vendor/GLFW/include"
 IncludeDir["Glad"]="ProjectInvasion/vendor/Glad/include"
+IncludeDir["imgui"]="ProjectInvasion/vendor/imgui"
 
 group "Dependencies"
 	include "ProjectInvasion/vendor/GLFW"
 	include "ProjectInvasion/vendor/Glad"
+	include "ProjectInvasion/vendor/imgui"
 
 group ""
 
@@ -40,13 +42,16 @@ project "ProjectInvasion"
 	includedirs{
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{prj.name}/src"
+		"%{IncludeDir.imgui}",
+		"%{prj.name}/src",
+		"%{IncludeDir.imgui}/backends"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
+		"imgui",
 		"opengl32.lib"
 	}
 
