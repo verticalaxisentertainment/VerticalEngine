@@ -14,6 +14,7 @@ IncludeDir={}
 IncludeDir["GLFW"]="ProjectInvasion/vendor/GLFW/include"
 IncludeDir["Glad"]="ProjectInvasion/vendor/Glad/include"
 IncludeDir["imgui"]="ProjectInvasion/vendor/imgui"
+IncludeDir["glm"]="ProjectInvasion/vendor/glm"
 
 group "Dependencies"
 	include "ProjectInvasion/vendor/GLFW"
@@ -43,6 +44,7 @@ project "ProjectInvasion"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.imgui}",
+		"%{IncludeDir.glm}",
 		"%{prj.name}/src",
 		"%{IncludeDir.imgui}/backends"
 	}

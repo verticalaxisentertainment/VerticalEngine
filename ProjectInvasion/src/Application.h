@@ -6,7 +6,7 @@
 #include "Layer/ImGUILayer.h"
 #include "Window.h"
 #include "Events/ApplicationEvent.h"
-
+#include <array>
 
 class ExampleLayer:public Layer
 {
@@ -16,7 +16,7 @@ public:
 
 	void OnUpdate() override
 	{
-		std::cout << "ExampleLayer::Update\n";
+		//std::cout << "ExampleLayer::Update\n";
 	}
 
 	void OnEvent(Event& e) override
@@ -68,6 +68,9 @@ private:
 	bool m_Running = true;
 
 	static Application* s_Instance;
+
+	std::array<float, 10> vertices;
+	unsigned int VBO;
 };
 
 Application* CreateApplication();

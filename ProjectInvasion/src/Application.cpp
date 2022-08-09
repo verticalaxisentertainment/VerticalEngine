@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Application.h"
 
+#include <array>
+
 Application* Application::s_Instance = nullptr;
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x,this,std::placeholders::_1)
@@ -24,6 +26,18 @@ Application::Application()
 
     PushLayer(new ExampleLayer());
 
+    vertices = {
+        -0.5f,-0.5f,0.0f,
+        0.5f,-0.5f,0.0f,
+        0.0f,0.5f,0.0f
+    };
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glad_glEnableVertexAttribArray(0);
 }
 
 Application::~Application()
@@ -51,7 +65,6 @@ void Application::Run()
     
     while (m_Running)
     {
-        glViewport(0, 0, 800, 600);
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.25f, 0.5f, 0, 1);
 
@@ -63,10 +76,10 @@ void Application::Run()
             layer->OnImGuiRender();
         m_ImGuiLayer->End();
 
+        glBindVertexArray(VBO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         m_Window->OnUpdate();
-        
-
 
     }
 

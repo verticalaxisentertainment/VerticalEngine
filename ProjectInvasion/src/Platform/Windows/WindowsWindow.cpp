@@ -4,6 +4,7 @@
 #include "Events/KeyEvent.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/MouseEvent.h"
+#include <glad/glad.h>
 
 static bool s_GLFWInitialized = false;
 static void GLFWErrorCallback(int error,const char* description)
@@ -28,8 +29,11 @@ WindowsWindow::~WindowsWindow()
 
 void WindowsWindow::OnUpdate()
 {
+	glViewport(0, 0, GetWidth(), GetHeight());
+
 	glfwPollEvents();
 	glfwSwapBuffers(m_Window);
+
 }
 
 void WindowsWindow::SetVSync(bool enabled)
