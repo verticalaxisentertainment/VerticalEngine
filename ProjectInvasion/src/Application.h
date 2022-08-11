@@ -6,6 +6,7 @@
 #include "Layer/ImGUILayer.h"
 #include "Window.h"
 #include "Events/ApplicationEvent.h"
+#include "Renderer/Shader.h"
 #include <array>
 
 class ExampleLayer:public Layer
@@ -25,21 +26,39 @@ public:
 	}
 };
 
-class ExampleLayer2 :public Layer
+class GameLayer :public Layer
 {
 public:
-	ExampleLayer2()
-		:Layer("ExampleLayer2") {}
+	GameLayer()
+		:Layer("GameLayer")
+	{
+		vertices = {
+		-0.5f,-0.5f,0.0f,
+		0.5f,-0.5f,0.0f,
+		0.0f,0.5f,0.0f
+		};
+
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glad_glEnableVertexAttribArray(0);
+	}
 
 	void OnUpdate() override
 	{
-		std::cout << "ExampleLayer::Update\n";
+		glBindVertexArray(VBO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 
 	void OnEvent(Event& e) override
 	{
-		std::cout << e << "\n";
+		e.Handled |= e.IsInCategory(EventCategoryMouse);
 	}
+private:
+	std::array<float, 10> vertices;
+	unsigned int VBO;
 };
 
 
@@ -67,10 +86,9 @@ private:
 	std::unique_ptr<Window> m_Window;
 	bool m_Running = true;
 
-	static Application* s_Instance;
+	std::unique_ptr<Shader> m_Shader;
 
-	std::array<float, 10> vertices;
-	unsigned int VBO;
+	static Application* s_Instance;
 };
 
 Application* CreateApplication();

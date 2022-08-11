@@ -22,22 +22,35 @@ Application::Application()
     
     //Imgui Stuff
     m_ImGuiLayer = new ImGUILayer();
-    PushOverlay(m_ImGuiLayer);
+    PushLayer(m_ImGuiLayer);
+
 
     PushLayer(new ExampleLayer());
+    PushLayer(new GameLayer());
 
-    vertices = {
-        -0.5f,-0.5f,0.0f,
-        0.5f,-0.5f,0.0f,
-        0.0f,0.5f,0.0f
-    };
+    std::string vertexSrc=R"(
+	#version 330 core
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+	layout (location=0) in vec3 a_Position;
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glad_glEnableVertexAttribArray(0);
+    void main()
+    {
+		gl_Position=vec4(a_Position,1.0);
+    }
+	)";
+
+    std::string fragmentSrc = R"(
+	#version 330 core
+
+	layout (location=0) out vec4 color;
+
+    void main()
+    {
+		color=vec4(1.0,0.0,0.0,1.0);
+    }
+	)";
+
+    m_Shader.reset(new Shader("src/shader.shader"));
 }
 
 Application::~Application()
@@ -68,6 +81,7 @@ void Application::Run()
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.25f, 0.5f, 0, 1);
 
+        m_Shader->Bind();
         for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
 
@@ -76,8 +90,7 @@ void Application::Run()
             layer->OnImGuiRender();
         m_ImGuiLayer->End();
 
-        glBindVertexArray(VBO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        
 
         m_Window->OnUpdate();
 
