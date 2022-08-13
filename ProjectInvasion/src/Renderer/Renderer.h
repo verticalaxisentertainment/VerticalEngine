@@ -4,8 +4,17 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+enum class RendererAPI
+{
+	None = 0, OpenGL = 1
+};
+
+
 class Renderer
 {
+	static RendererAPI s_RendererAPI;
+public:
+	inline static RendererAPI GetAPI() { return s_RendererAPI; }
 public:
 	static void Init();
 	static void Shutdown();

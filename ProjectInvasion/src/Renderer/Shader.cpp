@@ -155,3 +155,18 @@ void Shader::UnBind() const
 {
 	glUseProgram(0);
 }
+
+void Shader::SetInt(const std::string& name, int value) const
+{
+	glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
+}
+
+void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetVec2(const std::string& name, const glm::vec2& value) const
+{
+	glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+}

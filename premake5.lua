@@ -15,6 +15,7 @@ IncludeDir["GLFW"]="ProjectInvasion/vendor/GLFW/include"
 IncludeDir["Glad"]="ProjectInvasion/vendor/Glad/include"
 IncludeDir["imgui"]="ProjectInvasion/vendor/imgui"
 IncludeDir["glm"]="ProjectInvasion/vendor/glm"
+IncludeDir["stb"]="ProjectInvasion/vendor/stb"
 
 group "Dependencies"
 	include "ProjectInvasion/vendor/GLFW"
@@ -45,6 +46,7 @@ project "ProjectInvasion"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb}",
 		"%{prj.name}/src",
 		"%{IncludeDir.imgui}/backends"
 	}

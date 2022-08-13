@@ -6,8 +6,17 @@
 #include "Layer/ImGUILayer.h"
 #include "Window.h"
 #include "Events/ApplicationEvent.h"
+#include "Events/KeyEvent.h"
 #include "Renderer/Shader.h"
 #include <array>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "Renderer/Buffer.h"
+#include <stb_image.h>
+#include "Renderer/VertexArray.h"
+
+#define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
 class ExampleLayer:public Layer
 {
@@ -22,43 +31,8 @@ public:
 
 	void OnEvent(Event& e) override
 	{
-		std::cout << e << "\n";
+		//std::cout << e << "\n";
 	}
-};
-
-class GameLayer :public Layer
-{
-public:
-	GameLayer()
-		:Layer("GameLayer")
-	{
-		vertices = {
-		-0.5f,-0.5f,0.0f,
-		0.5f,-0.5f,0.0f,
-		0.0f,0.5f,0.0f
-		};
-
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glad_glEnableVertexAttribArray(0);
-	}
-
-	void OnUpdate() override
-	{
-		glBindVertexArray(VBO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-	}
-
-	void OnEvent(Event& e) override
-	{
-		e.Handled |= e.IsInCategory(EventCategoryMouse);
-	}
-private:
-	std::array<float, 10> vertices;
-	unsigned int VBO;
 };
 
 
@@ -86,7 +60,14 @@ private:
 	std::unique_ptr<Window> m_Window;
 	bool m_Running = true;
 
-	std::unique_ptr<Shader> m_Shader;
+	std::shared_ptr<Shader> m_Shader;
+	std::shared_ptr<Shader> m_ScreenShader;
+	std::shared_ptr<FrameBuffer> m_FrameBuffer;
+	unsigned int framebuffer;
+	unsigned int quadVAO, quadVBO;
+	unsigned int textureColorbuffer;
+	unsigned int rbo;
+
 
 	static Application* s_Instance;
 };
