@@ -50,6 +50,7 @@ public:
 private:
 	unsigned int framebuffer;
 	unsigned int textureColorbuffer;
+	unsigned int rbo;
 
 	std::shared_ptr<VertexArray> frameVA;
 };

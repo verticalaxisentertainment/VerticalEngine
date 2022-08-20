@@ -16,17 +16,14 @@ public:
 		m_VertexArray.reset(VertexArray::Create());
 
 		vertices = {
-			// positions   // texCoords
-			-0.5f,  0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f,  1.0f, 0.0f,
-
-			-0.5f,  0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  1.0f, 1.0f
+			// positions   // texCoords  //colors
+			-0.5f,  0.5f,  0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+			-0.5f, -0.5f,  0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
+			 0.5f, -0.5f,  1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
+			 0.5f,  0.5f,  1.0f, 1.0f,   1.0f, 0.0f, 0.0f
 		};
 
-		indices = { 0,1,2,3,4,5 };
+		indices = { 0,1,2,0,2,3 };
 
 		std::shared_ptr<VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(VertexBuffer::Create((float*)&vertices, sizeof(vertices)));
@@ -34,7 +31,8 @@ public:
 
 		BufferLayout layout = {
 			{ShaderDataType::Float2, "a_Position"},
-			{ShaderDataType::Float2, "a_TexCoord"}
+			{ShaderDataType::Float2, "a_TexCoord"},
+			{ShaderDataType::Float3,"a_Color"}
 		};
 
 		vertexBuffer->SetLayout(layout);
@@ -57,12 +55,15 @@ public:
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::onKeyPressed));
 		dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(GameLayer::onKeyReleased));
-		e.Handled |= e.IsInCategory(EventCategoryMouse);
+		if(!e.Handled&&e.IsInCategory(EventCategoryMouse))
+		{
+			dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(GameLayer::onMouseMoved));
+		}
 	}
 
 
 private:
-	std::array<float, 24> vertices;
+	std::array<float, 28> vertices;
 	std::array<float, 12> trianglevertices;
 	std::array<uint32_t, 6> indices;
 	unsigned int VBO;
@@ -87,6 +88,14 @@ private:
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+
+		return true;
+	}
+
+	bool onMouseMoved(MouseMovedEvent& e)
+	{
+		Application& app = Application::Get();
+		app.SetMousePos(e.GetX(), e.GetY());
 
 		return true;
 	}

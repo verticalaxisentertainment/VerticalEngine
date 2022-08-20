@@ -38,7 +38,9 @@ project "ProjectInvasion"
 
 	files{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{IncludeDir.stb}/**.h",
+		"%{IncludeDir.stb}/**.cpp"
 	}
 
 	includedirs{

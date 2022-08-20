@@ -26,7 +26,7 @@ const float offset = 1.0 / 300.0;
 
 vec4 applyVignette(vec4 color)
 {
-    vec2 position = (gl_FragCoord.xy / vec2(1200,720)) - vec2(0.5);           
+    vec2 position = (gl_FragCoord.xy / resoulation) - vec2(0.5);           
     float dist = length(position);
 
     float radius = 0.5;
@@ -40,7 +40,7 @@ vec4 applyVignette(vec4 color)
 
 void main()
 { 
-   vec2 uv = gl_FragCoord.xy / vec2(1200,720);
+   vec2 uv = gl_FragCoord.xy / resoulation;
    
     uv *=  1.0 - uv.yx;   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
     
