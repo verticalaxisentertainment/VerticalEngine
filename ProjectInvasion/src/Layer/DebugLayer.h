@@ -2,6 +2,7 @@
 
 #include "ImGUILayer.h"
 #include "Layer.h"
+#include "Utils/PlatformUtils.h"
 
 class DebugLayer:public Layer
 {
@@ -10,10 +11,18 @@ public:
 		:Layer("Debug Layer") {}
 	void OnImGuiRender() override
 	{
-		Application& app = Application::Get();
 		static bool show = true;
-		ImGui::Begin("Debug window", &show);
+		Application& app = Application::Get();
+		ImGui::Begin("Debug", &show);
 		ImGui::Checkbox("Post Process", &app.showPostProcessing);
+		if(ImGui::Button("Texture"))
+		{
+			std::string path=FileDialogs::OpenFile(".jpg");
+			if(!path.empty())
+			{
+				GameLayer::m_Texture->UpdateTexture(path);
+			}
+		}
 		ImGui::End();
 	}
 };

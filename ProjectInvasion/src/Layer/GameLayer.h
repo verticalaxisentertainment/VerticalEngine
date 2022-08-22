@@ -1,11 +1,13 @@
 #pragma once
 #include "Layer/Layer.h"
-#include "Renderer/VertexArray.h"
 #include "Events/KeyEvent.h"
+#include "Renderer/Renderer.h"
 
 #include <glad/glad.h>
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
+
+
 
 class GameLayer :public Layer
 {
@@ -13,41 +15,15 @@ public:
 	GameLayer()
 		:Layer("GameLayer")
 	{
-		m_VertexArray.reset(VertexArray::Create());
-
-		vertices = {
-			// positions   // texCoords  //colors
-			-0.5f,  0.5f,  0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-			-0.5f, -0.5f,  0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-			 0.5f, -0.5f,  1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-			 0.5f,  0.5f,  1.0f, 1.0f,   1.0f, 0.0f, 0.0f
-		};
-
-		indices = { 0,1,2,0,2,3 };
-
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create((float*)&vertices, sizeof(vertices)));
-
-
-		BufferLayout layout = {
-			{ShaderDataType::Float2, "a_Position"},
-			{ShaderDataType::Float2, "a_TexCoord"},
-			{ShaderDataType::Float3,"a_Color"}
-		};
-
-		vertexBuffer->SetLayout(layout);
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create((uint32_t*)&indices, sizeof(indices) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(indexBuffer);
-
+		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 	}
 
 	void OnUpdate() override
 	{
-		m_VertexArray->Bind();
-		glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		Application& app = Application::Get();
+		Renderer::DrawQuad({ 0.0f,0.0f }, { 1.0f,2.0f }, m_Texture);
+		Renderer::DrawQuad({ (m_X - app.GetWindow().GetWidth() / 2) / app.GetWindow().GetWidth() * 2 * 2,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+
 	}
 
 	void OnEvent(Event& e) override
@@ -62,15 +38,10 @@ public:
 	}
 
 
+	static std::shared_ptr<Texture2D> m_Texture;
 private:
-	std::array<float, 28> vertices;
-	std::array<float, 12> trianglevertices;
-	std::array<uint32_t, 6> indices;
-	unsigned int VBO;
+	float m_X, m_Y;
 
-	/*std::shared_ptr<VertexBuffer> m_VertexBuffer;
-	std::shared_ptr<IndexBuffer> m_IndexBuffer;*/
-	std::shared_ptr<VertexArray> m_VertexArray;
 
 	bool onKeyPressed(KeyPressedEvent& e)
 	{
@@ -95,8 +66,10 @@ private:
 	bool onMouseMoved(MouseMovedEvent& e)
 	{
 		Application& app = Application::Get();
-		app.SetMousePos(e.GetX(), e.GetY());
-
+		m_X = e.GetX();
+		m_Y = e.GetY();
 		return true;
 	}
 };
+
+std::shared_ptr<Texture2D> GameLayer::m_Texture;

@@ -10,6 +10,13 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
 
+OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+{
+	glGenBuffers(1, &m_RendererID);
+	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+	glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+}
+
 OpenGLVertexBuffer::~OpenGLVertexBuffer()
 {
 	glDeleteBuffers(1, &m_RendererID);
@@ -25,9 +32,11 @@ void OpenGLVertexBuffer::UnBind() const
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-
-
-
+void OpenGLVertexBuffer::SetData(const void* data, uint32_t size)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+}
 
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
@@ -55,9 +64,12 @@ void OpenGLIndexBuffer::UnBind() const
 
 
 
+
+
+
 OpenGLFrameBuffer::OpenGLFrameBuffer()
 {
-	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+	float quadVertices[] = {
 		// positions   // texCoords
 		-1.0f,  1.0f,  0.0f, 1.0f,
 		-1.0f, -1.0f,  0.0f, 0.0f,
@@ -84,8 +96,6 @@ OpenGLFrameBuffer::OpenGLFrameBuffer()
 	indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 	frameVA->SetIndexBuffer(indexBuffer);
 
-	// framebuffer configuration
-	// -------------------------
 	Application& app = Application::Get();
 
 	glGenFramebuffers(1, &framebuffer);
@@ -104,7 +114,9 @@ OpenGLFrameBuffer::OpenGLFrameBuffer()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
 	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	{
+		ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 

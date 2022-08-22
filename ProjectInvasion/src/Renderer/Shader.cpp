@@ -26,7 +26,7 @@ Shader::Shader(const std::string& shaderPath)
 	}
 	catch (std::ifstream::failure e)
 	{
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+		ERROR("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
 	}
 
 	std::string vShaderCode;
@@ -83,7 +83,7 @@ Shader::Shader(const std::string& shaderPath)
 
 		glDeleteShader(vertexShader);
 
-		std::cout << "VertexShader Compilation Error: " << infoLog.data() << std::endl;
+		ERROR("VertexShader Compilation Error: " << infoLog.data());
 		return;
 	}
 
@@ -107,7 +107,7 @@ Shader::Shader(const std::string& shaderPath)
 		glDeleteShader(fragmentShader);
 		glDeleteShader(vertexShader);
 
-		std::cout << "FragmetnShader Compilation Error: " << infoLog.data() << std::endl;
+		ERROR("FragmentShader Compilation Error: " << infoLog.data());
 		return;
 	}
 

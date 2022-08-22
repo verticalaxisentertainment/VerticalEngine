@@ -22,7 +22,7 @@ static uint32_t ShaderDataTypeSize(ShaderDataType type)
 		case ShaderDataType::Bool:   return 1;
 	}
 
-	std::cout << "Unknown ShaderDataType!\n";
+	ERROR("Unknown ShaderDataType!");
 	return 0;
 }
 
@@ -100,10 +100,13 @@ public:
 	virtual void Bind() const = 0;
 	virtual void UnBind() const = 0;
 
+	virtual void SetData(const void* data, uint32_t size) = 0;
+
 	virtual BufferLayout& GetLayout() = 0;
 	virtual void SetLayout(const BufferLayout& layout) = 0;
 
 	static VertexBuffer* Create(float* vertices, uint32_t size);
+	static VertexBuffer* Create(uint32_t size);
 };
 
 class IndexBuffer

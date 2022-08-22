@@ -53,7 +53,6 @@ public:
 	inline Window& GetWindow() const{ return *m_Window; }
 
 	bool showPostProcessing;
-	inline void SetMousePos(float x, float y) { m_mouseX = x; m_mouseY = y; }
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	LayerStack m_LayerStack;
@@ -61,15 +60,9 @@ private:
 	ImGUILayer* m_ImGuiLayer;
 
 	std::unique_ptr<Window> m_Window;
-	bool m_Running = true;
+	inline static bool m_Running = true;
 
-	glm::mat4 model;
-	
-	float m_mouseX, m_mouseY;
-
-	std::shared_ptr<Shader> m_Shader;
 	std::shared_ptr<Shader> m_ScreenShader;
-	std::shared_ptr<Texture2D> m_Texture,m_Texture2;
 	std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	
 	static Application* s_Instance;

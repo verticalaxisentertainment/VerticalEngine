@@ -1,27 +1,28 @@
 ﻿#pragma once
 
+#include "RendererAPI.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "Texture.h"
 
-enum class RendererAPI
-{
-	None = 0, OpenGL = 1
-};
 
 
 class Renderer
 {
-	static RendererAPI s_RendererAPI;
 public:
-	inline static RendererAPI GetAPI() { return s_RendererAPI; }
+	inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 public:
 	static void Init();
 	static void Shutdown();
 
 	//Primitives
 	static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
+	static void DrawQuad(const glm::vec2& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture);
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+
+	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
+	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture);
 
 
 	static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color);

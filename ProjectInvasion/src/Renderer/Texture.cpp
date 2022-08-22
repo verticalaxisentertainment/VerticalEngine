@@ -8,11 +8,11 @@ Texture2D* Texture2D::Create(uint32_t width, uint32_t height)
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::None: std::cout << "Currently not supported RendererAPI" << std::endl; return nullptr;
-	case RendererAPI::OpenGL: return new OpenGLTexture2D(width, height);
+	case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
+	case RendererAPI::API::OpenGL: return new OpenGLTexture2D(width, height);
 	}
 
-	std::cout << "Unknown RendererAPI\n";
+	ERROR("Unknown RendererAPI");
 	return nullptr;
 }
 
@@ -20,10 +20,10 @@ Texture2D* Texture2D::Create(const std::string& path)
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::None: std::cout << "Currently not supported RendererAPI" << std::endl; return nullptr;
-	case RendererAPI::OpenGL: return new OpenGLTexture2D(path);
+	case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
+	case RendererAPI::API::OpenGL: return new OpenGLTexture2D(path);
 	}
 
-	std::cout << "Unknown RendererAPI\n";
+	ERROR("Unknown RendererAPI");
 	return nullptr;
 }

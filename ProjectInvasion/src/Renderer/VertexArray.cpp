@@ -8,10 +8,10 @@ VertexArray* VertexArray::Create()
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::None: std::cout << "Currently not supported RendererAPI" << std::endl; return nullptr;
-	case RendererAPI::OpenGL: return new OpenGLVertexArray();
+	case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
+	case RendererAPI::API::OpenGL: return new OpenGLVertexArray();
 	}
 
-	std::cout << "Unknown RendererAPI\n";
+	ERROR("Unknown RendererAPI");
 	return nullptr;
 }

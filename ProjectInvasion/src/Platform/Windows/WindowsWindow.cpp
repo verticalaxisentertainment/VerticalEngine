@@ -9,7 +9,7 @@
 static bool s_GLFWInitialized = false;
 static void GLFWErrorCallback(int error,const char* description)
 {
-	std::cout << error << ": " << description << std::endl;
+	ERROR(error << ": " << description);
 }
 
 Window* Window::Create(const WindowProps& props)
