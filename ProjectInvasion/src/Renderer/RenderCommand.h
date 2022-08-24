@@ -25,6 +25,11 @@ public:
 		s_RendererAPI->DrawIndexed(vertexArray, indexCount);
 	}
 
+	static void DrawLines(const std::shared_ptr<VertexArray>& vertexArray)
+	{
+		s_RendererAPI->DrawLines(vertexArray, 2);
+	}
+
 	static void SetLineWidth(float width)
 	{
 		s_RendererAPI->SetLineWidth(width);

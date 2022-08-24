@@ -11,6 +11,7 @@
 Application* Application::s_Instance = nullptr;
 
 Application::Application()
+	:m_CameraController(1280.0f/720.0f,true)
 {
     s_Instance = this;
 
@@ -23,8 +24,7 @@ Application::Application()
         ERROR("Failed to initialize GLAD");
     }
 
-    INFO(glGetString(GL_VERSION) <<"|" << glGetString(GL_RENDERER));
-    glEnable(GL_DEPTH_TEST);
+    INFO(glGetString(GL_VERSION) <<" | " << glGetString(GL_RENDERER));
 
     //Imgui Stuff
     m_ImGuiLayer = new ImGUILayer();
@@ -50,6 +50,7 @@ void Application::OnEvent(Event& e)
 {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+    m_CameraController.OnEvent(e);
 
     for(auto it=m_LayerStack.end();it!=m_LayerStack.begin();)
     {
@@ -66,6 +67,12 @@ void Application::Run()
 {
     while (m_Running)
     {
+        float time = glfwGetTime();
+        Timestep timestep = time - m_LastFrameTime;
+        m_LastFrameTime = time;
+
+        m_CameraController.OnUpdate(timestep);
+        Renderer::BeginScene(m_CameraController.GetCamera());
         if (showPostProcessing)
         {
             m_FrameBuffer->Bind();
@@ -76,7 +83,7 @@ void Application::Run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (Layer* layer : m_LayerStack)
-				layer->OnUpdate();
+            layer->OnUpdate();
 
 
         if(showPostProcessing)

@@ -16,6 +16,7 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Texture.h"
+#include "Renderer/OrthographicCameraController.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -52,7 +53,8 @@ public:
 	inline static Application& Get() { return *s_Instance; }
 	inline Window& GetWindow() const{ return *m_Window; }
 
-	bool showPostProcessing;
+	bool showPostProcessing = false;
+	OrthographicCameraController m_CameraController;
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	LayerStack m_LayerStack;
@@ -64,6 +66,8 @@ private:
 
 	std::shared_ptr<Shader> m_ScreenShader;
 	std::shared_ptr<FrameBuffer> m_FrameBuffer;
+
+	float m_LastFrameTime;
 	
 	static Application* s_Instance;
 };

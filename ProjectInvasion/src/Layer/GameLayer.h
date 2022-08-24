@@ -2,6 +2,8 @@
 #include "Layer/Layer.h"
 #include "Events/KeyEvent.h"
 #include "Renderer/Renderer.h"
+#include "Input.h"
+#include "KeyCode.h"
 
 #include <glad/glad.h>
 
@@ -18,12 +20,45 @@ public:
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 	}
 
+	float x=0.0f,y=0.0f;
 	void OnUpdate() override
 	{
+		if(Input::IsKeyPressed(Key::Right))
+		{
+			x += 0.01f;
+		}
+		else if(Input::IsKeyPressed(Key::Left))
+		{
+			x -= 0.01f;
+		}
+		if(Input::IsKeyPressed(Key::Up))
+		{
+			y += 0.01f;
+		}
+		else if(Input::IsKeyPressed(Key::Down))
+		{
+			y -= 0.01f;
+		}
 		Application& app = Application::Get();
-		Renderer::DrawQuad({ 0.0f,0.0f }, { 1.0f,2.0f }, m_Texture);
-		Renderer::DrawQuad({ (m_X - app.GetWindow().GetWidth() / 2) / app.GetWindow().GetWidth() * 2 * 2,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+		glm::vec3 position(x, y, 1.0f);
+		float currentX = m_X / app.GetWindow().GetWidth() * 2 - 1.0f;
+		glm::vec4 tmp(currentX, 0, 0, 1);
+		tmp = tmp * glm::inverse(app.m_CameraController.GetCamera().GetViewProjectionMatrix());
+		currentX = tmp.x;
 
+		//INFO(currentX);
+		glm::mat4 model=glm::mat4(1.0f);
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 0, 1));
+		model = glm::translate(model, glm::vec3(0, -1.0f, 0));
+		//INFO(glm::radians(90.0f));
+
+
+		Renderer::DrawQuad(model, m_Texture);
+		/*Renderer::DrawQuad({ (m_X - app.GetWindow().GetWidth() / 2) / app.GetWindow().GetWidth() * 2.5f,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+		Renderer::DrawQuad({ -1.0f,1.5f }, { 1.0f,1.0f }, { 1.0,1.0f,1.0f,1.0f });*/
+
+		Renderer::DrawLine({glm::sin(glfwGetTime()),-glm::cos(glfwGetTime()),1.0f}, { 0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f,1.0f });
+		/*Renderer::DrawLine({ 0.0f,-1.0f,0.0f }, { 0.0f,1.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });*/
 	}
 
 	void OnEvent(Event& e) override
