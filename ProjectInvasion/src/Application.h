@@ -54,7 +54,6 @@ public:
 	inline Window& GetWindow() const{ return *m_Window; }
 
 	bool showPostProcessing = false;
-	OrthographicCameraController m_CameraController;
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	LayerStack m_LayerStack;
@@ -66,8 +65,6 @@ private:
 
 	std::shared_ptr<Shader> m_ScreenShader;
 	std::shared_ptr<FrameBuffer> m_FrameBuffer;
-
-	float m_LastFrameTime;
 	
 	static Application* s_Instance;
 };

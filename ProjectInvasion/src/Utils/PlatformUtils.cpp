@@ -33,3 +33,13 @@ std::string FileDialogs::SaveFile(const char* filter)
 {
 	return std::string();
 }
+
+void Win32Menu::OpenMenu()
+{
+	HMENU hMenu = CreateMenu();
+
+	AppendMenu(hMenu, MF_STRING, NULL, L"File");
+	AppendMenu(hMenu, MF_STRING, NULL, L"Edit");
+
+	SetMenu(glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow()), hMenu);
+}

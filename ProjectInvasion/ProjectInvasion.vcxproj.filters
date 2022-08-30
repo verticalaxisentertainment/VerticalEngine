@@ -22,6 +22,9 @@
     <Filter Include="src\Renderer">
       <UniqueIdentifier>{73D1DFBF-5F34-6F64-08BA-A71AF4FB3AE7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{4D9AFFB3-B904-B42A-0243-65D06EEC917F}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -45,6 +48,15 @@
     <ClInclude Include="src\Events\MouseEvent.h">
       <Filter>src\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Input.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyCode.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Layer\DebugLayer.h">
+      <Filter>src\Layer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Layer\GameLayer.h">
       <Filter>src\Layer</Filter>
     </ClInclude>
@@ -57,7 +69,16 @@
     <ClInclude Include="src\Layer\LayerStack.h">
       <Filter>src\Layer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Log.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MouseCode.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
@@ -72,7 +93,19 @@
     <ClInclude Include="src\Renderer\Buffer.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\OrthographicCamera.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OrthographicCameraController.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\RenderCommand.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\RendererAPI.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Shader.h">
@@ -84,6 +117,12 @@
     <ClInclude Include="src\Renderer\VertexArray.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Timestep.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\PlatformUtils.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\Window.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -93,18 +132,6 @@
     <ClInclude Include="vendor\stb\stb_image.h">
       <Filter>vendor\stb</Filter>
     </ClInclude>
-    <ClInclude Include="src\Layer\DebugLayer.h" />
-    <ClInclude Include="src\Log.h" />
-    <ClInclude Include="src\Renderer\RenderCommand.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
-    <ClInclude Include="src\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\Utils\PlatformUtils.h" />
-    <ClInclude Include="src\Renderer\OrthographicCamera.h" />
-    <ClInclude Include="src\Renderer\OrthographicCameraController.h" />
-    <ClInclude Include="src\Timestep.h" />
-    <ClInclude Include="src\Input.h" />
-    <ClInclude Include="src\KeyCode.h" />
-    <ClInclude Include="src\MouseCode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -125,11 +152,17 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
+      <Filter>src\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
@@ -137,7 +170,19 @@
     <ClCompile Include="src\Renderer\Buffer.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\OrthographicCamera.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OrthographicCameraController.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\RenderCommand.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\Renderer.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\RendererAPI.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Shader.cpp">
@@ -149,18 +194,14 @@
     <ClCompile Include="src\Renderer\VertexArray.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Utils\PlatformUtils.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb\stb_image.cpp">
       <Filter>vendor\stb</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\RenderCommand.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
-    <ClCompile Include="src\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\Utils\PlatformUtils.cpp" />
-    <ClCompile Include="src\Renderer\OrthographicCamera.cpp" />
-    <ClCompile Include="src\Renderer\OrthographicCameraController.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
   </ItemGroup>
 </Project>

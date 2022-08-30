@@ -11,13 +11,13 @@
 Application* Application::s_Instance = nullptr;
 
 Application::Application()
-	:m_CameraController(1280.0f/720.0f,true)
 {
     s_Instance = this;
 
     m_Window = std::unique_ptr<Window>(Window::Create());
     m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 
+    Win32Menu::OpenMenu();
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -50,7 +50,6 @@ void Application::OnEvent(Event& e)
 {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
-    m_CameraController.OnEvent(e);
 
     for(auto it=m_LayerStack.end();it!=m_LayerStack.begin();)
     {
@@ -67,12 +66,7 @@ void Application::Run()
 {
     while (m_Running)
     {
-        float time = glfwGetTime();
-        Timestep timestep = time - m_LastFrameTime;
-        m_LastFrameTime = time;
-
-        m_CameraController.OnUpdate(timestep);
-        Renderer::BeginScene(m_CameraController.GetCamera());
+        
         if (showPostProcessing)
         {
             m_FrameBuffer->Bind();

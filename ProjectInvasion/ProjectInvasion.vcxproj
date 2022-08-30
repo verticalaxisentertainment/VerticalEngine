@@ -192,10 +192,10 @@
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Utils\PlatformUtils.cpp" />
     <ClCompile Include="vendor\stb\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
