@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include "Layer/LayerStack.h"
 #include "Layer/ImGUILayer.h"
 #include "Window.h"
@@ -9,14 +7,11 @@
 #include "Events/MouseEvent.h"
 
 #include "Renderer/Shader.h"
-#include <array>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Texture.h"
 #include "Renderer/OrthographicCameraController.h"
+#include "Core.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -38,7 +33,7 @@ public:
 };
 
 
-class Application
+class _API Application
 {
 public:
 	Application();
@@ -69,4 +64,4 @@ private:
 	static Application* s_Instance;
 };
 
-Application* CreateApplication();
+Application* CreateApplication();//defined client side

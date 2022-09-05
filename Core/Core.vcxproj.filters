@@ -36,6 +36,12 @@
     <ClInclude Include="src\Application.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DLL.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\Events\ApplicationEvent.h">
       <Filter>src\Events</Filter>
     </ClInclude>
@@ -70,6 +76,9 @@
       <Filter>src\Layer</Filter>
     </ClInclude>
     <ClInclude Include="src\Log.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Main.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\MouseCode.h">
@@ -145,9 +154,6 @@
     </ClCompile>
     <ClCompile Include="src\Layer\LayerStack.cpp">
       <Filter>src\Layer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Main.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>

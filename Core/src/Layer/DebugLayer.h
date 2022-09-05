@@ -3,12 +3,15 @@
 #include "ImGUILayer.h"
 #include "Layer.h"
 #include "Utils/PlatformUtils.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 class DebugLayer:public Layer
 {
 public:
 	DebugLayer()
 		:Layer("Debug Layer") {}
+
 	void OnImGuiRender() override
 	{
 		static bool show = true;

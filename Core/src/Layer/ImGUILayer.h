@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Layer.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 
 class ImGUILayer :public Layer
 {
