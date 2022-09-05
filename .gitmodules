@@ -1,9 +1,9 @@
-[submodule "ProjectInvasion/vendor/glfw"]
-	path = ProjectInvasion/vendor/glfw
+[submodule "Core/vendor/glfw"]
+	path = Core/vendor/glfw
 	url = https://github.com/TheCherno/glfw.git
-[submodule "ProjectInvasion/vendor/imgui"]
-	path = ProjectInvasion/vendor/imgui
+[submodule "Core/vendor/imgui"]
+	path = Core/vendor/imgui
 	url = https://github.com/rifkikesepara/imgui.git
-[submodule "ProjectInvasion/vendor/glm"]
-	path = ProjectInvasion/vendor/glm
+[submodule "Core/vendor/glm"]
+	path = Core/vendor/glm
 	url = https://github.com/g-truc/glm.git
