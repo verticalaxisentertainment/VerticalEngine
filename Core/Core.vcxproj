@@ -165,6 +165,7 @@
     <ClInclude Include="src\Layer\LayerStack.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Main.h" />
+    <ClInclude Include="src\Math\Mathematics.h" />
     <ClInclude Include="src\MouseCode.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="src\Layer\ImGUILayer.cpp" />
     <ClCompile Include="src\Layer\Layer.cpp" />
     <ClCompile Include="src\Layer\LayerStack.cpp" />
+    <ClCompile Include="src\Math\Mathematics.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />

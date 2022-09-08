@@ -18,7 +18,7 @@ Application::Application()
     m_Window = std::unique_ptr<Window>(Window::Create());
     m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 
-    Win32Menu::OpenMenu();
+    //Win32Menu::OpenMenu();
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {

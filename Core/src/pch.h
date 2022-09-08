@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <random>
 
 #ifdef PLATFORM_WINDOWS
 #include <Windows.h>

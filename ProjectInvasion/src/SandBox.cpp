@@ -5,7 +5,7 @@ class SandBox:public Application
 public:
 	SandBox()
 	{
-
+		INFO("Application Created");
 	}
 	~SandBox()
 	{

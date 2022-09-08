@@ -4,8 +4,8 @@
 #include "Renderer/Renderer.h"
 #include "Input.h"
 #include "KeyCode.h"
-
 #include <glad/glad.h>
+#include "Math/Mathematics.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -30,13 +30,16 @@ public:
 		Renderer::BeginScene(m_CameraController.GetCamera());
 
 		Application& app = Application::Get();
+
+		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
+
 		glm::mat4 model=glm::mat4(1.0f);
 		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 0, 1));
 		model = glm::translate(model, glm::vec3(0, -1.0f, 0));
 
+		Renderer::DrawQuad({test.x,test.y ,-0.5f}, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		Renderer::DrawQuad(model, m_Texture);
-		Renderer::DrawQuad({ (m_X - app.GetWindow().GetWidth() / 2) / app.GetWindow().GetWidth() * 2.5f,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
-		Renderer::DrawQuad({ -1.0f,1.5f }, { 1.0f,1.0f }, { 1.0,1.0f,1.0f,1.0f });
+		Renderer::DrawQuad({ -1.0f,1.5f,1.0f }, { 1.0f,1.0f }, { 1.0,1.0f,1.0f,1.0f });
 
 		Renderer::DrawLine({ glm::sin(glfwGetTime()),-glm::cos(glfwGetTime()),1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
 		Renderer::DrawLine({ -1.0f,0.0f,1.0f }, { 1.0f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
@@ -59,8 +62,8 @@ public:
 
 	static std::shared_ptr<Texture2D> m_Texture;
 private:
-	float m_X, m_Y;
 	OrthographicCameraController m_CameraController;
+	float m_X, m_Y;
 	float m_LastFrameTime;
 
 	bool onKeyPressed(KeyPressedEvent& e)
