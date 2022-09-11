@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include <glm/glm.hpp>
+#include "Core.h"
 
-class OrthographicCamera
+class _API OrthographicCamera
 {
 public:
 	OrthographicCamera(float left,float right,float bottom,float top);

@@ -3,8 +3,11 @@
 
 #include "Application.h"
 #include <GLFW/glfw3.h>
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+#include "imgui_internal.h"
 
 ImGUILayer::ImGUILayer()
 	:Layer("ImGuiLayer")
@@ -21,7 +24,7 @@ ImGUILayer::~ImGUILayer()
 void ImGUILayer::OnAttach()
 {
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	ImGuiContext* context = ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -52,8 +55,8 @@ void ImGUILayer::OnDetach()
 
 void ImGUILayer::OnImGuiRender()
 {
-	static bool show = true;
-	ImGui::ShowDemoWindow(&show);
+	if(show)
+		ImGui::ShowDemoWindow(&show);
 }
 
 void ImGUILayer::OnEvent(Event& e)

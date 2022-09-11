@@ -6,10 +6,10 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "Texture.h"
 #include "OrthographicCamera.h"
+#include "Core.h"
 
 
-
-class Renderer
+class _API Renderer
 {
 public:
 	inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
@@ -38,11 +38,26 @@ public:
 
 	static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 	static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
+
+	struct Statistics
+	{
+		uint32_t DrawCalls = 0;
+		uint32_t QuadCount = 0;
+
+		uint32_t GetTotalVertexCount() { return QuadCount * 4; }
+		uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+	};
+
+	static void ResetStats();
+	static Statistics GetStats();
+
+	static void WireframeMode(bool on);
 private:
 	struct SceneData
 	{
 		glm::mat4 ViewProjectionMatrix;
 	};
+
 
 	static std::unique_ptr<SceneData> s_SceneData;
 };

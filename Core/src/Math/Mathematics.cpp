@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Mathematics.h"
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 glm::vec3 Math::ScreenToWorldPoint(const glm::vec3& pos, const glm::mat4& eye)
 {
@@ -29,5 +30,17 @@ float Math::RandomFloat(float range1, float range2)
 
 int Math::RandomInt(int range1, int range2)
 {
-	return static_cast<int>(RandomFloat(range1, range2));
+	float tmp = (RandomFloat(range1, range2));
+	if(tmp>=range2-0.5f)
+	{
+		return range2;
+	}else
+	{
+		return static_cast<int>(tmp);
+	}
+}
+
+float Math::Time()
+{
+	return glfwGetTime();
 }

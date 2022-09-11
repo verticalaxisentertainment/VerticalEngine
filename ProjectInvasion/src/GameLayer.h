@@ -2,10 +2,8 @@
 #include "Layer/Layer.h"
 #include "Events/KeyEvent.h"
 #include "Renderer/Renderer.h"
-#include "Input.h"
-#include "KeyCode.h"
-#include <glad/glad.h>
 #include "Math/Mathematics.h"
+#include "KeyCode.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -18,11 +16,13 @@ public:
 		:Layer("GameLayer"), m_CameraController(1280.0f / 720.0f, true)
 	{
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
+		tiles[0] = 1;
+		tiles[1] = 1;
 	}
 
 	void OnUpdate() override
 	{
-		float time = glfwGetTime();
+		float time = Math::Time();
 		Timestep timestep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 
@@ -33,18 +33,24 @@ public:
 
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
 
-		glm::mat4 model=glm::mat4(1.0f);
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0, 0, 1));
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, (float)Math::Time(), glm::vec3(0, 0, 1));
 		model = glm::translate(model, glm::vec3(0, -1.0f, 0));
 
-		Renderer::DrawQuad({test.x,test.y ,-0.5f}, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+		Renderer::DrawQuad({ test.x,test.y ,-0.5f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		Renderer::DrawQuad(model, m_Texture);
-		Renderer::DrawQuad({ -1.0f,1.5f,1.0f }, { 1.0f,1.0f }, { 1.0,1.0f,1.0f,1.0f });
 
-		Renderer::DrawLine({ glm::sin(glfwGetTime()),-glm::cos(glfwGetTime()),1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
+		for (int i = 0; i < tiles[0]; i++)
+		{
+			for (int k = 0; k < tiles[1]; k++)
+				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,1.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+		}
+
+		Renderer::DrawLine({ glm::sin(Math::Time()),-glm::cos(Math::Time()),1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
 		Renderer::DrawLine({ -1.0f,0.0f,1.0f }, { 1.0f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
 		Renderer::DrawLine({ 0.0f,1.0f,1.0f }, { 0.0f,-1.0f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
 		/*Renderer::DrawLine({ 0.0f,-1.0f,0.0f }, { 0.0f,1.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });*/
+
 	}
 
 	void OnEvent(Event& e) override
@@ -59,18 +65,19 @@ public:
 		}
 	}
 
-
+	inline static int tiles[2];
 	static std::shared_ptr<Texture2D> m_Texture;
 private:
+	std::vector<glm::vec2> positions;
 	OrthographicCameraController m_CameraController;
 	float m_X, m_Y;
 	float m_LastFrameTime;
 
 	bool onKeyPressed(KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == GLFW_KEY_C)
+		if (e.GetKeyCode() == Key::C)
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			Renderer::WireframeMode(true);
 		}
 
 		return true;
@@ -78,9 +85,9 @@ private:
 
 	bool onKeyReleased(KeyReleasedEvent& e)
 	{
-		if (e.GetKeyCode() == GLFW_KEY_C)
+		if (e.GetKeyCode() == Key::C)
 		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			Renderer::WireframeMode(false);
 		}
 
 		return true;

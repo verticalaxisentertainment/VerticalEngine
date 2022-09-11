@@ -1,11 +1,14 @@
 #include "DLL.h"
+#include "GameLayer.h"
+#include "DebugLayer.h"
 
 class SandBox:public Application
 {
 public:
 	SandBox()
 	{
-		INFO("Application Created");
+		PushLayer(new GameLayer());
+		PushOverlay(new DebugLayer());
 	}
 	~SandBox()
 	{

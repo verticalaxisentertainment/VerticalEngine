@@ -60,6 +60,9 @@ struct RendererData
 
 	std::shared_ptr<Shader> QuadShaderFlat;
 	std::shared_ptr<Shader> QuadShaderTexture;
+
+	//Statistics
+	Renderer::Statistics stats;
 	
 };
 
@@ -120,6 +123,7 @@ void Renderer::Init()
 void Renderer::BeginScene(OrthographicCamera& camera)
 {
 	s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	ResetStats();
 }
 
 void Renderer::EndScene()
@@ -147,19 +151,23 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 	glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
 	s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
 
+	s_Data.stats.QuadCount++;
+	s_Data.stats.DrawCalls++;
 	RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture)
 {
-	texture->Bind(1);
+	texture->Bind(0);
 	s_Data.QuadShaderTexture->Bind();
 	s_Data.QuadShaderTexture->SetMat4("model", transform);
 	glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
 	s_Data.QuadShaderTexture->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
-	s_Data.QuadShaderTexture->SetInt("tex", 1);
-	s_Data.QuadShaderTexture->SetInt("tex2", 1);
+	s_Data.QuadShaderTexture->SetInt("tex", 0);
+	s_Data.QuadShaderTexture->SetInt("tex2", 0);
 
+	s_Data.stats.QuadCount++;
+	s_Data.stats.DrawCalls++;
 	RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
 }
 
@@ -184,5 +192,25 @@ void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4
 	s_Data.LineVertexBuffer->SetData(&s_Data.lineVertices, sizeof(s_Data.lineVertices));
 	s_Data.LineShader->Bind();
 	s_Data.LineShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+
+	s_Data.stats.DrawCalls++;
 	RenderCommand::DrawLines(s_Data.LineVertexArray);
+}
+
+void Renderer::ResetStats()
+{
+	memset(&s_Data.stats, 0, sizeof(Statistics));
+}
+
+Renderer::Statistics Renderer::GetStats()
+{
+	return s_Data.stats;
+}
+
+void Renderer::WireframeMode(bool on)
+{
+	if (on)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

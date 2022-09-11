@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Core.h"
 
 class Texture
 {
@@ -21,7 +22,7 @@ public:
 	virtual bool operator==(const Texture& other) const = 0;
 };
 
-class Texture2D :public Texture
+class _API Texture2D :public Texture
 {
 public:
 	static Texture2D* Create(uint32_t width, uint32_t height);

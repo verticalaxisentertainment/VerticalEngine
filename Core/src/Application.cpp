@@ -5,8 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "stb_image.h"
-#include "Layer/GameLayer.h"
-#include "Layer/DebugLayer.h"
+//#include "Layer/DebugLayer.h"
 #include "Renderer/Renderer.h"
 
 Application* Application::s_Instance = nullptr;
@@ -30,11 +29,11 @@ Application::Application()
     //Imgui Stuff
     m_ImGuiLayer = new ImGUILayer();
     PushOverlay(m_ImGuiLayer);
-    PushOverlay(new DebugLayer());
+    //PushOverlay(new DebugLayer());
 
 
     Renderer::Init();
-    PushLayer(new GameLayer());
+    //PushLayer(new GameLayer());
 
 
     m_FrameBuffer.reset(FrameBuffer::Create());

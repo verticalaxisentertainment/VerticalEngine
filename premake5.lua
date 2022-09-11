@@ -96,7 +96,7 @@ project "ProjectInvasion"
 	location "ProjectInvasion"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "On"
+	staticruntime "off"
 
 	targetdir("bin/" .. outputdir .."/%{prj.name}")
 	objdir("bin-int/" .. outputdir .."/%{prj.name}")
@@ -108,7 +108,8 @@ project "ProjectInvasion"
 
 	includedirs{
 		"Core/src",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.imgui}"
 	}
 
 	links

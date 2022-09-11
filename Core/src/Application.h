@@ -49,11 +49,11 @@ public:
 	inline Window& GetWindow() const{ return *m_Window; }
 
 	bool showPostProcessing = false;
+	ImGUILayer* m_ImGuiLayer;
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	LayerStack m_LayerStack;
 
-	ImGUILayer* m_ImGuiLayer;
 
 	std::unique_ptr<Window> m_Window;
 	inline static bool m_Running = true;

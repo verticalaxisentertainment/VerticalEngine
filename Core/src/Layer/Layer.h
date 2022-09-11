@@ -1,8 +1,9 @@
 ﻿#pragma once
 
+#include "Core.h"
 #include "Events/Event.h"
 
-	class Layer
+	class _API Layer
 	{
 	public:
 		Layer(const std::string& name = "Layer");

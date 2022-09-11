@@ -6,7 +6,9 @@
 #include "Events/MouseEvent.h"
 #include "Events/ApplicationEvent.h"
 
-class OrthographicCameraController
+#include "Core.h"
+
+class _API OrthographicCameraController
 {
 public:
 	OrthographicCameraController(float aspectRatio, bool rotation = false);
