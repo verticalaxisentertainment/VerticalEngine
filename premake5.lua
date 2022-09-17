@@ -16,11 +16,13 @@ IncludeDir["Glad"]="Core/vendor/Glad/include"
 IncludeDir["imgui"]="Core/vendor/imgui"
 IncludeDir["glm"]="Core/vendor/glm"
 IncludeDir["stb"]="Core/vendor/stb"
+IncludeDir["yaml"]="Core/vendor/yaml"
 
 group "Dependencies"
 	include "Core/vendor/GLFW"
 	include "Core/vendor/Glad"
 	include "Core/vendor/imgui"
+	include "Core/vendor/yaml"
 
 group ""
 
@@ -50,7 +52,8 @@ project "Core"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb}",
 		"%{prj.name}/src",
-		"%{IncludeDir.imgui}/backends"
+		"%{IncludeDir.imgui}/backends",
+		"%{IncludeDir.yaml}"
 	}
 
 	links
@@ -58,7 +61,8 @@ project "Core"
 		"GLFW",
 		"Glad",
 		"imgui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"yaml-cpp"
 	}
 
 	postbuildcommands
