@@ -18,6 +18,9 @@ public:
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 		tiles[0] = 1;
 		tiles[1] = 1;
+
+		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
+		Physics::CreateDynamicBody({ 0.0f,100.0f,1.0f }, { 1.0f,1.0f });
 	}
 
 	void OnUpdate() override
@@ -39,6 +42,8 @@ public:
 
 		Renderer::DrawQuad({ test.x,test.y ,-0.5f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		Renderer::DrawQuad(model, m_Texture);
+		/*Physics::CreateStaticBody({ 0.0f,-10.0f,1.0f },{10.0f,1.0f});
+		Physics::CreateDynamicBody({ 0.0f,0.0f,1.0f },{1.0f,1.0f});*/
 
 		for (int i = 0; i < tiles[0]; i++)
 		{
@@ -51,6 +56,7 @@ public:
 		Renderer::DrawLine({ 0.0f,1.0f,1.0f }, { 0.0f,-1.0f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
 		/*Renderer::DrawLine({ 0.0f,-1.0f,0.0f }, { 0.0f,1.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });*/
 
+		Physics::Simulate(timestep);
 	}
 
 	void OnEvent(Event& e) override
@@ -62,6 +68,7 @@ public:
 		if(!e.Handled&&e.IsInCategory(EventCategoryMouse))
 		{
 			dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(GameLayer::onMouseMoved));
+			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(GameLayer::onMouseClicked));
 		}
 	}
 
@@ -98,6 +105,13 @@ private:
 		Application& app = Application::Get();
 		m_X = e.GetX();
 		m_Y = e.GetY();
+		return true;
+	}
+
+	bool onMouseClicked(MouseButtonPressedEvent& e)
+	{
+		glm::vec3 position=Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
+		Physics::CreateDynamicBody({ position.x,position.y,1.0f }, { 1.0f,1.0f });
 		return true;
 	}
 };

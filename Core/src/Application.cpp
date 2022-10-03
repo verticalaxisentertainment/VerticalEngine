@@ -3,26 +3,37 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include "stb_image.h"
-//#include "Layer/DebugLayer.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_math.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_world.h"
 #include "Renderer/Renderer.h"
+//#include "Layer/DebugLayer.h"
 
 Application* Application::s_Instance = nullptr;
 
 Application::Application()
 {
     s_Instance = this;
-
-    m_Window = std::unique_ptr<Window>(Window::Create());
+    m_Window = std::unique_ptr<Window>(Window::Create({"Project Invasion | Renderer: " +RendererAPI::GetAPIString()+" | GPU: " }));
     m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 
+#ifdef MOBILE
     //Win32Menu::OpenMenu();
+    if(gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress))
+    {
+        INFO("Mobile Support ON!");
+    }
+    
+#else
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         ERROR("Failed to initialize GLAD");
     }
+#endif
 
     INFO(glGetString(GL_VERSION) <<" | " << glGetString(GL_RENDERER));
 
@@ -64,8 +75,11 @@ void Application::OnEvent(Event& e)
 
 void Application::Run()
 {
+
     while (m_Running)
     {
+        std::string title = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: "+(const char*)glGetString(GL_RENDERER);
+        glfwSetWindowTitle(static_cast<GLFWwindow*>(GetWindow().GetNativeWindow()), title.c_str());
         
         if (showPostProcessing)
         {

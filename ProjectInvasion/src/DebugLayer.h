@@ -37,6 +37,10 @@ public:
 				GameLayer::m_Texture->UpdateTexture(path);
 			}
 		}
+		if (ImGui::Button("Clear PhysicObjects"))
+		{
+			Physics::Clear();
+		}
 		{
 			ImGui::DragInt2("", values, 1, -100, 100);
 			ImGui::SameLine();

@@ -12,6 +12,7 @@
 #include "Renderer/Texture.h"
 #include "Renderer/OrthographicCameraController.h"
 #include "Core.h"
+#include "Renderer/Physics.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -53,7 +54,6 @@ public:
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	LayerStack m_LayerStack;
-
 
 	std::unique_ptr<Window> m_Window;
 	inline static bool m_Running = true;
