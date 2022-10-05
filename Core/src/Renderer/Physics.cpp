@@ -96,6 +96,6 @@ void Physics::Simulate(const float& timestep)
 			model = glm::rotate(model, body.Body->GetAngle(), glm::vec3(0.0f, 0.0f, 1.0f));
 			
 			//printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
-			Renderer::DrawQuad(model, { 1.0f,1.0f,1.0f,1.0f });
+			Renderer::DrawQuad(model, { 1.0f,0.0f,0.0f,0.5f });
 		}
 }

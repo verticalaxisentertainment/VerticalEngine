@@ -4,6 +4,7 @@
 #include "Renderer/Renderer.h"
 #include "Math/Mathematics.h"
 #include "KeyCode.h"
+#include "MouseCode.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -40,23 +41,24 @@ public:
 		model = glm::rotate(model, (float)Math::Time(), glm::vec3(0, 0, 1));
 		model = glm::translate(model, glm::vec3(0, -1.0f, 0));
 
-		Renderer::DrawQuad({ test.x,test.y ,-0.5f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
-		Renderer::DrawQuad(model, m_Texture);
+		//Renderer::DrawQuad(model, m_Texture);
 		/*Physics::CreateStaticBody({ 0.0f,-10.0f,1.0f },{10.0f,1.0f});
 		Physics::CreateDynamicBody({ 0.0f,0.0f,1.0f },{1.0f,1.0f});*/
+		Renderer::DrawQuad({ test.x,test.y ,-0.5f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 
 		for (int i = 0; i < tiles[0]; i++)
 		{
 			for (int k = 0; k < tiles[1]; k++)
 				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,1.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		}
-
 		Renderer::DrawLine({ glm::sin(Math::Time()),-glm::cos(Math::Time()),1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
 		Renderer::DrawLine({ -1.0f,0.0f,1.0f }, { 1.0f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
 		Renderer::DrawLine({ 0.0f,1.0f,1.0f }, { 0.0f,-1.0f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
+
 		/*Renderer::DrawLine({ 0.0f,-1.0f,0.0f }, { 0.0f,1.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });*/
 
 		Physics::Simulate(timestep);
+		Renderer::EndScene();
 	}
 
 	void OnEvent(Event& e) override
@@ -110,9 +112,12 @@ private:
 
 	bool onMouseClicked(MouseButtonPressedEvent& e)
 	{
-		glm::vec3 position=Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
-		Physics::CreateDynamicBody({ position.x,position.y,1.0f }, { 1.0f,1.0f });
-		return true;
+		if (e.GetMouseButton() == Mouse::Button0)
+		{
+			glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
+			Physics::CreateDynamicBody({ position.x,position.y,1.0f }, { 1.0f,1.0f });
+			return true;
+		}
 	}
 };
 

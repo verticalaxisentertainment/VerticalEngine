@@ -4,11 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
-#include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
-#include "box2d/b2_math.h"
-#include "box2d/b2_polygon_shape.h"
-#include "box2d/b2_world.h"
 #include "Renderer/Renderer.h"
 //#include "Layer/DebugLayer.h"
 
@@ -78,6 +74,7 @@ void Application::Run()
 
     while (m_Running)
     {
+        
         std::string title = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: "+(const char*)glGetString(GL_RENDERER);
         glfwSetWindowTitle(static_cast<GLFWwindow*>(GetWindow().GetNativeWindow()), title.c_str());
         

@@ -9,6 +9,8 @@
 #include "Core.h"
 
 
+class Shader;
+
 class _API Renderer
 {
 public:
@@ -19,6 +21,7 @@ public:
 
 	static void BeginScene(OrthographicCamera& camera);
 	static void EndScene();
+	static void Flush();
 
 	//Primitives
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
@@ -60,4 +63,9 @@ private:
 
 
 	static std::unique_ptr<SceneData> s_SceneData;
+private:
+	static void StartBatch();
+	static void NextBatch();
+
+	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 };

@@ -15,24 +15,14 @@ std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Re
 struct QuadVertex
 {
 	glm::vec3 Position;
-	glm::vec4 Color;
 	glm::vec2 TexCoord;
-	float TexIndex;
-	float TilingFactor;
-
-	// Editor-only
-	int EntityID;
+	glm::vec4 Color;
 };
 
 struct LineVertex
 {
-	glm::vec3 Position1;
-	glm::vec3 Position2;
+	glm::vec3 Position;
 	glm::vec4 Color;
-
-
-	//Editor-only
-	int EntityID;
 };
 
 struct RendererData
@@ -44,22 +34,22 @@ struct RendererData
 
 	std::shared_ptr<VertexArray> QuadVertexArray;
 	std::shared_ptr<VertexBuffer> QuadVertexBuffer;
+	std::shared_ptr<Shader> QuadShaderFlat;
+	std::shared_ptr<Shader> QuadShaderTexture;
 
 	std::shared_ptr<VertexArray> LineVertexArray;
 	std::shared_ptr<VertexBuffer> LineVertexBuffer;
 	std::shared_ptr<Shader> LineShader;
-	LineVertex* lineVertexValues;
-	//float LineVerctices[12];
 
-	float lineVertices[12]
-	{
-		//position     //color
-		0.0f,0.0f,0.0f,1.0f, 1.0f, 1.0f,
-		1.0f,0.0f,0.0f,0.0f,1.0f,1.0f
-	};
+	uint32_t QuadIndexCount = 0;
+	QuadVertex* QuadVertexBufferBase = nullptr;
+	QuadVertex* QuadVertexBufferPtr = nullptr;
 
-	std::shared_ptr<Shader> QuadShaderFlat;
-	std::shared_ptr<Shader> QuadShaderTexture;
+	uint32_t LineVertexCount = 0;
+	LineVertex* LineVertexBufferBase = nullptr;
+	LineVertex* LineVertexBufferPtr = nullptr;
+
+	glm::vec4 QuadVertexPositions[4];
 
 	//Statistics
 	Renderer::Statistics stats;
@@ -72,67 +62,136 @@ void Renderer::Init()
 {
 	RenderCommand::Init();
 
-	//Quad init
-	float vertices[]{
-		// positions   // texCoords  //colors
-			-0.5f,  0.5f,  0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
-			-0.5f, -0.5f,  0.0f, 0.0f,   0.0f, 1.0f, 0.0f,
-			 0.5f, -0.5f,  1.0f, 0.0f,   0.0f, 0.0f, 1.0f,
-			 0.5f,  0.5f,  1.0f, 1.0f,   1.0f, 0.0f, 0.0f
-	};
-
-	uint32_t indices[]{ 0,1,2,0,2,3 };
-
 	s_Data.QuadVertexArray.reset(VertexArray::Create());
 
-	s_Data.QuadVertexBuffer.reset(VertexBuffer::Create((float*)&vertices, sizeof(vertices)));
+	s_Data.QuadVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex)));
 	s_Data.QuadVertexBuffer->SetLayout({
-		{ShaderDataType::Float2,"a_Position"},
+		{ShaderDataType::Float3,"a_Position"},
 		{ShaderDataType::Float2,"a_TexCoord"},
-		{ShaderDataType::Float3,"a_Color"}
+		{ShaderDataType::Float4,"a_Color"}
 		});
 
 	s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
+	s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+
+	uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];
+
+	uint32_t offset = 0;
+	for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
+	{
+		quadIndices[i + 0] = offset + 0;
+		quadIndices[i + 1] = offset + 1;
+		quadIndices[i + 2] = offset + 2;
+
+		quadIndices[i + 3] = offset + 2;
+		quadIndices[i + 4] = offset + 3;
+		quadIndices[i + 5] = offset + 0;
+
+		offset += 4;
+	}
+
 	std::shared_ptr<IndexBuffer> indexbuffer;
-	indexbuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+	indexbuffer.reset(IndexBuffer::Create(quadIndices, s_Data.MaxIndices));
 	s_Data.QuadVertexArray->SetIndexBuffer(indexbuffer);
+	delete[] quadIndices;
+
 
 
 	//Line init
-	
-
-	
-
 	s_Data.LineVertexArray.reset(VertexArray::Create());
-	s_Data.LineVertexBuffer.reset(VertexBuffer::Create(sizeof(s_Data.lineVertices)));
+
+	s_Data.LineVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(LineVertex)));
 	s_Data.LineVertexBuffer->SetLayout({
 		{ShaderDataType::Float3,"a_Position"},
-		{ShaderDataType::Float3, "a_Color"}
+		{ShaderDataType::Float4, "a_Color"}
 		});
 
 	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
-
+	s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
 
 	//shaders init
 	s_Data.QuadShaderFlat.reset(new Shader("assets/shaders/FlatColor.glsl"));
 	s_Data.QuadShaderTexture.reset(new Shader("assets/shaders/Texture.glsl"));
 	s_Data.LineShader.reset(new Shader("assets/shaders/Line.glsl"));
+
+	s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+	s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
+	s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 }
 
 void Renderer::BeginScene(OrthographicCamera& camera)
 {
 	s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	
+	
 	ResetStats();
+	StartBatch();
 }
 
 void Renderer::EndScene()
 {
+	Flush();
 }
+
+void Renderer::Flush()
+{
+	if (s_Data.LineVertexCount)
+	{
+		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+		s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, dataSize);
+
+		RenderCommand::SetLineWidth(2);
+		s_Data.LineShader->Bind();
+		s_Data.LineShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
+		s_Data.stats.DrawCalls++;
+	}
+
+	if (s_Data.QuadIndexCount)
+	{
+		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
+		s_Data.QuadShaderFlat->Bind();
+		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		s_Data.stats.DrawCalls++;
+	}
+}
+
+void Renderer::StartBatch()
+{
+	s_Data.QuadIndexCount = 0;
+	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+	s_Data.LineVertexCount = 0;
+	s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
+}
+
+void Renderer::NextBatch()
+{
+	Flush();
+	StartBatch();
+}
+
+void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray,
+	const glm::mat4& transform)
+{
+	shader->Bind();
+	shader->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
+	shader->SetMat4("model", transform);
+
+	vertexArray->Bind();
+	RenderCommand::DrawIndexed(vertexArray);
+}
+
 
 void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 {
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, position.z)) * glm::scale(glm::mat4(1.0f), { size.x,size.y,1.0f });
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 	DrawQuad(transform, color);
 }
@@ -146,55 +205,58 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::s
 
 void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 {
-	s_Data.QuadShaderFlat->Bind();
-	s_Data.QuadShaderFlat->SetMat4("model", transform);
-	glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
-	s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+	constexpr size_t quadVertexCount = 4;
+	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
+	if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
+		NextBatch();
+
+	for (size_t i = 0; i < quadVertexCount; i++)
+	{
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr++;
+	}
+
+	s_Data.QuadIndexCount += 6;
 
 	s_Data.stats.QuadCount++;
-	s_Data.stats.DrawCalls++;
-	RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture)
 {
-	texture->Bind(0);
-	s_Data.QuadShaderTexture->Bind();
-	s_Data.QuadShaderTexture->SetMat4("model", transform);
-	glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
-	s_Data.QuadShaderTexture->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
-	s_Data.QuadShaderTexture->SetInt("tex", 0);
-	s_Data.QuadShaderTexture->SetInt("tex2", 0);
+	constexpr size_t quadVertexCount = 4;
+		const float textureIndex = 0.0f; // White Texture
+		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-	s_Data.stats.QuadCount++;
-	s_Data.stats.DrawCalls++;
-	RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
+		if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
+			NextBatch();
+
+		for (size_t i = 0; i < quadVertexCount; i++)
+		{
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = { 0.0f,0.0f,0.0f,1.0f };
+			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+			s_Data.QuadVertexBufferPtr++;
+		}
+
+		s_Data.QuadIndexCount += 6;
+
+		s_Data.stats.QuadCount++;
 }
 
 void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4& color)
 {
-	s_Data.lineVertices[0] = p0[0];
-	s_Data.lineVertices[1] = p0[1];
-	s_Data.lineVertices[2] = p0[2];
+	s_Data.LineVertexBufferPtr->Position = p0;
+	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr++;
 
-	s_Data.lineVertices[3] = color[0];
-	s_Data.lineVertices[4] = color[1];
-	s_Data.lineVertices[5] = color[2];
+	s_Data.LineVertexBufferPtr->Position = p1;
+	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr++;
 
-	s_Data.lineVertices[6] = p1[0];
-	s_Data.lineVertices[7] = p1[1];
-	s_Data.lineVertices[8] = p1[2];
-
-	s_Data.lineVertices[9] = color[0];
-	s_Data.lineVertices[10] = color[1];
-	s_Data.lineVertices[11] = color[2];
-
-	s_Data.LineVertexBuffer->SetData(&s_Data.lineVertices, sizeof(s_Data.lineVertices));
-	s_Data.LineShader->Bind();
-	s_Data.LineShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
-
-	s_Data.stats.DrawCalls++;
-	RenderCommand::DrawLines(s_Data.LineVertexArray);
+	s_Data.LineVertexCount += 2;
 }
 
 void Renderer::ResetStats()
