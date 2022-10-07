@@ -8,7 +8,8 @@ class _API Physics
 {
 public:
 	static void CreateStaticBody(const glm::vec3& position, const glm::vec2& scale);
-	static void CreateDynamicBody(const glm::vec3& position, const glm::vec2& scale);
+	static void CreateDynamicBox(const glm::vec3& position, const glm::vec2& scale);
+	static void CreateDynamicCircle(const glm::vec3& position, const float& radius);
 
 	static void Clear();
 

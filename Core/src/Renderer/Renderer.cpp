@@ -12,6 +12,15 @@
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 
+struct CircleVertex
+{
+	glm::vec3 WorldPosition;
+	glm::vec3 LocalPosition;
+	glm::vec4 Color;
+	float Thickness;
+	float Fade;
+};
+
 struct QuadVertex
 {
 	glm::vec3 Position;
@@ -41,6 +50,10 @@ struct RendererData
 	std::shared_ptr<VertexBuffer> LineVertexBuffer;
 	std::shared_ptr<Shader> LineShader;
 
+	std::shared_ptr<VertexArray> CircleVertexArray;
+	std::shared_ptr<VertexBuffer> CircleVertexBuffer;
+	std::shared_ptr<Shader> CircleShader;
+
 	uint32_t QuadIndexCount = 0;
 	QuadVertex* QuadVertexBufferBase = nullptr;
 	QuadVertex* QuadVertexBufferPtr = nullptr;
@@ -48,6 +61,10 @@ struct RendererData
 	uint32_t LineVertexCount = 0;
 	LineVertex* LineVertexBufferBase = nullptr;
 	LineVertex* LineVertexBufferPtr = nullptr;
+
+	uint32_t CircleIndexCount = 0;
+	CircleVertex* CircleVertexBufferBase = nullptr;
+	CircleVertex* CircleVertexBufferPtr = nullptr;
 
 	glm::vec4 QuadVertexPositions[4];
 
@@ -62,6 +79,9 @@ void Renderer::Init()
 {
 	RenderCommand::Init();
 
+
+
+	//quad init
 	s_Data.QuadVertexArray.reset(VertexArray::Create());
 
 	s_Data.QuadVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex)));
@@ -96,8 +116,6 @@ void Renderer::Init()
 	s_Data.QuadVertexArray->SetIndexBuffer(indexbuffer);
 	delete[] quadIndices;
 
-
-
 	//Line init
 	s_Data.LineVertexArray.reset(VertexArray::Create());
 
@@ -110,10 +128,26 @@ void Renderer::Init()
 	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
 	s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
 
+	//Circle Init
+	s_Data.CircleVertexArray.reset(VertexArray::Create());
+
+	s_Data.CircleVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(CircleVertex)));
+	s_Data.CircleVertexBuffer->SetLayout({
+		{ ShaderDataType::Float3, "a_WorldPosition" },
+		{ ShaderDataType::Float3, "a_LocalPosition" },
+		{ ShaderDataType::Float4, "a_Color"         },
+		{ ShaderDataType::Float,  "a_Thickness"     },
+		{ ShaderDataType::Float,  "a_Fade"          },
+		});
+	s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
+	s_Data.CircleVertexArray->SetIndexBuffer(indexbuffer); // Use quad IB
+	s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
+
 	//shaders init
 	s_Data.QuadShaderFlat.reset(new Shader("assets/shaders/FlatColor.glsl"));
 	s_Data.QuadShaderTexture.reset(new Shader("assets/shaders/Texture.glsl"));
 	s_Data.LineShader.reset(new Shader("assets/shaders/Line.glsl"));
+	s_Data.CircleShader.reset(new Shader("assets/shaders/Circle.glsl"));
 
 	s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
@@ -159,12 +193,26 @@ void Renderer::Flush()
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 		s_Data.stats.DrawCalls++;
 	}
+
+	if (s_Data.CircleIndexCount)
+	{
+		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase);
+		s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
+
+		s_Data.CircleShader->Bind();
+		s_Data.CircleShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
+		s_Data.stats.DrawCalls++;
+	}
 }
 
 void Renderer::StartBatch()
 {
 	s_Data.QuadIndexCount = 0;
 	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+	s_Data.CircleIndexCount = 0;
+	s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
 
 	s_Data.LineVertexCount = 0;
 	s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
@@ -227,23 +275,40 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture)
 {
 	constexpr size_t quadVertexCount = 4;
-		const float textureIndex = 0.0f; // White Texture
-		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+	const float textureIndex = 0.0f; // White Texture
+	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
-		if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
-			NextBatch();
+	if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
+		NextBatch();
 
-		for (size_t i = 0; i < quadVertexCount; i++)
-		{
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = { 0.0f,0.0f,0.0f,1.0f };
-			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-			s_Data.QuadVertexBufferPtr++;
-		}
+	for (size_t i = 0; i < quadVertexCount; i++)
+	{
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+		s_Data.QuadVertexBufferPtr->Color = { 0.0f,0.0f,0.0f,1.0f };
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+		s_Data.QuadVertexBufferPtr++;
+	}
 
-		s_Data.QuadIndexCount += 6;
+	s_Data.QuadIndexCount += 6;
 
-		s_Data.stats.QuadCount++;
+	s_Data.stats.QuadCount++;
+}
+
+void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade)
+{
+	for (size_t i = 0; i < 4; i++)
+	{
+		s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
+		s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
+		s_Data.CircleVertexBufferPtr->Color = color;
+		s_Data.CircleVertexBufferPtr->Thickness = thickness;
+		s_Data.CircleVertexBufferPtr->Fade = fade;
+		s_Data.CircleVertexBufferPtr++;
+	}
+
+	s_Data.CircleIndexCount += 6;
+
+	s_Data.stats.QuadCount++;
 }
 
 void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4& color)

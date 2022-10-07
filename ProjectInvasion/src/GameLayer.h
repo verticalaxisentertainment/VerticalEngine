@@ -17,11 +17,10 @@ public:
 		:Layer("GameLayer"), m_CameraController(1280.0f / 720.0f, true)
 	{
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
-		tiles[0] = 1;
-		tiles[1] = 1;
+		tiles[0] = 0;
+		tiles[1] = 0;
 
 		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
-		Physics::CreateDynamicBody({ 0.0f,100.0f,1.0f }, { 1.0f,1.0f });
 	}
 
 	void OnUpdate() override
@@ -38,12 +37,11 @@ public:
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, (float)Math::Time(), glm::vec3(0, 0, 1));
-		model = glm::translate(model, glm::vec3(0, -1.0f, 0));
+		model = glm::translate(model, glm::vec3(0, 5.0f, 0));
 
 		//Renderer::DrawQuad(model, m_Texture);
 		/*Physics::CreateStaticBody({ 0.0f,-10.0f,1.0f },{10.0f,1.0f});
-		Physics::CreateDynamicBody({ 0.0f,0.0f,1.0f },{1.0f,1.0f});*/
+		Physics::CreateDynamicBox({ 0.0f,0.0f,1.0f },{1.0f,1.0f});*/
 		Renderer::DrawQuad({ test.x,test.y ,-0.5f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 
 		for (int i = 0; i < tiles[0]; i++)
@@ -55,6 +53,14 @@ public:
 		Renderer::DrawLine({ -1.0f,0.0f,1.0f }, { 1.0f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
 		Renderer::DrawLine({ 0.0f,1.0f,1.0f }, { 0.0f,-1.0f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
 
+		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f,1.0f,1.0f,1.0f });
+		/*Renderer::DrawCircle(model, {0.0f,1.0f,0.0f,1.0f});
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(3.0f, 5.0f, 0));
+		Renderer::DrawCircle(model, {0.0f,0.0f,1.0f,1.0f});
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(1.5f, 5.0f, 0));
+		Renderer::DrawCircle(model, { 1.0f,0.0f,0.0f,1.0f });*/
 		/*Renderer::DrawLine({ 0.0f,-1.0f,0.0f }, { 0.0f,1.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });*/
 
 		Physics::Simulate(timestep);
@@ -115,9 +121,17 @@ private:
 		if (e.GetMouseButton() == Mouse::Button0)
 		{
 			glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
-			Physics::CreateDynamicBody({ position.x,position.y,1.0f }, { 1.0f,1.0f });
+			Physics::CreateDynamicBox({ position.x,position.y,1.0f }, { 1.0f,1.0f });
 			return true;
 		}
+
+		if(e.GetMouseButton()==Mouse::Button1)
+		{
+			glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController.GetCamera().GetViewProjectionMatrix());
+			Physics::CreateDynamicCircle({ position.x,position.y,1.0f }, 1.0f);
+			return true;
+		}
+		return false;
 	}
 };
 
