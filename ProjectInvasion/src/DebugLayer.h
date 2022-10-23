@@ -26,7 +26,7 @@ public:
 		ImGui::Begin("Debug", &show);
 		ImGui::Checkbox("ShowDemoWindow", &ImGUILayer::show);
 		ImGui::Checkbox("Show Stats", &showStats);
-		ImGui::Checkbox("Post Process", &app.showPostProcessing);
+		ImGui::Checkbox("Post Process", &Application::showPostProcessing);
 		ImGui::Checkbox("VSYNC", &vsync);
 		Application::Get().GetWindow().SetVSync(vsync);
 		if (ImGui::Button("Texture"))

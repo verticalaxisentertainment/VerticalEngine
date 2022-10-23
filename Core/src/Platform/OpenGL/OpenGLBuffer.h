@@ -36,23 +36,3 @@ private:
 	uint32_t m_RendererID;
 	uint32_t m_Count;
 };
-
-class OpenGLFrameBuffer :public FrameBuffer
-{
-public:
-	OpenGLFrameBuffer();
-	virtual ~OpenGLFrameBuffer();
-
-	virtual void Bind() const override;
-	virtual void BindVertexArray() const override;
-	virtual void UnBind() const override;
-
-	virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return frameVA->GetIndexBuffer(); }
-
-private:
-	unsigned int framebuffer;
-	unsigned int textureColorbuffer;
-	unsigned int rbo;
-
-	std::shared_ptr<VertexArray> frameVA;
-};

@@ -5,6 +5,8 @@
 #include "Buffer.h"
 #include "Shader.h"
 #include "RendererAPI.h"
+#include "OrthographicCameraController.h"
+#include "FrameBuffer.h"
 
 #include <glad/glad.h>
 
@@ -68,6 +70,10 @@ struct RendererData
 
 	glm::vec4 QuadVertexPositions[4];
 
+	std::shared_ptr<VertexArray> FrameBufferVertexArray;
+	std::shared_ptr<VertexBuffer> FrameBufferVertexBuffer;
+	std::shared_ptr<Shader> FrameBufferShader;
+
 	//Statistics
 	Renderer::Statistics stats;
 	
@@ -77,7 +83,6 @@ static RendererData s_Data;
 
 void Renderer::Init()
 {
-	RenderCommand::Init();
 
 
 
@@ -143,11 +148,40 @@ void Renderer::Init()
 	s_Data.CircleVertexArray->SetIndexBuffer(indexbuffer); // Use quad IB
 	s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 
+	//framebuffer init
+	float quadVertices[] = {
+		// positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	uint32_t indices[] = {
+		0,1,2,0,2,3
+	};
+	s_Data.FrameBufferVertexArray.reset(VertexArray::Create());
+
+	std::shared_ptr<VertexBuffer> vertexBuffer;
+	vertexBuffer.reset(VertexBuffer::Create((float*)&quadVertices, sizeof(quadVertices)));
+
+	BufferLayout layout = {
+			{ShaderDataType::Float2, "a_Position"},
+			{ShaderDataType::Float2, "a_TexCoord"}
+	};
+	vertexBuffer->SetLayout(layout);
+	s_Data.FrameBufferVertexArray->AddVertexBuffer(vertexBuffer);
+
+	std::shared_ptr<IndexBuffer> indexBuffer;
+	indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+	s_Data.FrameBufferVertexArray->SetIndexBuffer(indexBuffer);
+
 	//shaders init
 	s_Data.QuadShaderFlat.reset(new Shader("assets/shaders/FlatColor.glsl"));
 	s_Data.QuadShaderTexture.reset(new Shader("assets/shaders/Texture.glsl"));
 	s_Data.LineShader.reset(new Shader("assets/shaders/Line.glsl"));
 	s_Data.CircleShader.reset(new Shader("assets/shaders/Circle.glsl"));
+	s_Data.FrameBufferShader.reset(new Shader("assets/shaders/screen.glsl"));
 
 	s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
@@ -155,12 +189,18 @@ void Renderer::Init()
 	s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 }
 
+void Renderer::BeginScene()
+{
+	OrthographicCameraController cam(1280.0f / 720.0f, true);
+	s_SceneData->ViewProjectionMatrix = cam.GetCamera().GetProjectionMatrix();
+
+	StartBatch();
+}
+
 void Renderer::BeginScene(OrthographicCamera& camera)
 {
 	s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
-	
-	
-	ResetStats();
+
 	StartBatch();
 }
 
@@ -322,6 +362,18 @@ void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4
 	s_Data.LineVertexBufferPtr++;
 
 	s_Data.LineVertexCount += 2;
+}
+
+void Renderer::DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer)
+{
+	glDisable(GL_DEPTH_TEST);
+	s_Data.FrameBufferShader->Bind();
+	s_Data.FrameBufferShader->SetInt("screenTexture", 0);
+	s_Data.FrameBufferShader->SetVec2("resoulation", glm::vec2(1280, 720));
+	buffer->BindVertexArray();
+	glDisable(GL_BLEND);
+	glDrawElements(GL_TRIANGLES, buffer->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	glEnable(GL_BLEND);
 }
 
 void Renderer::ResetStats()

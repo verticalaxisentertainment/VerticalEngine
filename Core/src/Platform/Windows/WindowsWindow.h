@@ -16,6 +16,8 @@ public:
 
 	inline void* GetNativeWindow() override { return m_Window; }
 
+	virtual void SetCursor(Cursor cursor);
+
 	inline void SetEventCallBack(const EventCallbakcFn& callback) override { m_Data.EventCallback = callback; }
 	void SetVSync(bool enabled) override;
 	bool IsVSync() const override;
@@ -34,5 +36,6 @@ private:
 		EventCallbakcFn EventCallback;
 	};
 
+	GLFWcursor* m_Cursor;
 	WindowData m_Data;
 };

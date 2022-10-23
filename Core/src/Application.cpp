@@ -6,6 +6,8 @@
 #include "stb_image.h"
 #include "box2d/b2_fixture.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/RenderCommand.h"
+#include "Input.h"
 //#include "Layer/DebugLayer.h"
 
 Application* Application::s_Instance = nullptr;
@@ -39,14 +41,15 @@ Application::Application()
     //PushOverlay(new DebugLayer());
 
 
+    RenderCommand::Init();
     Renderer::Init();
     //PushLayer(new GameLayer());
 
 
-    m_FrameBuffer.reset(FrameBuffer::Create());
-    m_ScreenShader.reset(new Shader("assets/shaders/screen.glsl"));
-    m_ScreenShader->Bind();
-    m_ScreenShader->SetInt("screenTexture", 0);
+    FrameBufferSpecification spec;
+    spec.Width = m_Window->GetWidth();
+    spec.Height = m_Window->GetHeight();
+    m_FrameBuffer.reset(FrameBuffer::Create(spec));
 }
 
 Application::~Application()
@@ -57,6 +60,8 @@ void Application::OnEvent(Event& e)
 {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+    dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
+    dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(Application::OnMouseMoved));
 
     for(auto it=m_LayerStack.end();it!=m_LayerStack.begin();)
     {
@@ -74,44 +79,43 @@ void Application::Run()
 
     while (m_Running)
     {
-        
+        Renderer::ResetStats();
         std::string title = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: "+(const char*)glGetString(GL_RENDERER);
         glfwSetWindowTitle(static_cast<GLFWwindow*>(GetWindow().GetNativeWindow()), title.c_str());
-        
+
+        glEnable(GL_DEPTH_TEST);
         if (showPostProcessing)
         {
             m_FrameBuffer->Bind();
             glEnable(GL_DEPTH_TEST);
         }
-
+		
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (Layer* layer : m_LayerStack)
             layer->OnUpdate();
 
-
+        float* pixelData;
         if(showPostProcessing)
         {
 	        m_FrameBuffer->UnBind();
-	        glDisable(GL_DEPTH_TEST);
-	        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	        glClear(GL_COLOR_BUFFER_BIT);
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-	        m_ScreenShader->Bind();
-	        m_ScreenShader->SetVec2("resoulation", glm::vec2(m_Window->GetWidth(), m_Window->GetHeight()));
-	        m_ScreenShader->SetFloat("iTime", glfwGetTime());
-	        m_FrameBuffer->BindVertexArray();
-	        glDrawElements(GL_TRIANGLES, m_FrameBuffer->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+            Renderer::DrawFrameBuffer(m_FrameBuffer);
+
+            //INFO(mousePos.x<<", " << m_Window->GetHeight() - mousePos.y);
+            
+            //glReadPixels(mousePos.x, m_Window->GetHeight() - mousePos.y, 1, 1, GL_RGBA, GL_INT, &pixelData);
+            //INFO(pixelData[0]);
         }
-
         m_ImGuiLayer->Begin();
         for (Layer* layer : m_LayerStack)
             layer->OnImGuiRender();
         m_ImGuiLayer->End();
 
         m_Window->OnUpdate();
-
     }
 
 }
@@ -132,4 +136,16 @@ bool Application::OnWindowClose(WindowCloseEvent& e)
 {
     m_Running = false;
     return true;
+}
+
+bool Application::OnWindowResize(WindowResizeEvent& e)
+{
+    m_FrameBuffer->Resize(e.GetWidth(), e.GetHeight());
+    return false;
+}
+
+bool Application::OnMouseMoved(MouseMovedEvent& e)
+{
+    mousePos = glm::vec2(e.GetX(), e.GetY());
+    return false;
 }

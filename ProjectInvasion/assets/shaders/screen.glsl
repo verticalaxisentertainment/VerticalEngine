@@ -59,5 +59,6 @@ vec2 uv = gl_FragCoord.xy / resoulation.xy;
     vig = pow(vig, 0.25); // change pow for modifying the extend of the  vignette
 
     
-    FragColor = vec4(vig)*texture(screenTexture, TexCoords); 
+    // FragColor = vec4(vig)*texture(screenTexture, TexCoords);
+    FragColor=texture(screenTexture,TexCoords); 
 }

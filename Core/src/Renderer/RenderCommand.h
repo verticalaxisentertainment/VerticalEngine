@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include "Renderer/RendererAPI.h"
+#include "Core.h"
 
-class RenderCommand
+class _API RenderCommand
 {
 public:
 	static void Init()
@@ -18,6 +19,11 @@ public:
 	static void SetClearColor(const glm::vec4& color)
 	{
 		s_RendererAPI->SetClearColor(color);
+	}
+
+	static void Clear()
+	{
+		s_RendererAPI->Clear();
 	}
 
 	static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount = 0)

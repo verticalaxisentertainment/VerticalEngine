@@ -121,7 +121,7 @@ void Physics::Simulate(const float& timestep)
 			if(body.Shape==ShapeType::Quad)
 			{
 				glm::mat4 model(1.0f);
-				model = glm::translate(model, glm::vec3(body.Body->GetPosition().x, body.Body->GetPosition().y, 1.0f))* glm::scale(glm::mat4(1.0f), { body.Size.x,body.Size.y,1.0f });
+				model = glm::translate(model, glm::vec3(body.Body->GetPosition().x, body.Body->GetPosition().y, 0.0f))* glm::scale(glm::mat4(1.0f), { body.Size.x,body.Size.y,1.0f });
 				model = glm::rotate(model, body.Body->GetAngle(), glm::vec3(0.0f, 0.0f, 1.0f));
 				
 				//printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
@@ -130,7 +130,7 @@ void Physics::Simulate(const float& timestep)
 			if(body.Shape==ShapeType::Circle)
 			{
 				glm::mat4 model(1.0f);
-				model = glm::translate(model, glm::vec3(body.Body->GetPosition().x, body.Body->GetPosition().y, 1.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
+				model = glm::translate(model, glm::vec3(body.Body->GetPosition().x, body.Body->GetPosition().y,0.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
 				model = glm::rotate(model, body.Body->GetAngle(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 				//printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);

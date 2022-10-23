@@ -20,6 +20,7 @@ Window* Window::Create(const WindowProps& props)
 WindowsWindow::WindowsWindow(const WindowProps& props)
 {
 	Init(props);
+	m_Cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 }
 
 WindowsWindow::~WindowsWindow()
@@ -31,9 +32,19 @@ void WindowsWindow::OnUpdate()
 {
 	glViewport(0, 0, GetWidth(), GetHeight());
 
+	glfwSetCursor(m_Window, m_Cursor);
+
 	glfwPollEvents();
 	glfwSwapBuffers(m_Window);
 
+}
+
+void WindowsWindow::SetCursor(Cursor cursor)
+{
+	if (cursor == Cursor::HAND)
+		m_Cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+	if (cursor == Cursor::ARROW)
+		m_Cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 }
 
 void WindowsWindow::SetVSync(bool enabled)
