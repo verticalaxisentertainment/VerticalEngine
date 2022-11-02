@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Renderer.h"
 #include "Renderer.h"
+
+
 #include "VertexArray.h"
 #include "Buffer.h"
 #include "Shader.h"
@@ -11,8 +13,11 @@
 #include <glad/glad.h>
 
 #include "RenderCommand.h"
+#include "Texture.h"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
+std::shared_ptr<Texture2D> Renderer::m_TextureTest;
+std::shared_ptr<Texture2D> Renderer::m_TextureTest1;
 
 struct CircleVertex
 {
@@ -28,6 +33,7 @@ struct QuadVertex
 	glm::vec3 Position;
 	glm::vec2 TexCoord;
 	glm::vec4 Color;
+	float TexIndex;
 };
 
 struct LineVertex
@@ -74,6 +80,9 @@ struct RendererData
 	std::shared_ptr<VertexBuffer> FrameBufferVertexBuffer;
 	std::shared_ptr<Shader> FrameBufferShader;
 
+	std::vector<std::shared_ptr<Texture2D>> Textures;
+	int	texs[32];
+
 	//Statistics
 	Renderer::Statistics stats;
 	
@@ -83,8 +92,13 @@ static RendererData s_Data;
 
 void Renderer::Init()
 {
+	for(int i=0;i<32;i++)
+	{
+		s_Data.texs[i] = i + 1;
+	}
 
-
+	m_TextureTest.reset(Texture2D::Create("assets/textures/container.jpg"));
+	m_TextureTest1.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
 
 	//quad init
 	s_Data.QuadVertexArray.reset(VertexArray::Create());
@@ -93,7 +107,8 @@ void Renderer::Init()
 	s_Data.QuadVertexBuffer->SetLayout({
 		{ShaderDataType::Float3,"a_Position"},
 		{ShaderDataType::Float2,"a_TexCoord"},
-		{ShaderDataType::Float4,"a_Color"}
+		{ShaderDataType::Float4,"a_Color"},
+		{ShaderDataType::Float,"a_TexIndex"}
 		});
 
 	s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -206,6 +221,10 @@ void Renderer::BeginScene(OrthographicCamera& camera)
 
 void Renderer::EndScene()
 {
+	for(int i=0;i<s_Data.Textures.size();i++)
+	{
+		s_Data.Textures[i]->Bind(i + 1);
+	}
 	Flush();
 }
 
@@ -229,8 +248,10 @@ void Renderer::Flush()
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
 		s_Data.QuadShaderFlat->Bind();
+		s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
 		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+
 		s_Data.stats.DrawCalls++;
 	}
 
@@ -304,9 +325,9 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexIndex = 0;
 		s_Data.QuadVertexBufferPtr++;
 	}
-
 	s_Data.QuadIndexCount += 6;
 
 	s_Data.stats.QuadCount++;
@@ -315,19 +336,35 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture)
 {
 	constexpr size_t quadVertexCount = 4;
-	const float textureIndex = 0.0f; // White Texture
+	float textureIndex = 0.0f;
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
 	if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
 		NextBatch();
+
+	for(size_t i=0;i<s_Data.Textures.size();i++)
+	{
+		if(s_Data.Textures[i]==texture)
+		{
+			textureIndex = i;
+		}
+	}
+	if(textureIndex==0)
+	{
+		s_Data.Textures.push_back(texture);
+	}
+
+	
 
 	for (size_t i = 0; i < quadVertexCount; i++)
 	{
 		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 		s_Data.QuadVertexBufferPtr->Color = { 0.0f,0.0f,0.0f,1.0f };
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex + 1;
 		s_Data.QuadVertexBufferPtr++;
 	}
+	texture->Bind(textureIndex + 2);
 
 	s_Data.QuadIndexCount += 6;
 

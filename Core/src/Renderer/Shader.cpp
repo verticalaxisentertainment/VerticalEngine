@@ -161,6 +161,11 @@ void Shader::SetInt(const std::string& name, int value) const
 	glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
 }
 
+void Shader::SetIntArray(const std::string& name, int* value) const
+{
+	glUniform1iv(glGetUniformLocation(m_RendererID, name.c_str()), sizeof(value)/4, value);
+}
+
 void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);

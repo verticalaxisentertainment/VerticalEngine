@@ -51,7 +51,7 @@ public:
 
 			ImGui::Text("%d", result);
 		}
-		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 50);
+		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
 
 
 
