@@ -111,6 +111,32 @@ void Physics::Clear()
 	INFO(s_Object.bodies.size());
 }
 
+const glm::vec2 Physics::GetLastObjectsPos()
+{
+	glm::vec2 pos = { 0.0f,0.0f };
+	if(s_Object.bodies.size()!=1)
+	{
+		pos = { s_Object.bodies[s_Object.bodies.size() - 1].Body->GetPosition().x, s_Object.bodies[s_Object.bodies.size() - 1].Body->GetPosition().y };
+		return pos;
+	}
+	else
+	{
+		return pos;
+	}
+}
+
+const float& Physics::GetLastObejctsVelocity()
+{
+	if (s_Object.bodies.size() != 0)
+	{
+		return s_Object.bodies[s_Object.bodies.size()-1].Body->GetLinearVelocity().y;
+	}
+	else
+	{
+		return 1.0f;
+	}
+}
+
 void Physics::Simulate(const float& timestep)
 {
 	
@@ -123,9 +149,17 @@ void Physics::Simulate(const float& timestep)
 				glm::mat4 model(1.0f);
 				model = glm::translate(model, glm::vec3(body.Body->GetPosition().x, body.Body->GetPosition().y, 0.0f))* glm::scale(glm::mat4(1.0f), { body.Size.x,body.Size.y,1.0f });
 				model = glm::rotate(model, body.Body->GetAngle(), glm::vec3(0.0f, 0.0f, 1.0f));
-				
+
+				glm::vec4 color(1.0f, 0.0f, 0.0f, 0.5f);
+				if (body.Body->IsAwake()&&body.Body->GetType()!=b2_staticBody)
+					color = { 1.0f,0.0f,0.0f,0.5 };
+				else
+					color = { 0.2f,0.2f,0.2f,0.5f };
+
+				if (body.Body->GetType() == b2_staticBody)
+					color = { 0.38,0.38,0.38,0.5 };
 				//printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
-				Renderer::DrawQuad(model, { 1.0f,0.0f,0.0f,0.5f });
+				Renderer::DrawQuad(model, color);
 			}
 			if(body.Shape==ShapeType::Circle)
 			{
@@ -133,8 +167,14 @@ void Physics::Simulate(const float& timestep)
 				model = glm::translate(model, glm::vec3(body.Body->GetPosition().x, body.Body->GetPosition().y,0.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
 				model = glm::rotate(model, body.Body->GetAngle(), glm::vec3(0.0f, 0.0f, 1.0f));
 
+				glm::vec4 color(0.0f, 0.0f, 0.0f, 0.5f);
+				if (body.Body->IsAwake())
+					color = { 0.0f,1.0f,0.0f,0.5 };
+				else
+					color = { 0.2f,0.2f,0.2f,0.5f };
+
 				//printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
-				Renderer::DrawCircle(model, { 0.0f,1.0f,0.0f,0.5f });
+				Renderer::DrawCircle(model, color);
 			}
 		}
 }

@@ -61,10 +61,10 @@ project "Core"
 		"GLFW",
 		"Glad",
 		"imgui",
-		"opengl32.lib",
+		"opengl32",
 		"box2d"
 	}
-
+	
 	postbuildcommands
 	{
 		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/ProjectInvasion/\"")

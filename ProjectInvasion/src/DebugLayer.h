@@ -52,8 +52,9 @@ public:
 			ImGui::Text("%d", result);
 		}
 		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
-
-
+		
+		//ImGui::Text("%f", GameLayer::m_CameraController->GetCamera().GetPosition().x);
+		//ImGui::Text("%f", Physics::GetLastObjectsPos().x);
 
 
 

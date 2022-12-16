@@ -10,3 +10,6 @@
 [submodule "Core/vendor/box2d"]
 	path = Core/vendor/box2d
 	url = https://github.com/rifkikesepara/box2d.git
+[submodule "Core/vendor/yaml-cpp"]
+	path = Core/vendor/yaml-cpp
+	url = https://github.com/rifkikesepara/yaml-cpp.git

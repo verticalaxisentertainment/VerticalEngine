@@ -9,7 +9,7 @@
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
-
+bool translate = false;
 
 class GameLayer :public Layer
 {
@@ -41,9 +41,8 @@ public:
 		m_LastFrameTime = time;
 
 		
-		m_CameraController->OnUpdate(timestep);
+		//m_CameraController->OnUpdate(timestep);
 		Renderer::BeginScene(m_CameraController->GetCamera());
-
 		Application& app = Application::Get();
 
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
@@ -52,8 +51,16 @@ public:
 		model = glm::translate(model, glm::vec3(0, 5.0f, -0.1f));
 
 		Renderer::DrawQuad(model, m_Texture);
-		model = glm::translate(model, glm::vec3(0, 6, -0.5f));
-		Renderer::DrawQuad(model, m_TextureTest);
+		model = glm::translate(model, glm::vec3(0, 5, -0.5f));
+		//Renderer::DrawQuad(model, m_TextureTest);
+
+		auto& pos = m_CameraController->GetCamera().GetPosition();
+		pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep*2);
+		pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep*2);
+		m_CameraController->GetCamera().SetPosition(pos);
+
+
+		Renderer::DrawLine({ test.x,test.y,0.5f }, {0.0f,5.0f,0.5f}, { 1.0f,1.0f,1.0f,1.0f });
 
 		if (isBox)
 			Renderer::DrawQuad({ test.x,test.y ,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
@@ -61,7 +68,7 @@ public:
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(test.x, test.y, 0.1f));
-			Renderer::DrawCircle(model, { 1.0f,1.0f,1.0f,1.0f });
+			Renderer::DrawCircleLight(model, { 1.0f,1.0f,1.0f,1.0f });
 		}
 
 		for (int i = 0; i < tiles[0]; i++)
@@ -69,19 +76,8 @@ public:
 			for (int k = 0; k < tiles[1]; k++)
 				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		}
-		Renderer::DrawLine({ glm::sin(Math::Time()),-glm::cos(Math::Time()),-0.5f }, { 0.0f,0.0f,-0.5f }, { 0.0f,0.0f,1.0f,1.0f });
-		Renderer::DrawLine({ -1.0f,0.0f,-0.5f }, { 1.0f,0.0f,-0.5f }, { 1.0f,0.0,0.0f,1.0f });
-		Renderer::DrawLine({ 0.0f,1.0f,-0.5f }, { 0.0f,-1.0f,-0.5f }, { 0.0f,1.0,0.0f,1.0f });
 
-		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f,1.0f,1.0f,1.0f });
-		/*Renderer::DrawCircle(model, {0.0f,1.0f,0.0f,1.0f});
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(3.0f, 5.0f, 0));
-		Renderer::DrawCircle(model, {0.0f,0.0f,1.0f,1.0f});
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(1.5f, 5.0f, 0));
-		Renderer::DrawCircle(model, { 1.0f,0.0f,0.0f,1.0f });*/
-		/*Renderer::DrawLine({ 0.0f,-1.0f,0.0f }, { 0.0f,1.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f });*/
+
 
 		Physics::Simulate(timestep);
 		Renderer::EndScene();
@@ -146,6 +142,8 @@ private:
 		{
 			if (e.GetMouseButton() == Mouse::Button0)
 			{
+				translate = true;
+
 				if(isBox)
 				{
 					glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());

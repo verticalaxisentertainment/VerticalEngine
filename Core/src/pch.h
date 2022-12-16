@@ -18,5 +18,5 @@
 #include <Windows.h>
 #include <windows.h>
 inline HANDLE hcc = GetStdHandle(STD_OUTPUT_HANDLE);
-#include "Log.h"
 #endif
+#include "Log.h"

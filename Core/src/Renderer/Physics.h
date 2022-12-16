@@ -13,6 +13,9 @@ public:
 
 	static void Clear();
 
+	static const glm::vec2 GetLastObjectsPos();
+	static const float& GetLastObejctsVelocity();
+
 	static void Simulate(const float& timestep);
 private:
 	inline static float timeStep = 1.0f / 5000.0f;

@@ -40,6 +40,17 @@ vec4 applyVignette(vec4 color)
 
 void main()
 { 
+    vec3 lightPos=vec3(0.0,0.0,0.5);
+    vec3 a=vec3(-0.5,0.5,0.5);
+    vec3 b=vec3(0.5,0.5,0.5);
+
+    vec3 wa=a-lightPos;
+    vec3 wb=b-lightPos;
+    
+    vec3 ea=lightPos+(normalize(wa)*5.0);
+    vec3 eb=lightPos+(normalize(wb)*5.0);
+
+
 //    vec2 uv = gl_FragCoord.xy / resoulation;
    
 //     uv *=  1.0 - uv.yx;   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
@@ -50,7 +61,7 @@ void main()
     
 //     FragColor = vig*texture(screenTexture, TexCoords);
 
-vec2 uv = gl_FragCoord.xy / resoulation.xy;
+    vec2 uv = gl_FragCoord.xy / resoulation.xy;
    
     uv *=  1.0 - uv.yx;   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
     
@@ -59,6 +70,6 @@ vec2 uv = gl_FragCoord.xy / resoulation.xy;
     vig = pow(vig, 0.25); // change pow for modifying the extend of the  vignette
 
     
-    // FragColor = vec4(vig)*texture(screenTexture, TexCoords);
-    FragColor=texture(screenTexture,TexCoords); 
+    FragColor = vec4(vig)*texture(screenTexture, TexCoords);
+    // FragColor=texture(screenTexture,TexCoords); 
 }

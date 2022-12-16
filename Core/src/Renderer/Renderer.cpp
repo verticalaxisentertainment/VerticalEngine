@@ -11,9 +11,11 @@
 #include "FrameBuffer.h"
 
 #include <glad/glad.h>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include "RenderCommand.h"
 #include "Texture.h"
+#include "Application.h"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 std::shared_ptr<Texture2D> Renderer::m_TextureTest;
@@ -49,6 +51,9 @@ struct RendererData
 	static const uint32_t MaxIndices = MaxQuads * 6;
 	static const uint32_t MaxTextureSlots = 32;
 
+	std::shared_ptr<VertexArray> TriangleVertexArray;
+	std::shared_ptr<VertexBuffer> TriangleVertexBuffer;
+
 	std::shared_ptr<VertexArray> QuadVertexArray;
 	std::shared_ptr<VertexBuffer> QuadVertexBuffer;
 	std::shared_ptr<Shader> QuadShaderFlat;
@@ -61,6 +66,10 @@ struct RendererData
 	std::shared_ptr<VertexArray> CircleVertexArray;
 	std::shared_ptr<VertexBuffer> CircleVertexBuffer;
 	std::shared_ptr<Shader> CircleShader;
+
+	uint32_t TriangleIndexCount = 0;
+	QuadVertex* TriangleVertexBufferBase = nullptr;
+	QuadVertex* TriangleVertexBufferPtr = nullptr;
 
 	uint32_t QuadIndexCount = 0;
 	QuadVertex* QuadVertexBufferBase = nullptr;
@@ -75,6 +84,7 @@ struct RendererData
 	CircleVertex* CircleVertexBufferPtr = nullptr;
 
 	glm::vec4 QuadVertexPositions[4];
+	glm::vec4 TriangleVertexPositions[3];
 
 	std::shared_ptr<VertexArray> FrameBufferVertexArray;
 	std::shared_ptr<VertexBuffer> FrameBufferVertexBuffer;
@@ -82,6 +92,8 @@ struct RendererData
 
 	std::vector<std::shared_ptr<Texture2D>> Textures;
 	int	texs[32];
+
+	glm::vec3 LightPos;
 
 	//Statistics
 	Renderer::Statistics stats;
@@ -99,6 +111,41 @@ void Renderer::Init()
 
 	m_TextureTest.reset(Texture2D::Create("assets/textures/container.jpg"));
 	m_TextureTest1.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
+
+	//triangle init
+	s_Data.TriangleVertexArray.reset(VertexArray::Create());
+
+	s_Data.TriangleVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(glm::vec3)));
+	s_Data.TriangleVertexBuffer->SetLayout({
+		{ShaderDataType::Float3,"a_Position"},
+		{ShaderDataType::Float2,"a_TexCoord"},
+		{ShaderDataType::Float4,"a_Color"},
+		{ShaderDataType::Float,"a_TexIndex"}
+		});
+
+	s_Data.TriangleVertexArray->AddVertexBuffer(s_Data.TriangleVertexBuffer);
+
+	s_Data.TriangleVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+
+	uint32_t* triangleIndices = new uint32_t[s_Data.MaxIndices];
+
+	{
+		uint32_t offset = 0;
+		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 3)
+		{
+			triangleIndices[i + 0] = offset + 0;
+			triangleIndices[i + 1] = offset + 1;
+			triangleIndices[i + 2] = offset + 2;
+
+			offset += 3;
+		}
+	}
+
+	std::shared_ptr<IndexBuffer> tindexBuffer;
+	tindexBuffer.reset(IndexBuffer::Create(triangleIndices, s_Data.MaxIndices));
+	s_Data.TriangleVertexArray->SetIndexBuffer(tindexBuffer);
+
+	delete[] triangleIndices;
 
 	//quad init
 	s_Data.QuadVertexArray.reset(VertexArray::Create());
@@ -162,7 +209,7 @@ void Renderer::Init()
 	s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
 	s_Data.CircleVertexArray->SetIndexBuffer(indexbuffer); // Use quad IB
 	s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
-
+		
 	//framebuffer init
 	float quadVertices[] = {
 		// positions   // texCoords
@@ -202,6 +249,10 @@ void Renderer::Init()
 	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+	s_Data.TriangleVertexPositions[0] = { -0.5f,-0.5f,0.0f,1.0f };
+	s_Data.TriangleVertexPositions[1] = { 0.5f,-0.5f,0.0f,1.0f };
+	s_Data.TriangleVertexPositions[2] = { 0.0f,0.5f,0.0f,1.0f };
 }
 
 void Renderer::BeginScene()
@@ -230,6 +281,20 @@ void Renderer::EndScene()
 
 void Renderer::Flush()
 {
+	if(s_Data.TriangleIndexCount)
+	{
+		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.TriangleVertexBufferPtr - (uint8_t*)s_Data.TriangleVertexBufferBase);
+		s_Data.QuadVertexBuffer->SetData(s_Data.TriangleVertexBufferBase, dataSize);
+
+		s_Data.QuadShaderFlat->Bind();
+		s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
+		s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
+		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		RenderCommand::DrawIndexed(s_Data.TriangleVertexArray, s_Data.TriangleIndexCount);
+
+		s_Data.stats.DrawCalls++;
+	}
+
 	if (s_Data.LineVertexCount)
 	{
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
@@ -248,6 +313,7 @@ void Renderer::Flush()
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
 		s_Data.QuadShaderFlat->Bind();
+		s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
 		s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
 		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
@@ -267,10 +333,49 @@ void Renderer::Flush()
 	}
 }
 
+void Renderer::DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+{
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+	DrawTriangle(transform, color);
+}
+
+void Renderer::DrawTriangle(const glm::mat4& transform, const glm::vec4& color)
+{
+	constexpr size_t triangleVertexCount = 3;
+	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
+	if (s_Data.TriangleIndexCount>= RendererData::MaxIndices)
+		NextBatch();
+
+	for (size_t i = 0; i < triangleVertexCount; i++)
+	{
+		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.TriangleVertexPositions[i];
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexIndex = 0;
+		s_Data.QuadVertexBufferPtr++;
+	}
+	s_Data.TriangleIndexCount+= 3;
+
+	s_Data.stats.QuadCount++;
+
+	/*s_Data.TriangleVertexArray->Bind();
+	s_Data.QuadShaderFlat->Bind();
+	s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
+	s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
+	s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);*/
+}
+
 void Renderer::StartBatch()
 {
 	s_Data.QuadIndexCount = 0;
 	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+	s_Data.TriangleIndexCount = 0;
+	s_Data.TriangleVertexBufferPtr= s_Data.TriangleVertexBufferBase;
 
 	s_Data.CircleIndexCount = 0;
 	s_Data.CircleVertexBufferPtr = s_Data.CircleVertexBufferBase;
@@ -383,6 +488,33 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color, fl
 		s_Data.CircleVertexBufferPtr++;
 	}
 
+	
+	s_Data.CircleIndexCount += 6;
+
+	s_Data.stats.QuadCount++;
+}
+
+void Renderer::DrawCircleLight(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade)
+{
+	glm::vec3 pos, a, b, c;
+	glm::vec4 d;
+	glm::quat rotation;
+
+	
+	glm::decompose(transform, a, rotation, pos, c, d);
+	s_Data.LightPos = pos;
+		
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
+		s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
+		s_Data.CircleVertexBufferPtr->Color = color;
+		s_Data.CircleVertexBufferPtr->Thickness = thickness;
+		s_Data.CircleVertexBufferPtr->Fade = fade;
+		s_Data.CircleVertexBufferPtr++;
+	}
+
 	s_Data.CircleIndexCount += 6;
 
 	s_Data.stats.QuadCount++;
@@ -404,9 +536,10 @@ void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4
 void Renderer::DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer)
 {
 	glDisable(GL_DEPTH_TEST);
+	Application& app = Application::Get();
 	s_Data.FrameBufferShader->Bind();
 	s_Data.FrameBufferShader->SetInt("screenTexture", 0);
-	s_Data.FrameBufferShader->SetVec2("resoulation", glm::vec2(1280, 720));
+	s_Data.FrameBufferShader->SetVec2("resoulation", glm::vec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight()));
 	buffer->BindVertexArray();
 	glDisable(GL_BLEND);
 	glDrawElements(GL_TRIANGLES, buffer->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
