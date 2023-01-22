@@ -7,7 +7,10 @@
 #include "Texture.h"
 #include "OrthographicCamera.h"
 #include "Core.h"
+#include "FrameBuffer.h"
 
+
+class Shader;
 
 class _API Renderer
 {
@@ -17,10 +20,15 @@ public:
 	static void Init();
 	static void Shutdown();
 
+	static void BeginScene();
 	static void BeginScene(OrthographicCamera& camera);
 	static void EndScene();
+	static void Flush();
 
 	//Primitives
+	static void DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+	static void DrawTriangle(const glm::mat4& transform, const glm::vec4& color);
+
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture);
 	//static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
@@ -33,11 +41,14 @@ public:
 	static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 
 	static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f);
+	static void DrawCircleLight(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f);
 
 	static void DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4& color);
 
 	static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 	static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
+
+	static void DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer);
 
 	struct Statistics
 	{
@@ -60,4 +71,12 @@ private:
 
 
 	static std::unique_ptr<SceneData> s_SceneData;
+private:
+	static void StartBatch();
+	static void NextBatch();
+
+	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
+
+	static std::shared_ptr<Texture2D> m_TextureTest;
+	static std::shared_ptr<Texture2D> m_TextureTest1;
 };

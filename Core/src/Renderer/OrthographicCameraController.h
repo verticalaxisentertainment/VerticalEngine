@@ -23,6 +23,7 @@ public:
 
 	float GetZoomLevel() const { return m_ZoomLevel; }
 	void SetZoomLevel(float level) { m_ZoomLevel = level; }
+	void SetPosition(const glm::vec3& pos) { m_CameraPosition = pos; }
 private:
 	bool OnMouseScrolled(MouseScrolledEvent& e);
 	bool OnWindowResized(WindowResizeEvent& e);

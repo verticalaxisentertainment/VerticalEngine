@@ -16,11 +16,13 @@ IncludeDir["Glad"]="Core/vendor/Glad/include"
 IncludeDir["imgui"]="Core/vendor/imgui"
 IncludeDir["glm"]="Core/vendor/glm"
 IncludeDir["stb"]="Core/vendor/stb"
+IncludeDir["box2d"]="Core/vendor/box2d/include"
 
 group "Dependencies"
 	include "Core/vendor/GLFW"
 	include "Core/vendor/Glad"
 	include "Core/vendor/imgui"
+	include "Core/vendor/box2d"
 
 group ""
 
@@ -50,7 +52,8 @@ project "Core"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb}",
 		"%{prj.name}/src",
-		"%{IncludeDir.imgui}/backends"
+		"%{IncludeDir.imgui}/backends",
+		"%{IncludeDir.box2d}"
 	}
 
 	links
@@ -58,9 +61,10 @@ project "Core"
 		"GLFW",
 		"Glad",
 		"imgui",
-		"opengl32.lib"
+		"opengl32",
+		"box2d"
 	}
-
+	
 	postbuildcommands
 	{
 		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/ProjectInvasion/\"")

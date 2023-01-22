@@ -38,15 +38,3 @@ IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t count)
 	ERROR("Unknown RendererAPI");
 	return nullptr;
 }
-
-FrameBuffer* FrameBuffer::Create()
-{
-	switch (Renderer::GetAPI())
-	{
-	case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
-	case RendererAPI::API::OpenGL: return new OpenGLFrameBuffer();
-	}
-
-	ERROR("Unknown RendererAPI");
-	return nullptr;
-}

@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <array>
 #include <unordered_map>
 #include <unordered_set>
 #include <random>
@@ -17,5 +18,5 @@
 #include <Windows.h>
 #include <windows.h>
 inline HANDLE hcc = GetStdHandle(STD_OUTPUT_HANDLE);
-#include "Log.h"
 #endif
+#include "Log.h"

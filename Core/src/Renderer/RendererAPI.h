@@ -25,6 +25,10 @@ public:
 	virtual void SetLineWidth(float width) = 0;
 
 	static API GetAPI() { return s_API; }
+	static std::string GetAPIString()
+	{
+		if (s_API == API::OpenGL)return "OpenGL";
+	}
 	static std::unique_ptr<RendererAPI> Create();
 
 private:

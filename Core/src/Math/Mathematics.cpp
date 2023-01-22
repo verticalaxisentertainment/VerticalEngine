@@ -3,6 +3,13 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 
+#include "Application.h"
+#include "Application.h"
+#include "Application.h"
+#include "Application.h"
+#include "Renderer/OrthographicCameraController.h"
+#include "Renderer/OrthographicCamera.h"
+
 glm::vec3 Math::ScreenToWorldPoint(const glm::vec3& pos, const glm::mat4& eye)
 {
 	glm::mat4 inverse = glm::inverse(eye);
@@ -38,6 +45,62 @@ int Math::RandomInt(int range1, int range2)
 	{
 		return static_cast<int>(tmp);
 	}
+}
+
+int Math::Translate(glm::vec3& pos,glm::vec3& position,Timestep ts)
+{
+	bool horizontal = true, vertical = true;
+	
+	if(!vertical&&!horizontal)
+	{
+		pos.y = position.y;
+		pos.x = position.x;
+		return 0;
+	}
+
+	if (abs(pos.y - position.y) <= 0.2f)
+	{
+		vertical = false;
+		pos.y = position.y;
+	}
+
+	if (abs(pos.x - position.x) <= 0.2f)
+	{
+		horizontal = false;
+		pos.x = position.x;
+	}
+
+	if(horizontal)
+	{
+		if (pos.x < position.x)
+		{
+			pos = (glm::vec3(pos.x + ts, pos.y, 0.0f));
+		}
+		else if (pos.x > position.x)
+		{
+			pos = (glm::vec3(pos.x - ts, pos.y, 0.0f));
+		}
+	}
+
+	if(vertical)
+	{
+		if (pos.y < position.y)
+		{
+			pos = (glm::vec3(pos.x, pos.y + ts, 0.0f));
+		}
+		else if (pos.y > position.y)
+		{
+			pos = (glm::vec3(pos.x, pos.y - ts, 0.0f));
+		}
+
+	}
+
+	return 0;
+}
+
+float Math::Lerp(const float& value1,const float& value2,const float& interpolationFactor)
+{
+	return glm::mix(value1, value2, interpolationFactor);
 }
 
 float Math::Time()

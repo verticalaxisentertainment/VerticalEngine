@@ -3,6 +3,11 @@
 #include "pch.h"
 #include "Events/Event.h"
 
+enum class Cursor
+{
+	ARROW, HAND
+};
+
 struct WindowProps
 {
 	std::string Title;
@@ -25,8 +30,11 @@ public:
 
 	virtual void OnUpdate() = 0;
 
+
 	virtual unsigned int GetWidth() const = 0;
 	virtual unsigned int GetHeight() const = 0;
+
+	virtual void SetCursor(Cursor cursor) = 0;
 
 	virtual void* GetNativeWindow() = 0;
 

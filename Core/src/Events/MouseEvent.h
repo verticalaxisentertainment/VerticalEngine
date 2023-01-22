@@ -19,7 +19,11 @@ public:
 		return ss.str();
 	}
 
-	EVENT_CLASS_TYPE(MouseMoved);
+	//EVENT_CLASS_TYPE(MouseMoved);
+	static EventType GetStaticType() { return EventType::MouseMoved; }
+	virtual EventType GetEventType() const override { return GetStaticType(); }
+	virtual const char* GetName() const override { return "MouseMoved"; }
+
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput);
 private:
 	float m_MouseX, m_MouseY;
@@ -41,7 +45,10 @@ public:
 		return ss.str();
 	}
 
-	EVENT_CLASS_TYPE(MouseScrolled);
+	//EVENT_CLASS_TYPE(MouseScrolled);
+	static EventType GetStaticType() { return EventType::MouseScrolled; }
+	virtual EventType GetEventType() const override { return GetStaticType(); }
+	virtual const char* GetName() const override { return "MouseScrolled"; }
 	EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput);
 private:
 	float m_xOffset, m_yOffset;
@@ -73,7 +80,11 @@ public:
 		return ss.str();
 	}
 
-	EVENT_CLASS_TYPE(MouseButtonPressed);
+	//EVENT_CLASS_TYPE(MouseButtonPressed);
+
+	static EventType GetStaticType() { return EventType::MouseButtonPressed; }
+	virtual EventType GetEventType() const override { return GetStaticType(); }
+	virtual const char* GetName() const override { return "MouseButtonPressed"; }
 };
 
 class MouseButtonReleasedEvent : public MouseButtonEvent
@@ -89,5 +100,8 @@ public:
 		return ss.str();
 	}
 
-	EVENT_CLASS_TYPE(MouseButtonReleased);
+	//EVENT_CLASS_TYPE(MouseButtonReleased);
+	static EventType GetStaticType() { return EventType::MouseButtonReleased; }
+	virtual EventType GetEventType() const override { return GetStaticType(); }
+	virtual const char* GetName() const override { return "MouseButtonReleased"; }
 };

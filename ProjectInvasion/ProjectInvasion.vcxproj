@@ -133,6 +133,8 @@
   <ItemGroup>
     <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\GameLayer.h" />
+    <ClInclude Include="src\ShadowTestLayer.h" />
+    <ClInclude Include="src\TestLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SandBox.cpp" />

@@ -7,30 +7,15 @@
 #include "Events/MouseEvent.h"
 
 #include "Renderer/Shader.h"
+#include "Renderer/FrameBuffer.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Texture.h"
 #include "Renderer/OrthographicCameraController.h"
 #include "Core.h"
+#include "Renderer/Physics.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
-
-class ExampleLayer:public Layer
-{
-public:
-	ExampleLayer()
-		:Layer("ExampleLayer"){}
-
-	void OnUpdate() override
-	{
-		//std::cout << "ExampleLayer::Update\n";
-	}
-
-	void OnEvent(Event& e) override
-	{
-		//std::cout << e << "\n";
-	}
-};
 
 
 class _API Application
@@ -48,19 +33,23 @@ public:
 	inline static Application& Get() { return *s_Instance; }
 	inline Window& GetWindow() const{ return *m_Window; }
 
-	bool showPostProcessing = false;
+	inline const std::shared_ptr<FrameBuffer>& GetFrameBuffer() const { return m_FrameBuffer; }
+
 	ImGUILayer* m_ImGuiLayer;
+	inline static bool showPostProcessing = false;
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
+	bool OnWindowResize(WindowResizeEvent& e);
+	bool OnMouseMoved(MouseMovedEvent& e);
+
 	LayerStack m_LayerStack;
 
+	glm::vec2 mousePos;
 
-	std::unique_ptr<Window> m_Window;
-	inline static bool m_Running = true;
-
-	std::shared_ptr<Shader> m_ScreenShader;
 	std::shared_ptr<FrameBuffer> m_FrameBuffer;
-	
+	std::unique_ptr<Window> m_Window;
+	std::shared_ptr<Shader> m_ScreenShader;
+	inline static bool m_Running = true;
 	static Application* s_Instance;
 };
 

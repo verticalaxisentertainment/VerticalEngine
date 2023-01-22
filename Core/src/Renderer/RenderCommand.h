@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include "Renderer/RendererAPI.h"
+#include "Core.h"
 
-class RenderCommand
+class _API RenderCommand
 {
 public:
 	static void Init()
@@ -20,14 +21,19 @@ public:
 		s_RendererAPI->SetClearColor(color);
 	}
 
+	static void Clear()
+	{
+		s_RendererAPI->Clear();
+	}
+
 	static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t indexCount = 0)
 	{
 		s_RendererAPI->DrawIndexed(vertexArray, indexCount);
 	}
 
-	static void DrawLines(const std::shared_ptr<VertexArray>& vertexArray)
+	static void DrawLines(const std::shared_ptr<VertexArray>& vertexArray,uint32_t vertexCount)
 	{
-		s_RendererAPI->DrawLines(vertexArray, 2);
+		s_RendererAPI->DrawLines(vertexArray, vertexCount);
 	}
 
 	static void SetLineWidth(float width)

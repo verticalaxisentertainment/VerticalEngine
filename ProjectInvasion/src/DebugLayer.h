@@ -26,8 +26,9 @@ public:
 		ImGui::Begin("Debug", &show);
 		ImGui::Checkbox("ShowDemoWindow", &ImGUILayer::show);
 		ImGui::Checkbox("Show Stats", &showStats);
-		ImGui::Checkbox("Post Process", &app.showPostProcessing);
+		ImGui::Checkbox("Post Process", &Application::showPostProcessing);
 		ImGui::Checkbox("VSYNC", &vsync);
+		ImGui::Checkbox("Lock Camera", &GameLayer::m_LockCamera);
 		Application::Get().GetWindow().SetVSync(vsync);
 		if (ImGui::Button("Texture"))
 		{
@@ -36,6 +37,10 @@ public:
 			{
 				GameLayer::m_Texture->UpdateTexture(path);
 			}
+		}
+		if (ImGui::Button("Clear PhysicObjects"))
+		{
+			Physics::Clear();
 		}
 		{
 			ImGui::DragInt2("", values, 1, -100, 100);
@@ -47,9 +52,10 @@ public:
 
 			ImGui::Text("%d", result);
 		}
-		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 50);
-
-
+		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
+		
+		//ImGui::Text("%f", GameLayer::m_CameraController->GetCamera().GetPosition().x);
+		//ImGui::Text("%f", Physics::GetLastObjectsPos().x);
 
 
 
