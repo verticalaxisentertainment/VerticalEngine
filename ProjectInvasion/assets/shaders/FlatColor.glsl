@@ -48,16 +48,16 @@ void main()
   //   color=Color;
   // }
   // color=mix(texture(tex,TexCoord),texture(tex2,TexCoord),0.5)*vec4(Color.r*sin(iTime)/2+1.0,Color.g*sin(iTime)/2+0.7,Color.b*sin(iTime)/2+0.3,1.0);
-  // switch(int(TexIndex))
-  // {
-  //   case 0: color=Color; break;
-  //   case 1: color=texture(u_Textures[0],TexCoord); break;
-  //   case 2: color=texture(u_Textures[1],TexCoord); break;
-  //   case 3: color=texture(u_Textures[2],TexCoord); break;
-  //   case 4: color=texture(u_Textures[3],TexCoord); break;
-  //   case 5: color=texture(u_Textures[4],TexCoord); break;
-  //   case 6: color=texture(u_Textures[5],TexCoord); break;
-  // }
+  switch(int(TexIndex))
+  {
+    case 0: color=Color; break;
+    case 1: color=texture(u_Textures[0],TexCoord); break;
+    case 2: color=texture(u_Textures[1],TexCoord); break;
+    case 3: color=texture(u_Textures[2],TexCoord); break;
+    case 4: color=texture(u_Textures[3],TexCoord); break;
+    case 5: color=texture(u_Textures[4],TexCoord); break;
+    case 6: color=texture(u_Textures[5],TexCoord); break;
+  }
   // vec3 zaa=vec3(0.0,5.0,-0.1);
   // if(TexIndex==1)
   // {
@@ -72,7 +72,7 @@ void main()
   //   color=Color;
   // }
 
-  color=vec4(1.0,1.0,1.0,1.0);
+  // color=vec4(1.0,1.0,1.0,1.0);
   
   // if(TexIndex==0)
   //   color=Color;

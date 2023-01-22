@@ -40,8 +40,14 @@ public:
 		Timestep timestep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 
-		
-		//m_CameraController->OnUpdate(timestep);
+		auto& pos = m_CameraController->GetCamera().GetPosition();
+		RenderCommand::Clear();
+		if (!m_LockCamera)
+		{
+			m_CameraController->SetPosition(pos);
+			m_CameraController->OnUpdate(timestep);
+		}
+
 		Renderer::BeginScene(m_CameraController->GetCamera());
 		Application& app = Application::Get();
 
@@ -52,15 +58,17 @@ public:
 
 		Renderer::DrawQuad(model, m_Texture);
 		model = glm::translate(model, glm::vec3(0, 5, -0.5f));
-		//Renderer::DrawQuad(model, m_TextureTest);
+		model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
+		Renderer::DrawQuad(model, m_TextureTest);
 
-		auto& pos = m_CameraController->GetCamera().GetPosition();
-		pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep*2);
-		pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep*2);
-		m_CameraController->GetCamera().SetPosition(pos);
+		if (m_LockCamera)
+		{
+			pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep*2);
+			pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep*2);
+			m_CameraController->GetCamera().SetPosition(pos);
+		}
 
-
-		Renderer::DrawLine({ test.x,test.y,0.5f }, {0.0f,5.0f,0.5f}, { 1.0f,1.0f,1.0f,1.0f });
+		//Renderer::DrawLine({ test.x,test.y,0.5f }, {0.0f,5.0f,0.5f}, { 1.0f,1.0f,1.0f,1.0f });
 
 		if (isBox)
 			Renderer::DrawQuad({ test.x,test.y ,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
@@ -76,8 +84,7 @@ public:
 			for (int k = 0; k < tiles[1]; k++)
 				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		}
-
-
+		
 
 		Physics::Simulate(timestep);
 		Renderer::EndScene();
@@ -99,10 +106,10 @@ public:
 	inline static int tiles[2];
 	static std::shared_ptr<Texture2D> m_Texture;
 	static std::shared_ptr<OrthographicCameraController> m_CameraController;
-	inline static bool onUI = false, isBox = true;
+	static std::shared_ptr<FrameBuffer> m_FrameBuffer;
+	inline static bool onUI = false, isBox = true, m_LockCamera = false;
 private:
 	std::shared_ptr<Texture2D> m_TextureTest;
-	std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	std::vector<glm::vec2> positions;
 	float m_X, m_Y;
 	float m_LastFrameTime;
@@ -164,3 +171,4 @@ private:
 
 std::shared_ptr<Texture2D> GameLayer::m_Texture;
 std::shared_ptr<OrthographicCameraController> GameLayer::m_CameraController;
+std::shared_ptr<FrameBuffer> GameLayer::m_FrameBuffer;

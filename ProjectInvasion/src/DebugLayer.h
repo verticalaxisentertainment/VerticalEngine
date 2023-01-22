@@ -28,6 +28,7 @@ public:
 		ImGui::Checkbox("Show Stats", &showStats);
 		ImGui::Checkbox("Post Process", &Application::showPostProcessing);
 		ImGui::Checkbox("VSYNC", &vsync);
+		ImGui::Checkbox("Lock Camera", &GameLayer::m_LockCamera);
 		Application::Get().GetWindow().SetVSync(vsync);
 		if (ImGui::Button("Texture"))
 		{

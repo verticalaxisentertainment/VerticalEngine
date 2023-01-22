@@ -15,6 +15,7 @@ public:
 	{
 		Application& app = Application::Get();
 
+			//GameLayer::m_FrameBuffer->Bind();
 		Renderer::BeginScene();
 			Renderer::DrawQuad({ 1.55f,0.9f,0.5f }, { 0.5f,0.2f }, { 0.38f,0.38f,0.38f,0.5f });
 			Renderer::DrawQuad({ 1.45f,0.9f,1.0f }, { 0.1f,0.1f }, m_ColorBox);
@@ -26,7 +27,13 @@ public:
 			Renderer::DrawLine({ glm::sin(Math::Time()) / 4 - 1.5f,-glm::cos(Math::Time())/4-0.75f,1.0f }, { -1.5f,-0.75f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
 			Renderer::DrawLine({ -1.75f,-0.75f,1.0f }, { -1.25f,-0.75f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
 			Renderer::DrawLine({ -1.5f,-0.5f,1.0f }, { -1.5f,-1.0f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
+
+			//RenderCommand::Clear();
+
+			//Renderer::DrawFrameBuffer(GameLayer::m_FrameBuffer);
 		Renderer::EndScene();
+			//GameLayer::m_FrameBuffer->UnBind();
+
 
 		pixelData = pixelData = app.GetFrameBuffer()->ReadPixel(0, m_x, app.GetWindow().GetHeight() - m_y);
 

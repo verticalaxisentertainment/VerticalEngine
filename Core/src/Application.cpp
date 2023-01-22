@@ -87,16 +87,14 @@ void Application::Run()
         if (showPostProcessing)
         {
             m_FrameBuffer->Bind();
-            glEnable(GL_DEPTH_TEST);
         }
 		
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (Layer* layer : m_LayerStack)
             layer->OnUpdate();
 
-        float* pixelData;
         if(showPostProcessing)
         {
 	        m_FrameBuffer->UnBind();
@@ -104,11 +102,6 @@ void Application::Run()
             glClear(GL_COLOR_BUFFER_BIT);
 
             Renderer::DrawFrameBuffer(m_FrameBuffer);
-
-            //INFO(mousePos.x<<", " << m_Window->GetHeight() - mousePos.y);
-            
-            //glReadPixels(mousePos.x, m_Window->GetHeight() - mousePos.y, 1, 1, GL_RGBA, GL_INT, &pixelData);
-            //INFO(pixelData[0]);
         }
         m_ImGuiLayer->Begin();
         for (Layer* layer : m_LayerStack)
