@@ -2,10 +2,18 @@
 
 #include "pch.h"
 #include "Events/Event.h"
+#include "Utils/Image.h"
 
 enum class Cursor
 {
 	ARROW, HAND
+};
+
+struct WindowIcon
+{
+	int width;
+	int height;
+	unsigned char* pixels;
 };
 
 struct WindowProps
@@ -13,11 +21,12 @@ struct WindowProps
 	std::string Title;
 	unsigned int Width;
 	unsigned int Height;
+	Image Icon;
 
-	WindowProps(const std::string& title="Project Invasion",
-				unsigned int width=1200,
-				unsigned int height=720)
-		:Title(title),Width(width),Height(height){}
+	WindowProps(const std::string& title = "Project Invasion",
+		unsigned int width = 1200,
+		unsigned int height = 720)
+		:Title(title), Width(width), Height(height), Icon("assets/icon/verticalaxis.jpg") {}
 };
 
 

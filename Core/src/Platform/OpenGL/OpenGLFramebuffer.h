@@ -18,6 +18,7 @@ public:
 
 	virtual void Resize(float width, float height) override;
 	virtual float* ReadPixel(uint32_t attachmentIndex, int x, int y) override;
+	virtual int ReadPixelInt(uint32_t attachmentIndex, int x, int y);
 
 	void Invalidate();
 
@@ -25,6 +26,8 @@ public:
 	virtual uint32_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; }
 private:
 	uint32_t m_RendererID;
+
+	uint32_t colorAttachmnetTest;
 	uint32_t m_ColorAttachment, m_DepthAttachment;
 	uint32_t m_RenderBuffer;
 

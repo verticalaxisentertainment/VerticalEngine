@@ -7,6 +7,7 @@
 #include "UUID.h"
 #include <imgui.h>
 #include "GameLayer.h"
+#include "Renderer/Shader.h"
 
 class DebugLayer:public Layer
 {
@@ -42,7 +43,7 @@ public:
 		{
 			Physics::Clear();
 		}
-		{
+		/*{
 			ImGui::DragInt2("", values, 1, -100, 100);
 			ImGui::SameLine();
 			if (ImGui::Button("Generate Number"))
@@ -51,12 +52,15 @@ public:
 			}
 
 			ImGui::Text("%d", result);
+		}*/
+		if (ImGui::Button("ReCompile Shaders"))
+		{
+			Shader::ReCompileShaders();
 		}
 		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
 		
 		//ImGui::Text("%f", GameLayer::m_CameraController->GetCamera().GetPosition().x);
 		//ImGui::Text("%f", Physics::GetLastObjectsPos().x);
-
 
 
 		ImGui::End();

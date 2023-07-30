@@ -16,6 +16,7 @@ IncludeDir["Glad"]="Core/vendor/Glad/include"
 IncludeDir["imgui"]="Core/vendor/imgui"
 IncludeDir["glm"]="Core/vendor/glm"
 IncludeDir["stb"]="Core/vendor/stb"
+IncludeDir["freetype"]="Core/vendor/freetype/include"
 IncludeDir["box2d"]="Core/vendor/box2d/include"
 
 group "Dependencies"
@@ -23,6 +24,7 @@ group "Dependencies"
 	include "Core/vendor/Glad"
 	include "Core/vendor/imgui"
 	include "Core/vendor/box2d"
+	include "Core/vendor/freetype"
 
 group ""
 
@@ -53,7 +55,8 @@ project "Core"
 		"%{IncludeDir.stb}",
 		"%{prj.name}/src",
 		"%{IncludeDir.imgui}/backends",
-		"%{IncludeDir.box2d}"
+		"%{IncludeDir.box2d}",
+		"%{IncludeDir.freetype}"
 	}
 
 	links
@@ -62,7 +65,8 @@ project "Core"
 		"Glad",
 		"imgui",
 		"opengl32",
-		"box2d"
+		"box2d",
+		"freetype"
 	}
 	
 	postbuildcommands

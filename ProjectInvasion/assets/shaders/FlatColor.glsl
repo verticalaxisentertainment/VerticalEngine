@@ -1,9 +1,10 @@
 $vertexshader
-#version 330 core
+#version 450 core
 layout (location = 0) in vec3 a_Position;
 layout (location = 1) in vec2 a_TexCoord;
 layout (location = 2) in vec4 a_Color;
 layout (location = 3) in float a_TexIndex;
+layout (location = 4) in int a_EntityID;
 
 uniform mat4 projection;
 
@@ -11,9 +12,12 @@ out vec4 Color;
 out vec2 TexCoord;
 out float TexIndex;
 out vec3 Position;
+out flat int EntityID;
+
 
 void main()
 {
+  EntityID=a_EntityID;
   Position=a_Position;
   TexIndex=a_TexIndex;
   TexCoord=a_TexCoord;
@@ -24,13 +28,17 @@ void main()
 
 
 $fragmentshader
-#version 330 core
+#version 450 core
 
-layout (location=0) out vec4 color;
+layout (location = 0) out vec4 color;
+layout (location = 1) out int color2;
+
 
 in vec3 Position;
 in vec4 Color;
 in float TexIndex;
+in flat int EntityID;
+
 uniform float iTime;
 
 uniform vec3 lightPos;
@@ -58,6 +66,14 @@ void main()
     case 5: color=texture(u_Textures[4],TexCoord); break;
     case 6: color=texture(u_Textures[5],TexCoord); break;
   }
+  // if(EntityID==1)
+  // {
+  // color2=vec4(EntityID,EntityID,EntityID,1);
+
+  // }
+
+  color2=EntityID;
+
   // vec3 zaa=vec3(0.0,5.0,-0.1);
   // if(TexIndex==1)
   // {

@@ -20,8 +20,6 @@ public:
 		m_CameraController.reset(new OrthographicCameraController(1280.0f / 720.0f, true));
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 		m_TextureTest.reset(Texture2D::Create("assets/textures/red.jpg"));
-		tiles[0] = 0;
-		tiles[1] = 0;
 
 		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
 	}
@@ -57,8 +55,9 @@ public:
 		model = glm::translate(model, glm::vec3(0, 5.0f, -0.1f));
 
 		Renderer::DrawQuad(model, m_Texture);
-		model = glm::translate(model, glm::vec3(0, 5, -0.5f));
-		model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(1.0f, 5, 0.5f));
+		//model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
 		Renderer::DrawQuad(model, m_TextureTest);
 
 		if (m_LockCamera)
@@ -71,22 +70,32 @@ public:
 		//Renderer::DrawLine({ test.x,test.y,0.5f }, {0.0f,5.0f,0.5f}, { 1.0f,1.0f,1.0f,1.0f });
 
 		if (isBox)
-			Renderer::DrawQuad({ test.x,test.y ,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+		{
+			Renderer::DrawQuad({ test.x,test.y ,0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f });
+
+		}
 		else
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(test.x, test.y, 0.1f));
-			Renderer::DrawCircleLight(model, { 1.0f,1.0f,1.0f,1.0f });
+			Renderer::DrawCircle(model, { 1.0f,1.0f,1.0f,0.5f });
 		}
 
 		for (int i = 0; i < tiles[0]; i++)
 		{
 			for (int k = 0; k < tiles[1]; k++)
-				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,-0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		}
 		
-
 		Physics::Simulate(timestep);
+
+		Renderer::RenderText("Select a shape", { 0.0f,0.0f}, 0.5f, { 1.0f,1.0f,1.0f,1.0f });
+
+
+		Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
+		Renderer::DrawLine({ -0.5f,0.0f,1.0f }, { 0.5f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
+		Renderer::DrawLine({ 0.0f,-0.5f,1.0f }, { 0.0f,0.5f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
+
 		Renderer::EndScene();
 	}
 

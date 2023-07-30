@@ -13,9 +13,13 @@
 #include <glad/glad.h>
 #include <glm/gtx/matrix_decompose.hpp>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "RenderCommand.h"
 #include "Texture.h"
 #include "Application.h"
+#include "TextRenderer.h"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 std::shared_ptr<Texture2D> Renderer::m_TextureTest;
@@ -28,6 +32,8 @@ struct CircleVertex
 	glm::vec4 Color;
 	float Thickness;
 	float Fade;
+
+	int EntityID;
 };
 
 struct QuadVertex
@@ -36,11 +42,22 @@ struct QuadVertex
 	glm::vec2 TexCoord;
 	glm::vec4 Color;
 	float TexIndex;
+
+	int EntityID;
 };
 
 struct LineVertex
 {
 	glm::vec3 Position;
+	glm::vec4 Color;
+
+	int EntityID;
+};
+
+struct TextVertex
+{
+	glm::vec2 Position;
+	glm::vec2 TexCoord;
 	glm::vec4 Color;
 };
 
@@ -67,6 +84,10 @@ struct RendererData
 	std::shared_ptr<VertexBuffer> CircleVertexBuffer;
 	std::shared_ptr<Shader> CircleShader;
 
+	std::shared_ptr<VertexArray> TextVertexArray;
+	std::shared_ptr<VertexBuffer> TextVertexBuffer;
+	std::shared_ptr<Shader> TextShader;
+
 	uint32_t TriangleIndexCount = 0;
 	QuadVertex* TriangleVertexBufferBase = nullptr;
 	QuadVertex* TriangleVertexBufferPtr = nullptr;
@@ -83,6 +104,10 @@ struct RendererData
 	CircleVertex* CircleVertexBufferBase = nullptr;
 	CircleVertex* CircleVertexBufferPtr = nullptr;
 
+	uint32_t TextVertexCount = 0;
+	TextVertex* TextVertexBufferBase = nullptr;
+	TextVertex* TextVertexBufferPtr = nullptr;
+
 	glm::vec4 QuadVertexPositions[4];
 	glm::vec4 TriangleVertexPositions[3];
 
@@ -90,8 +115,10 @@ struct RendererData
 	std::shared_ptr<VertexBuffer> FrameBufferVertexBuffer;
 	std::shared_ptr<Shader> FrameBufferShader;
 
+
 	std::vector<std::shared_ptr<Texture2D>> Textures;
 	int	texs[32];
+	unsigned int FontTexture;
 
 	glm::vec3 LightPos;
 
@@ -120,7 +147,8 @@ void Renderer::Init()
 		{ShaderDataType::Float3,"a_Position"},
 		{ShaderDataType::Float2,"a_TexCoord"},
 		{ShaderDataType::Float4,"a_Color"},
-		{ShaderDataType::Float,"a_TexIndex"}
+		{ShaderDataType::Float,"a_TexIndex"},
+		{ShaderDataType::Float,"a_EntityID"}
 		});
 
 	s_Data.TriangleVertexArray->AddVertexBuffer(s_Data.TriangleVertexBuffer);
@@ -155,7 +183,8 @@ void Renderer::Init()
 		{ShaderDataType::Float3,"a_Position"},
 		{ShaderDataType::Float2,"a_TexCoord"},
 		{ShaderDataType::Float4,"a_Color"},
-		{ShaderDataType::Float,"a_TexIndex"}
+		{ShaderDataType::Float,"a_TexIndex"},
+		{ShaderDataType::Float,"a_EntityID"}
 		});
 
 	s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -189,7 +218,8 @@ void Renderer::Init()
 	s_Data.LineVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(LineVertex)));
 	s_Data.LineVertexBuffer->SetLayout({
 		{ShaderDataType::Float3,"a_Position"},
-		{ShaderDataType::Float4, "a_Color"}
+		{ShaderDataType::Float4, "a_Color"},
+		{ShaderDataType::Float, "a_EntityID"}
 		});
 
 	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
@@ -205,11 +235,28 @@ void Renderer::Init()
 		{ ShaderDataType::Float4, "a_Color"         },
 		{ ShaderDataType::Float,  "a_Thickness"     },
 		{ ShaderDataType::Float,  "a_Fade"          },
+		{ ShaderDataType::Float,  "a_EntityID"      }
 		});
 	s_Data.CircleVertexArray->AddVertexBuffer(s_Data.CircleVertexBuffer);
 	s_Data.CircleVertexArray->SetIndexBuffer(indexbuffer); // Use quad IB
 	s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
+
+	
+	//Text Init
+	s_Data.TextVertexArray.reset(VertexArray::Create());
+
+	s_Data.TextVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(TextVertex)));
+	s_Data.TextVertexBuffer->SetLayout({
+		{ShaderDataType::Float2,"a_Position"},
+		{ShaderDataType::Float2,"a_TexCoord"},
+		{ShaderDataType::Float4,"a_Color"}
+		});
+	s_Data.TextVertexArray->AddVertexBuffer(s_Data.TextVertexBuffer);
+	s_Data.TextVertexArray->SetIndexBuffer(indexbuffer); // TODO: change the index buffer to be complatible with batch rendering ,now it's using framebuffer's
+	s_Data.TextVertexBufferBase = new TextVertex[s_Data.MaxVertices];
+	TextRenderer::Init();
 		
+
 	//framebuffer init
 	float quadVertices[] = {
 		// positions   // texCoords
@@ -229,7 +276,8 @@ void Renderer::Init()
 
 	BufferLayout layout = {
 			{ShaderDataType::Float2, "a_Position"},
-			{ShaderDataType::Float2, "a_TexCoord"}
+			{ShaderDataType::Float2, "a_TexCoord"},
+			{ShaderDataType::Float4, "a_Color"}
 	};
 	vertexBuffer->SetLayout(layout);
 	s_Data.FrameBufferVertexArray->AddVertexBuffer(vertexBuffer);
@@ -238,12 +286,15 @@ void Renderer::Init()
 	indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 	s_Data.FrameBufferVertexArray->SetIndexBuffer(indexBuffer);
 
+	
+
 	//shaders init
 	s_Data.QuadShaderFlat.reset(new Shader("assets/shaders/FlatColor.glsl"));
 	s_Data.QuadShaderTexture.reset(new Shader("assets/shaders/Texture.glsl"));
 	s_Data.LineShader.reset(new Shader("assets/shaders/Line.glsl"));
 	s_Data.CircleShader.reset(new Shader("assets/shaders/Circle.glsl"));
 	s_Data.FrameBufferShader.reset(new Shader("assets/shaders/screen.glsl"));
+	s_Data.TextShader.reset(new Shader("assets/shaders/Text.glsl"));
 
 	s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
@@ -257,8 +308,10 @@ void Renderer::Init()
 
 void Renderer::BeginScene()
 {
+	Application& app = Application::Get();
 	OrthographicCameraController cam(1280.0f / 720.0f, true);
-	s_SceneData->ViewProjectionMatrix = cam.GetCamera().GetProjectionMatrix();
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(app.GetWindow().GetWidth()), 0.0f, static_cast<float>(app.GetWindow().GetHeight()));
+	s_SceneData->ViewProjectionMatrix = projection;
 
 	StartBatch();
 }
@@ -313,6 +366,7 @@ void Renderer::Flush()
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
 		s_Data.QuadShaderFlat->Bind();
+		s_Data.QuadShaderFlat->SetVec4("pickingColor", glm::vec4(s_Data.QuadVertexBufferPtr->EntityID));
 		s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
 		s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
 		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
@@ -331,6 +385,20 @@ void Renderer::Flush()
 		RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 		s_Data.stats.DrawCalls++;
 	}
+
+	if (s_Data.TextVertexCount)
+	{
+		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.TextVertexBufferPtr - (uint8_t*)s_Data.TextVertexBufferBase);
+		s_Data.TextVertexBuffer->SetData(s_Data.TextVertexBufferBase, dataSize);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, s_Data.FontTexture);
+
+		s_Data.TextShader->Bind();
+		s_Data.TextShader->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
+		s_Data.TextShader->SetInt("text", 0);
+
+		RenderCommand::DrawIndexed(s_Data.TextVertexArray, s_Data.TextVertexCount);
+	}
 }
 
 void Renderer::DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
@@ -341,7 +409,7 @@ void Renderer::DrawTriangle(const glm::vec3& position, const glm::vec2& size, co
 	DrawTriangle(transform, color);
 }
 
-void Renderer::DrawTriangle(const glm::mat4& transform, const glm::vec4& color)
+void Renderer::DrawTriangle(const glm::mat4& transform, const glm::vec4& color, int id)
 {
 	constexpr size_t triangleVertexCount = 3;
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
@@ -355,6 +423,7 @@ void Renderer::DrawTriangle(const glm::mat4& transform, const glm::vec4& color)
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexIndex = 0;
+		s_Data.QuadVertexBufferPtr->EntityID = id;
 		s_Data.QuadVertexBufferPtr++;
 	}
 	s_Data.TriangleIndexCount+= 3;
@@ -382,6 +451,9 @@ void Renderer::StartBatch()
 
 	s_Data.LineVertexCount = 0;
 	s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
+
+	s_Data.TextVertexCount = 0;
+	s_Data.TextVertexBufferPtr = s_Data.TextVertexBufferBase;
 }
 
 void Renderer::NextBatch()
@@ -402,12 +474,12 @@ void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_p
 }
 
 
-void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color,int id)
 {
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-	DrawQuad(transform, color);
+	DrawQuad(transform, color, id);
 }
 
 void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture)
@@ -417,7 +489,7 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::s
 	DrawQuad(transform, texture);
 }
 
-void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,int id)
 {
 	constexpr size_t quadVertexCount = 4;
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
@@ -431,6 +503,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexIndex = 0;
+		s_Data.QuadVertexBufferPtr->EntityID = id;
 		s_Data.QuadVertexBufferPtr++;
 	}
 	s_Data.QuadIndexCount += 6;
@@ -438,7 +511,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 	s_Data.stats.QuadCount++;
 }
 
-void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture)
+void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture, int id)
 {
 	constexpr size_t quadVertexCount = 4;
 	float textureIndex = 0.0f;
@@ -457,7 +530,8 @@ void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& 
 	if(textureIndex==0)
 	{
 		s_Data.Textures.push_back(texture);
-	}
+		textureIndex = s_Data.Textures.size() - 1;
+;	}
 
 	
 
@@ -466,7 +540,8 @@ void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& 
 		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 		s_Data.QuadVertexBufferPtr->Color = { 0.0f,0.0f,0.0f,1.0f };
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex + 1;
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->EntityID = id;
 		s_Data.QuadVertexBufferPtr++;
 	}
 	texture->Bind(textureIndex + 2);
@@ -476,7 +551,7 @@ void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& 
 	s_Data.stats.QuadCount++;
 }
 
-void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade)
+void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int id)
 {
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -485,6 +560,7 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color, fl
 		s_Data.CircleVertexBufferPtr->Color = color;
 		s_Data.CircleVertexBufferPtr->Thickness = thickness;
 		s_Data.CircleVertexBufferPtr->Fade = fade;
+		s_Data.CircleVertexBufferPtr->EntityID = id;
 		s_Data.CircleVertexBufferPtr++;
 	}
 
@@ -520,7 +596,7 @@ void Renderer::DrawCircleLight(const glm::mat4& transform, const glm::vec4& colo
 	s_Data.stats.QuadCount++;
 }
 
-void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4& color)
+void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int id)
 {
 	s_Data.LineVertexBufferPtr->Position = p0;
 	s_Data.LineVertexBufferPtr->Color = color;
@@ -528,6 +604,7 @@ void Renderer::DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4
 
 	s_Data.LineVertexBufferPtr->Position = p1;
 	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr->EntityID = id;
 	s_Data.LineVertexBufferPtr++;
 
 	s_Data.LineVertexCount += 2;
@@ -537,13 +614,37 @@ void Renderer::DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer)
 {
 	glDisable(GL_DEPTH_TEST);
 	Application& app = Application::Get();
+	/*glActiveTexture(GL_TEXTURE20);
+	glBindTexture(GL_TEXTURE_2D, buffer->GetColorAttachmentRendererID());*/
 	s_Data.FrameBufferShader->Bind();
-	s_Data.FrameBufferShader->SetInt("screenTexture", 0);
+	s_Data.FrameBufferShader->SetInt("screenTexture", 20);
 	s_Data.FrameBufferShader->SetVec2("resoulation", glm::vec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight()));
 	buffer->BindVertexArray();
 	glDisable(GL_BLEND);
 	glDrawElements(GL_TRIANGLES, buffer->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	glEnable(GL_BLEND);
+}
+
+void Renderer::RenderText(const std::string& text,const glm::vec2& position,float scale,const glm::vec4& color)
+{
+	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f } };
+	
+	auto textData = TextRenderer::RenderText(text, position, scale, color, s_Data.TextVertexArray, s_SceneData->ViewProjectionMatrix);
+
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 1.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
+	for (size_t i = 0; i < 4 * text.size(); i++)
+	{
+		glm::vec3 pos = transform * textData.Vertices[i];
+		s_Data.TextVertexBufferPtr->Position = { pos.x, pos.y };
+		s_Data.TextVertexBufferPtr->TexCoord = textureCoords[i % 4];
+		s_Data.TextVertexBufferPtr->Color = color;
+		s_Data.TextVertexBufferPtr++;
+	}
+
+	s_Data.TextVertexCount += 6 * text.size();
+
+	s_Data.stats.QuadCount += text.size();
+	s_Data.FontTexture = textData.TextureID;
 }
 
 void Renderer::ResetStats()
@@ -562,4 +663,9 @@ void Renderer::WireframeMode(bool on)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+RendererData Renderer::GetData()
+{
+	return s_Data;
 }

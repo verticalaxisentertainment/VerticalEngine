@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;DLL_BUILD;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -102,7 +102,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;DLL_BUILD;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -128,7 +128,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;DLL_BUILD;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\GLFW\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -181,13 +181,16 @@
     <ClInclude Include="src\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
+    <ClInclude Include="src\Renderer\UIRenderer.h" />
     <ClInclude Include="src\Renderer\VertexArray.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Timestep.h" />
     <ClInclude Include="src\UUID.h" />
+    <ClInclude Include="src\Utils\Image.h" />
     <ClInclude Include="src\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\Renderer\TextRenderer.h" />
     <ClInclude Include="vendor\stb\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
@@ -213,13 +216,16 @@
     <ClCompile Include="src\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
+    <ClCompile Include="src\Renderer\UIRenderer.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\UUID.cpp" />
+    <ClCompile Include="src\Utils\Image.cpp" />
     <ClCompile Include="src\Utils\PlatformUtils.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Renderer\TextRenderer.cpp" />
     <ClCompile Include="vendor\stb\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +240,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\box2d\Box2D.vcxproj">
       <Project>{A434E80C-1049-10BE-D9CA-B31D459E0CEF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\freetype\freetype.vcxproj">
+      <Project>{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

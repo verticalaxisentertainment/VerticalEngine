@@ -4,8 +4,9 @@
 #include "MouseCode.h"
 
 #include <glm/glm.hpp>
+#include "Core.h"
 
-class Input
+class _API Input
 {
 public:
 	static bool IsKeyPressed(KeyCode key);
@@ -14,4 +15,6 @@ public:
 	static glm::vec2 GetMousePosition();
 	static float GetMouseX();
 	static float GetMouseY();
+	static float GetLocalMouseX();
+	static float GetLocalMouseY();
 };
