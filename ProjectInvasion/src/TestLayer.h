@@ -25,6 +25,8 @@ public:
 		selectCircle.Render({ windowWidth - 35.0f * aspect,windowHeight - 40.0f * aspect,1.0f }, { 50.0f * aspect,50.0f * aspect }, m_ColorCircle);
 
 		//Renderer::RenderText("Select a shape", { windowWidth * aspect, windowHeight * aspect }, 500.f * aspect, { 1.0f,1.0f,1.0f,1.0f });
+		Renderer::RenderText("Select a shape", { 0.0f,0.0f }, 0.5f * aspect, { 1.0f,1.0f,1.0f,1.0f });
+
 
 		Renderer::EndScene();
 

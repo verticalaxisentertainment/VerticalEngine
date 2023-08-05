@@ -82,7 +82,4 @@ private:
 	static void NextBatch();
 
 	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-
-	static std::shared_ptr<Texture2D> m_TextureTest;
-	static std::shared_ptr<Texture2D> m_TextureTest1;
 };

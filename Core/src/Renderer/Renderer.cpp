@@ -22,8 +22,6 @@
 #include "TextRenderer.h"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
-std::shared_ptr<Texture2D> Renderer::m_TextureTest;
-std::shared_ptr<Texture2D> Renderer::m_TextureTest1;
 
 struct CircleVertex
 {
@@ -59,6 +57,7 @@ struct TextVertex
 	glm::vec2 Position;
 	glm::vec2 TexCoord;
 	glm::vec4 Color;
+	float TexIndex;
 };
 
 struct RendererData
@@ -135,9 +134,6 @@ void Renderer::Init()
 	{
 		s_Data.texs[i] = i + 1;
 	}
-
-	m_TextureTest.reset(Texture2D::Create("assets/textures/container.jpg"));
-	m_TextureTest1.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
 
 	//triangle init
 	s_Data.TriangleVertexArray.reset(VertexArray::Create());
@@ -249,7 +245,8 @@ void Renderer::Init()
 	s_Data.TextVertexBuffer->SetLayout({
 		{ShaderDataType::Float2,"a_Position"},
 		{ShaderDataType::Float2,"a_TexCoord"},
-		{ShaderDataType::Float4,"a_Color"}
+		{ShaderDataType::Float4,"a_Color"},
+		{ShaderDataType::Float,"a_TexIndex"}
 		});
 	s_Data.TextVertexArray->AddVertexBuffer(s_Data.TextVertexBuffer);
 	s_Data.TextVertexArray->SetIndexBuffer(indexbuffer); // TODO: change the index buffer to be complatible with batch rendering ,now it's using framebuffer's
@@ -396,6 +393,7 @@ void Renderer::Flush()
 		s_Data.TextShader->Bind();
 		s_Data.TextShader->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
 		s_Data.TextShader->SetInt("text", 0);
+		s_Data.TextShader->SetIntArray("u_Textures", s_Data.texs);
 
 		RenderCommand::DrawIndexed(s_Data.TextVertexArray, s_Data.TextVertexCount);
 	}
@@ -520,14 +518,14 @@ void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& 
 	if (s_Data.QuadIndexCount >= RendererData::MaxIndices)
 		NextBatch();
 
-	for(size_t i=0;i<s_Data.Textures.size();i++)
+	for (size_t i = 0; i < s_Data.Textures.size(); i++)
 	{
-		if(s_Data.Textures[i]==texture)
+		if (s_Data.Textures[i] == texture)
 		{
 			textureIndex = i;
 		}
 	}
-	if(textureIndex==0)
+	if (textureIndex == 0)
 	{
 		s_Data.Textures.push_back(texture);
 		textureIndex = s_Data.Textures.size() - 1;
@@ -629,22 +627,25 @@ void Renderer::RenderText(const std::string& text,const glm::vec2& position,floa
 {
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f } };
 	
-	auto textData = TextRenderer::RenderText(text, position, scale, color, s_Data.TextVertexArray, s_SceneData->ViewProjectionMatrix);
+	auto textData = TextRenderer::RenderText(text, position, scale);
 
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 1.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
+
+
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
 	for (size_t i = 0; i < 4 * text.size(); i++)
 	{
 		glm::vec3 pos = transform * textData.Vertices[i];
 		s_Data.TextVertexBufferPtr->Position = { pos.x, pos.y };
 		s_Data.TextVertexBufferPtr->TexCoord = textureCoords[i % 4];
 		s_Data.TextVertexBufferPtr->Color = color;
+		s_Data.TextVertexBufferPtr->TexIndex = textData.Texture[0]->GetRendererID();
 		s_Data.TextVertexBufferPtr++;
 	}
 
 	s_Data.TextVertexCount += 6 * text.size();
 
 	s_Data.stats.QuadCount += text.size();
-	s_Data.FontTexture = textData.TextureID;
+	s_Data.FontTexture = textData.Texture[10]->GetRendererID();
 }
 
 void Renderer::ResetStats()

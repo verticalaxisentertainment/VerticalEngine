@@ -89,7 +89,7 @@ public:
 		
 		Physics::Simulate(timestep);
 
-		Renderer::RenderText("Select a shape", { 0.0f,0.0f}, 0.5f, { 1.0f,1.0f,1.0f,1.0f });
+		//Renderer::RenderText("Select a shape", { 0.0f,0.0f }, 0.5f, { 1.0f,1.0f,1.0f,1.0f });
 
 
 		Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
