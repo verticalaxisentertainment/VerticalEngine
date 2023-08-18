@@ -16,6 +16,8 @@ class TextRenderer
 public:
 	static void Init();
 
+	static void StartBatch();
+	static void Flush();
 	static TextData RenderText(const std::string& text, glm::vec2 position, const float& scale);
 
 private:

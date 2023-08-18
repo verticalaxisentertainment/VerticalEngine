@@ -2,6 +2,7 @@
 #include "Layer/Layer.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/UIRenderer.h"
+#include <string>
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -24,8 +25,8 @@ public:
 		selectQuad.Render({ windowWidth - 100.0f * aspect,windowHeight - 40.0f * aspect,1.0f }, { 50.0f * aspect,50.0f * aspect }, m_ColorBox);
 		selectCircle.Render({ windowWidth - 35.0f * aspect,windowHeight - 40.0f * aspect,1.0f }, { 50.0f * aspect,50.0f * aspect }, m_ColorCircle);
 
-		//Renderer::RenderText("Select a shape", { windowWidth * aspect, windowHeight * aspect }, 500.f * aspect, { 1.0f,1.0f,1.0f,1.0f });
-		Renderer::RenderText("Select a shape", { 0.0f,0.0f }, 0.5f * aspect, { 1.0f,1.0f,1.0f,1.0f });
+		Renderer::RenderText(m_Text, { 0.0f,10.0f }, 0.5f * aspect, { 1.0f,1.0f,1.0f,1.0f });
+		Renderer::RenderText("Select a shape", { windowWidth-140.0f*aspect, windowHeight-100.0f*aspect }, 0.4f * aspect, { 1.0f,1.0f,1.0f,1.0f });
 
 
 		Renderer::EndScene();
@@ -62,11 +63,14 @@ public:
 		EventDispatcher dispatcher(e);
 	}
 
+	static char m_Text[128];
 private:
 	UIQuad selectQuad;
 	UICircle selectCircle;
 	float* pixelData;
 	glm::vec4 m_ColorBox= { 1.0f,0.0f,0.0f,1.0f }, m_ColorCircle= { 0.0f,1.0f,0.0f,1.0f };
 	float m_x, m_y;
-
 };
+
+char TestLayer::m_Text[128];
+

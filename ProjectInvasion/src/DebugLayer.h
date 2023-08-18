@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include "GameLayer.h"
 #include "Renderer/Shader.h"
+#include "TestLayer.h"
 
 class DebugLayer:public Layer
 {
@@ -58,6 +59,7 @@ public:
 			Shader::ReCompileShaders();
 		}
 		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
+		ImGui::InputText("Text", TestLayer::m_Text, IM_ARRAYSIZE(TestLayer::m_Text));
 		
 		//ImGui::Text("%f", GameLayer::m_CameraController->GetCamera().GetPosition().x);
 		//ImGui::Text("%f", Physics::GetLastObjectsPos().x);

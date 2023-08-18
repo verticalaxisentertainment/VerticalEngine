@@ -34,7 +34,7 @@ void Shader::SetInt(const std::string& name, int value) const
 
 void Shader::SetIntArray(const std::string& name, int* value) const
 {
-	glUniform1iv(glGetUniformLocation(m_RendererID, name.c_str()), sizeof(value)/4, value);
+	glUniform1iv(glGetUniformLocation(m_RendererID, name.c_str()), sizeof(value) / 4, value);
 }
 
 void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const

@@ -43,7 +43,7 @@ uniform float iTime;
 
 uniform vec3 lightPos;
 in vec2 TexCoord;
-uniform sampler2D u_Textures[32];
+layout (binding = 0) uniform sampler2D u_Textures[32];
 
 void main()
 {

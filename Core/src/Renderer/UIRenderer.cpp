@@ -40,7 +40,7 @@ UIQuad::~UIQuad()
 void UIQuad::Render(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color)
 {
 	
-	Renderer::DrawQuad(position, scale, color,m_ID);
+	Renderer::DrawQuad(position, scale, color, m_ID);
 	m_Color = color;
 }
 

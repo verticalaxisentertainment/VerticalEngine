@@ -20,6 +20,7 @@ public:
 		m_CameraController.reset(new OrthographicCameraController(1280.0f / 720.0f, true));
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 		m_TextureTest.reset(Texture2D::Create("assets/textures/red.jpg"));
+		m_newTexture.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
 
 		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
 	}
@@ -59,6 +60,9 @@ public:
 		model = glm::translate(model, glm::vec3(1.0f, 5, 0.5f));
 		//model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
 		Renderer::DrawQuad(model, m_TextureTest);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(2.0f, 5, 0.5f));
+		Renderer::DrawQuad(model, m_newTexture);
 
 		if (m_LockCamera)
 		{
@@ -118,6 +122,7 @@ public:
 	static std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	inline static bool onUI = false, isBox = true, m_LockCamera = false;
 private:
+	std::shared_ptr<Texture2D> m_newTexture;
 	std::shared_ptr<Texture2D> m_TextureTest;
 	std::vector<glm::vec2> positions;
 	float m_X, m_Y;

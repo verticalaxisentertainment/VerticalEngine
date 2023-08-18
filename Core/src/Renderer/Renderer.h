@@ -69,6 +69,8 @@ public:
 	static void SetDepthTest(bool on);
 
 	static RendererData GetData();
+
+	friend class TextRenderer;
 private:
 	struct SceneData
 	{

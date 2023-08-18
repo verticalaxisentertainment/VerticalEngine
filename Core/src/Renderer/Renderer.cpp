@@ -52,14 +52,6 @@ struct LineVertex
 	int EntityID;
 };
 
-struct TextVertex
-{
-	glm::vec2 Position;
-	glm::vec2 TexCoord;
-	glm::vec4 Color;
-	float TexIndex;
-};
-
 struct RendererData
 {
 	static const uint32_t MaxQuads = 20000;
@@ -83,10 +75,6 @@ struct RendererData
 	std::shared_ptr<VertexBuffer> CircleVertexBuffer;
 	std::shared_ptr<Shader> CircleShader;
 
-	std::shared_ptr<VertexArray> TextVertexArray;
-	std::shared_ptr<VertexBuffer> TextVertexBuffer;
-	std::shared_ptr<Shader> TextShader;
-
 	uint32_t TriangleIndexCount = 0;
 	QuadVertex* TriangleVertexBufferBase = nullptr;
 	QuadVertex* TriangleVertexBufferPtr = nullptr;
@@ -103,10 +91,6 @@ struct RendererData
 	CircleVertex* CircleVertexBufferBase = nullptr;
 	CircleVertex* CircleVertexBufferPtr = nullptr;
 
-	uint32_t TextVertexCount = 0;
-	TextVertex* TextVertexBufferBase = nullptr;
-	TextVertex* TextVertexBufferPtr = nullptr;
-
 	glm::vec4 QuadVertexPositions[4];
 	glm::vec4 TriangleVertexPositions[3];
 
@@ -117,7 +101,6 @@ struct RendererData
 
 	std::vector<std::shared_ptr<Texture2D>> Textures;
 	int	texs[32];
-	unsigned int FontTexture;
 
 	glm::vec3 LightPos;
 
@@ -130,7 +113,7 @@ static RendererData s_Data;
 
 void Renderer::Init()
 {
-	for(int i=0;i<32;i++)
+	for (int i = 0; i < 32; i++)
 	{
 		s_Data.texs[i] = i + 1;
 	}
@@ -237,22 +220,8 @@ void Renderer::Init()
 	s_Data.CircleVertexArray->SetIndexBuffer(indexbuffer); // Use quad IB
 	s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 
-	
-	//Text Init
-	s_Data.TextVertexArray.reset(VertexArray::Create());
-
-	s_Data.TextVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(TextVertex)));
-	s_Data.TextVertexBuffer->SetLayout({
-		{ShaderDataType::Float2,"a_Position"},
-		{ShaderDataType::Float2,"a_TexCoord"},
-		{ShaderDataType::Float4,"a_Color"},
-		{ShaderDataType::Float,"a_TexIndex"}
-		});
-	s_Data.TextVertexArray->AddVertexBuffer(s_Data.TextVertexBuffer);
-	s_Data.TextVertexArray->SetIndexBuffer(indexbuffer); // TODO: change the index buffer to be complatible with batch rendering ,now it's using framebuffer's
-	s_Data.TextVertexBufferBase = new TextVertex[s_Data.MaxVertices];
+	//Text Renderer Init
 	TextRenderer::Init();
-		
 
 	//framebuffer init
 	float quadVertices[] = {
@@ -291,7 +260,6 @@ void Renderer::Init()
 	s_Data.LineShader.reset(new Shader("assets/shaders/Line.glsl"));
 	s_Data.CircleShader.reset(new Shader("assets/shaders/Circle.glsl"));
 	s_Data.FrameBufferShader.reset(new Shader("assets/shaders/screen.glsl"));
-	s_Data.TextShader.reset(new Shader("assets/shaders/Text.glsl"));
 
 	s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
@@ -322,15 +290,18 @@ void Renderer::BeginScene(OrthographicCamera& camera)
 
 void Renderer::EndScene()
 {
-	for(int i=0;i<s_Data.Textures.size();i++)
-	{
-		s_Data.Textures[i]->Bind(i + 1);
-	}
+	TextRenderer::Flush();
 	Flush();
 }
 
 void Renderer::Flush()
 {
+	//Binding textures
+	for(int i=0;i<s_Data.Textures.size();i++)
+	{
+		s_Data.Textures[i]->Bind(i + 1);
+	}
+
 	if(s_Data.TriangleIndexCount)
 	{
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.TriangleVertexBufferPtr - (uint8_t*)s_Data.TriangleVertexBufferBase);
@@ -381,21 +352,6 @@ void Renderer::Flush()
 		s_Data.CircleShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 		s_Data.stats.DrawCalls++;
-	}
-
-	if (s_Data.TextVertexCount)
-	{
-		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.TextVertexBufferPtr - (uint8_t*)s_Data.TextVertexBufferBase);
-		s_Data.TextVertexBuffer->SetData(s_Data.TextVertexBufferBase, dataSize);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, s_Data.FontTexture);
-
-		s_Data.TextShader->Bind();
-		s_Data.TextShader->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
-		s_Data.TextShader->SetInt("text", 0);
-		s_Data.TextShader->SetIntArray("u_Textures", s_Data.texs);
-
-		RenderCommand::DrawIndexed(s_Data.TextVertexArray, s_Data.TextVertexCount);
 	}
 }
 
@@ -450,8 +406,7 @@ void Renderer::StartBatch()
 	s_Data.LineVertexCount = 0;
 	s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
 
-	s_Data.TextVertexCount = 0;
-	s_Data.TextVertexBufferPtr = s_Data.TextVertexBufferBase;
+	TextRenderer::StartBatch();
 }
 
 void Renderer::NextBatch()
@@ -542,7 +497,6 @@ void Renderer::DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& 
 		s_Data.QuadVertexBufferPtr->EntityID = id;
 		s_Data.QuadVertexBufferPtr++;
 	}
-	texture->Bind(textureIndex + 2);
 
 	s_Data.QuadIndexCount += 6;
 
@@ -627,25 +581,7 @@ void Renderer::RenderText(const std::string& text,const glm::vec2& position,floa
 {
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f } };
 	
-	auto textData = TextRenderer::RenderText(text, position, scale);
-
-
-
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
-	for (size_t i = 0; i < 4 * text.size(); i++)
-	{
-		glm::vec3 pos = transform * textData.Vertices[i];
-		s_Data.TextVertexBufferPtr->Position = { pos.x, pos.y };
-		s_Data.TextVertexBufferPtr->TexCoord = textureCoords[i % 4];
-		s_Data.TextVertexBufferPtr->Color = color;
-		s_Data.TextVertexBufferPtr->TexIndex = textData.Texture[0]->GetRendererID();
-		s_Data.TextVertexBufferPtr++;
-	}
-
-	s_Data.TextVertexCount += 6 * text.size();
-
-	s_Data.stats.QuadCount += text.size();
-	s_Data.FontTexture = textData.Texture[10]->GetRendererID();
+	TextRenderer::RenderText(text, position, scale);
 }
 
 void Renderer::ResetStats()
