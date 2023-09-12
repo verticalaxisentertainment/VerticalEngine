@@ -18,6 +18,7 @@ IncludeDir["glm"]="Core/vendor/glm"
 IncludeDir["stb"]="Core/vendor/stb"
 IncludeDir["freetype"]="Core/vendor/freetype/include"
 IncludeDir["box2d"]="Core/vendor/box2d/include"
+IncludeDir["ImGuizmo"]="Core/vendor/ImGuizmo"
 
 group "Dependencies"
 	include "Core/vendor/GLFW"
@@ -44,7 +45,10 @@ project "Core"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
 		"%{IncludeDir.stb}/**.h",
-		"%{IncludeDir.stb}/**.cpp"
+		"%{IncludeDir.stb}/**.cpp",
+		
+		-- "%{IncludeDir.ImGuizmo}/ImGuizmo.h",
+		-- "%{IncludeDir.ImGuizmo}/ImGuizmo.cpp",
 	}
 
 	includedirs{
@@ -56,7 +60,8 @@ project "Core"
 		"%{prj.name}/src",
 		"%{IncludeDir.imgui}/backends",
 		"%{IncludeDir.box2d}",
-		"%{IncludeDir.freetype}"
+		"%{IncludeDir.freetype}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links
@@ -66,8 +71,11 @@ project "Core"
 		"imgui",
 		"opengl32",
 		"box2d",
-		"freetype"
+		"freetype",
 	}
+
+	-- filter "files:Core/vendor/ImGuizmo/**.cpp"
+	-- 	flags { "NoPCH" }
 	
 	postbuildcommands
 	{
@@ -81,7 +89,8 @@ project "Core"
 		defines{
 			"GLFW_INCLUDE_NONE",
 			"PLATFORM_WINDOWS",
-			"DLL_BUILD"
+			"DLL_BUILD",
+			-- "USE_IMGUI_API"
 		}
 
 		filter "configurations:Debug"
@@ -117,7 +126,8 @@ project "ProjectInvasion"
 	includedirs{
 		"Core/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.imgui}"
+		"%{IncludeDir.imgui}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links
@@ -132,7 +142,8 @@ project "ProjectInvasion"
 
 		defines{
 			"GLFW_INCLUDE_NONE",
-			"PLATFORM_WINDOWS"
+			"PLATFORM_WINDOWS",
+			"USE_IMGUI_API",
 		}
 
 		filter "configurations:Debug"

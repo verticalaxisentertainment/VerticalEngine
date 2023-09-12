@@ -69,8 +69,6 @@ void Application::OnEvent(Event& e)
         if (e.Handled)
             break;
     }
-
-    //std::cout << e << std::endl;
 }
 
 

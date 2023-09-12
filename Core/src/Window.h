@@ -6,7 +6,7 @@
 
 enum class Cursor
 {
-	ARROW, HAND
+	ARROW, HAND, IBEAM
 };
 
 struct WindowIcon

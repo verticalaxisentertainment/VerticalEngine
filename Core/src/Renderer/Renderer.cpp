@@ -2,7 +2,6 @@
 #include "Renderer.h"
 #include "Renderer.h"
 
-
 #include "VertexArray.h"
 #include "Buffer.h"
 #include "Shader.h"
@@ -12,9 +11,6 @@
 
 #include <glad/glad.h>
 #include <glm/gtx/matrix_decompose.hpp>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include "RenderCommand.h"
 #include "Texture.h"
@@ -256,7 +252,6 @@ void Renderer::Init()
 
 	//shaders init
 	s_Data.QuadShaderFlat.reset(new Shader("assets/shaders/FlatColor.glsl"));
-	s_Data.QuadShaderTexture.reset(new Shader("assets/shaders/Texture.glsl"));
 	s_Data.LineShader.reset(new Shader("assets/shaders/Line.glsl"));
 	s_Data.CircleShader.reset(new Shader("assets/shaders/Circle.glsl"));
 	s_Data.FrameBufferShader.reset(new Shader("assets/shaders/screen.glsl"));
@@ -577,11 +572,11 @@ void Renderer::DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer)
 	glEnable(GL_BLEND);
 }
 
-void Renderer::RenderText(const std::string& text,const glm::vec2& position,float scale,const glm::vec4& color)
+void Renderer::RenderText(const std::string& text,const glm::vec3& position,float scale,const glm::vec4& color)
 {
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f } };
 	
-	TextRenderer::RenderText(text, position, scale);
+	TextRenderer::RenderText(text, position, scale, color);
 }
 
 void Renderer::ResetStats()
@@ -589,7 +584,7 @@ void Renderer::ResetStats()
 	memset(&s_Data.stats, 0, sizeof(Statistics));
 }
 
-Renderer::Statistics Renderer::GetStats()
+Renderer::Statistics& Renderer::GetStats()
 {
 	return s_Data.stats;
 }

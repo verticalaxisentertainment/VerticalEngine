@@ -8,8 +8,8 @@ Texture2D* Texture2D::Create(uint32_t width, uint32_t height, TextureOption minm
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
-	case RendererAPI::API::OpenGL: return new OpenGLTexture2D(width, height, minmagFilter, wrap, format, buffer);
+		case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
+		case RendererAPI::API::OpenGL: return new OpenGLTexture2D(width, height, minmagFilter, wrap, format, buffer);
 	}
 
 	ERROR("Unknown RendererAPI");
@@ -20,8 +20,8 @@ Texture2D* Texture2D::Create(const std::string& path)
 {
 	switch (Renderer::GetAPI())
 	{
-	case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
-	case RendererAPI::API::OpenGL: return new OpenGLTexture2D(path);
+		case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
+		case RendererAPI::API::OpenGL: return new OpenGLTexture2D(path);
 	}
 
 	ERROR("Unknown RendererAPI");

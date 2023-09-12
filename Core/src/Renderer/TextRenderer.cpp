@@ -2,8 +2,8 @@
 #include "TextRenderer.h"
 #include "Buffer.h"
 #include "Shader.h"
-#include "Renderer.h"
 #include "RenderCommand.h"
+#include "Renderer.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -20,7 +20,7 @@ std::map<GLchar, Character> Characters;
 
 struct TextVertex
 {
-	glm::vec2 Position;
+	glm::vec3 Position;
 	glm::vec2 TexCoord;
 	glm::vec4 Color;
 	float TexIndex;
@@ -81,7 +81,7 @@ void TextRenderer::Init()
 
 	s_Data.TextVertexBuffer.reset(VertexBuffer::Create(s_Data.MaxVertices * sizeof(TextVertex)));
 	s_Data.TextVertexBuffer->SetLayout({
-		{ShaderDataType::Float2,"a_Position"},
+		{ShaderDataType::Float3,"a_Position"},
 		{ShaderDataType::Float2,"a_TexCoord"},
 		{ShaderDataType::Float4,"a_Color"},
 		{ShaderDataType::Float,"a_TexIndex"}
@@ -177,21 +177,25 @@ void TextRenderer::Flush()
 		s_Data.TextShader->SetIntArray("u_Textures", s_Data.texs);
 
 		RenderCommand::DrawIndexed(s_Data.TextVertexArray, s_Data.TextVertexCount);
+		Renderer::GetStats().DrawCalls++;
 	}
+
+	s_Data.Textures.clear();
 }
 
-TextData TextRenderer::RenderText(const std::string& text, glm::vec2 position, const float& scale)
+TextData TextRenderer::RenderText(const std::string& text, glm::vec3 position, const float& scale,const glm::vec4& color)
 {
-	s_Data.Textures.clear();
 	TextData textData;
-	uint32_t indices[] = { 0,1,2,0,2,3 };
 	std::vector<int> letterIndexes;
 
 	std::string::const_iterator c;
-	float texIndex = 0.0f;
+	float texIndex = -1.0f;
 
 	for (c = text.begin(); c != text.end(); c++)
 	{
+		Renderer::GetStats().QuadCount++;
+
+
 		Character ch = Characters[*c];
 		float xpos = position.x + ch.Bearing.x * scale;
 		float ypos = position.y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -212,7 +216,7 @@ TextData TextRenderer::RenderText(const std::string& text, glm::vec2 position, c
 		if (s_Data.Textures.size() == 0)
 		{
 			s_Data.Textures.push_back(ch.Texture);
-			letterIndexes.push_back(texIndex);
+			letterIndexes.push_back(texIndex + 1);
 		}
 		else
 		{
@@ -225,7 +229,7 @@ TextData TextRenderer::RenderText(const std::string& text, glm::vec2 position, c
 					break;
 				}
 			}
-			if (texIndex == 0.0f)
+			if (texIndex == -1.0f)
 			{
 				s_Data.Textures.push_back(ch.Texture);
 				letterIndexes.push_back(s_Data.Textures.size() - 1);
@@ -238,27 +242,30 @@ TextData TextRenderer::RenderText(const std::string& text, glm::vec2 position, c
 			textData.Vertices.push_back(vertex);
 
 		position.x += (ch.Advance >> 6) * scale;
-		texIndex = 0.0f;
+		texIndex = -1.0f;
 	}
+
+	texIndex = 0.0f;
+
 	constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 0.0f } };
-
-
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f)) * glm::scale(glm::mat4(1.0f), { 1.0f,1.0f,1.0f });
+
 	for (size_t i = 0; i < 4 * text.size(); i++)
 	{
 		if (i != 0 && i % 4 == 0)
 			texIndex++;
 
 		glm::vec3 pos = transform * textData.Vertices[i];
-		s_Data.TextVertexBufferPtr->Position = { pos.x, pos.y };
+		s_Data.TextVertexBufferPtr->Position = { pos.x, pos.y,position.z };
 		s_Data.TextVertexBufferPtr->TexCoord = textureCoords[i % 4];
-		s_Data.TextVertexBufferPtr->Color = { 1.0f,1.0f,1.0f,1.0f };
+		s_Data.TextVertexBufferPtr->Color = color;
 		s_Data.TextVertexBufferPtr->TexIndex = letterIndexes[texIndex];
 		s_Data.TextVertexBufferPtr++;
 
 	}
 
 	s_Data.TextVertexCount += 6 * text.size();
+
 
 	return textData;
 }

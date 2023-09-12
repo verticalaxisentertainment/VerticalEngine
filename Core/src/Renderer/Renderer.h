@@ -51,7 +51,7 @@ public:
 
 	static void DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer);
 
-	static void RenderText(const std::string& text,const glm::vec2& position,float scale,const glm::vec4& color);
+	static void RenderText(const std::string& text,const glm::vec3& position,float scale,const glm::vec4& color);
 
 	struct Statistics
 	{
@@ -63,7 +63,7 @@ public:
 	};
 
 	static void ResetStats();
-	static Statistics GetStats();
+	static Statistics& GetStats();
 
 	static void WireframeMode(bool on);
 	static void SetDepthTest(bool on);

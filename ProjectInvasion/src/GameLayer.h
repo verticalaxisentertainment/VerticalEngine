@@ -17,6 +17,10 @@ public:
 	GameLayer()
 		:Layer("GameLayer")
 	{
+		std::string startText = "Lorem Upsulum";
+		for (int i = 0; i < startText.size(); i++)
+			m_Text[i] = startText[i];
+
 		m_CameraController.reset(new OrthographicCameraController(1280.0f / 720.0f, true));
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 		m_TextureTest.reset(Texture2D::Create("assets/textures/red.jpg"));
@@ -35,13 +39,16 @@ public:
 
 	void OnUpdate() override
 	{
+		m_X = Input::GetLocalMouseX();
+		m_Y = Input::GetLocalMouseY();
+
 		float time = Math::Time();
 		Timestep timestep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 
 		auto& pos = m_CameraController->GetCamera().GetPosition();
 		RenderCommand::Clear();
-		if (!m_LockCamera)
+		if (!m_LockCamera && m_Move)
 		{
 			m_CameraController->SetPosition(pos);
 			m_CameraController->OnUpdate(timestep);
@@ -50,6 +57,8 @@ public:
 		Renderer::BeginScene(m_CameraController->GetCamera());
 		Application& app = Application::Get();
 
+
+
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
 
 		glm::mat4 model = glm::mat4(1.0f);
@@ -57,17 +66,17 @@ public:
 
 		Renderer::DrawQuad(model, m_Texture);
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(1.0f, 5, 0.5f));
+		model = glm::translate(model, glm::vec3(1.0f, 5, 0.0f));
 		//model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
 		Renderer::DrawQuad(model, m_TextureTest);
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 5, 0.5f));
+		model = glm::translate(model, glm::vec3(2.0f, 5, 0.0f));
 		Renderer::DrawQuad(model, m_newTexture);
 
 		if (m_LockCamera)
 		{
-			pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep*2);
-			pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep*2);
+			pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep * 2);
+			pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep * 2);
 			m_CameraController->GetCamera().SetPosition(pos);
 		}
 
@@ -76,7 +85,6 @@ public:
 		if (isBox)
 		{
 			Renderer::DrawQuad({ test.x,test.y ,0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f });
-
 		}
 		else
 		{
@@ -93,12 +101,11 @@ public:
 		
 		Physics::Simulate(timestep);
 
-		//Renderer::RenderText("Select a shape", { 0.0f,0.0f }, 0.5f, { 1.0f,1.0f,1.0f,1.0f });
-
-
 		Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
 		Renderer::DrawLine({ -0.5f,0.0f,1.0f }, { 0.5f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
 		Renderer::DrawLine({ 0.0f,-0.5f,1.0f }, { 0.0f,0.5f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
+
+		Renderer::RenderText(m_Text, { -5.0f,2.0f,-0.8f }, 0.01f, { 0.0f,1.0f,0.5f,1.0f });
 
 		Renderer::EndScene();
 	}
@@ -106,21 +113,25 @@ public:
 	void OnEvent(Event& e) override
 	{
 		EventDispatcher dispatcher(e);
-		m_CameraController->OnEvent(e);
-		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::onKeyPressed));
-		dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(GameLayer::onKeyReleased));
-		if(!e.Handled&&e.IsInCategory(EventCategoryMouse))
+		if (!e.Handled)
 		{
-			dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(GameLayer::onMouseMoved));
+			m_Move = true;
+			m_CameraController->OnEvent(e);
+			//m_CameraController->CanMove(true);
+			dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(GameLayer::onKeyReleased));
+			dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::onKeyPressed));
+			//dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(GameLayer::onMouseMoved));
 			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(GameLayer::onMouseClicked));
 		}
+
 	}
 
 	inline static int tiles[2];
 	static std::shared_ptr<Texture2D> m_Texture;
 	static std::shared_ptr<OrthographicCameraController> m_CameraController;
 	static std::shared_ptr<FrameBuffer> m_FrameBuffer;
-	inline static bool onUI = false, isBox = true, m_LockCamera = false;
+	inline static bool onUI = false, isBox = true, m_LockCamera = false, m_Move = false;
+	static char m_Text[128];
 private:
 	std::shared_ptr<Texture2D> m_newTexture;
 	std::shared_ptr<Texture2D> m_TextureTest;
@@ -128,6 +139,7 @@ private:
 	float m_X, m_Y;
 	float m_LastFrameTime;
 	float* pixelData;
+
 
 	bool onKeyPressed(KeyPressedEvent& e)
 	{
@@ -186,3 +198,4 @@ private:
 std::shared_ptr<Texture2D> GameLayer::m_Texture;
 std::shared_ptr<OrthographicCameraController> GameLayer::m_CameraController;
 std::shared_ptr<FrameBuffer> GameLayer::m_FrameBuffer;
+char GameLayer::m_Text[128];

@@ -58,13 +58,38 @@ void main()
   // color=mix(texture(tex,TexCoord),texture(tex2,TexCoord),0.5)*vec4(Color.r*sin(iTime)/2+1.0,Color.g*sin(iTime)/2+0.7,Color.b*sin(iTime)/2+0.3,1.0);
   switch(int(TexIndex))
   {
-    case 0: color=Color; break;
+    case 0: color=Color;break;
     case 1: color=texture(u_Textures[0],TexCoord); break;
     case 2: color=texture(u_Textures[1],TexCoord); break;
     case 3: color=texture(u_Textures[2],TexCoord); break;
     case 4: color=texture(u_Textures[3],TexCoord); break;
     case 5: color=texture(u_Textures[4],TexCoord); break;
     case 6: color=texture(u_Textures[5],TexCoord); break;
+    case 7: color=texture(u_Textures[6],TexCoord); break;
+    case 8: color=texture(u_Textures[7],TexCoord); break;
+    case 9: color=texture(u_Textures[8],TexCoord); break;
+    case 10: color=texture(u_Textures[9],TexCoord); break;
+    case 11: color=texture(u_Textures[10],TexCoord); break;
+    case 12: color=texture(u_Textures[11],TexCoord); break;
+    case 13: color=texture(u_Textures[12],TexCoord); break;
+    case 14: color=texture(u_Textures[13],TexCoord); break;
+    case 15: color=texture(u_Textures[14],TexCoord); break;
+    case 16: color=texture(u_Textures[15],TexCoord); break;
+    case 17: color=texture(u_Textures[16],TexCoord); break;
+    case 18: color=texture(u_Textures[17],TexCoord); break;
+    case 19: color=texture(u_Textures[18],TexCoord); break;
+    case 20: color=texture(u_Textures[19],TexCoord); break;
+    case 21: color=texture(u_Textures[20],TexCoord); break;
+    case 22: color=texture(u_Textures[21],TexCoord); break;
+    case 23: color=texture(u_Textures[22],TexCoord); break;
+    case 24: color=texture(u_Textures[23],TexCoord); break;
+    case 25: color=texture(u_Textures[24],TexCoord); break;
+    case 26: color=texture(u_Textures[25],TexCoord); break;
+    case 27: color=texture(u_Textures[26],TexCoord); break;
+    case 28: color=texture(u_Textures[27],TexCoord); break;
+    case 29: color=texture(u_Textures[28],TexCoord); break;
+    case 30: color=texture(u_Textures[29],TexCoord); break;
+    case 31: color=texture(u_Textures[30],TexCoord); break;
   }
   // if(EntityID==1)
   // {

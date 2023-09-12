@@ -6,24 +6,24 @@
 #include "Application.h"
 
 OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)
-	:m_AspectRatio(aspectRatio),m_Camera(-m_AspectRatio*m_ZoomLevel,m_AspectRatio*m_ZoomLevel,-m_ZoomLevel,m_ZoomLevel),m_Rotation(rotation)
+	:m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation)
 {
 }
 
 void OrthographicCameraController::OnUpdate(Timestep ts)
 {
-	if(Input::IsKeyPressed(Key::A))
+	if (Input::IsKeyPressed(Key::A))
 	{
 		m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 	}
-	else if(Input::IsKeyPressed(Key::D))
+	else if (Input::IsKeyPressed(Key::D))
 	{
-		m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed *ts;
+		m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 	}
 
-	if(Input::IsKeyPressed(Key::W))
+	if (Input::IsKeyPressed(Key::W))
 	{
 		m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 		m_CameraPosition.y += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
@@ -34,7 +34,7 @@ void OrthographicCameraController::OnUpdate(Timestep ts)
 		m_CameraPosition.y -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * ts;
 	}
 
-	if(m_Rotation)
+	if (m_Rotation)
 	{
 		if (Input::IsKeyPressed(Key::Q))
 			m_CameraRotation += m_CameraRotationSpeed * ts;
@@ -48,8 +48,8 @@ void OrthographicCameraController::OnUpdate(Timestep ts)
 
 		m_Camera.SetRotation(m_CameraRotation);
 	}
-		m_Camera.SetPosition(m_CameraPosition);
-		m_CameraTranslationSpeed = m_ZoomLevel;
+	m_Camera.SetPosition(m_CameraPosition);
+	m_CameraTranslationSpeed = m_ZoomLevel;
 }
 
 void OrthographicCameraController::OnEvent(Event& e)
@@ -78,3 +78,5 @@ bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e)
 	OnResize((float)e.GetWidth(), (float)e.GetHeight());
 	return false;
 }
+
+

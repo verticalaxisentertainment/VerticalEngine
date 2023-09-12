@@ -25,12 +25,15 @@ public:
 		selectQuad.Render({ windowWidth - 100.0f * aspect,windowHeight - 40.0f * aspect,1.0f }, { 50.0f * aspect,50.0f * aspect }, m_ColorBox);
 		selectCircle.Render({ windowWidth - 35.0f * aspect,windowHeight - 40.0f * aspect,1.0f }, { 50.0f * aspect,50.0f * aspect }, m_ColorCircle);
 
-		Renderer::RenderText(m_Text, { 0.0f,10.0f }, 0.5f * aspect, { 1.0f,1.0f,1.0f,1.0f });
-		Renderer::RenderText("Select a shape", { windowWidth-140.0f*aspect, windowHeight-100.0f*aspect }, 0.4f * aspect, { 1.0f,1.0f,1.0f,1.0f });
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(100.0f, 100.0f, 1.0f));
+		model = glm::scale(model, glm::vec3(160.0f, 90.0f, 1.0f));
+		Renderer::DrawQuad(model, GameLayer::m_Texture);
+
+		Renderer::RenderText("Select a shape", { windowWidth - 140.0f * aspect, windowHeight - 100.0f * aspect,1.0f }, 0.4f * aspect, { 1.0f,1.0f,1.0f,1.0f });
 
 
 		Renderer::EndScene();
-
 
 		if (selectQuad.IsHovered() || selectCircle.IsHovered())
 		{
@@ -43,13 +46,18 @@ public:
 			app.GetWindow().SetCursor(Cursor::ARROW);
 		}
 
+		
+			
+
 		if (selectQuad.IsClicked())
 		{
 			m_ColorBox = { 0.0f,0.0f,0.0f,1.0f }; GameLayer::isBox = true;
+			app.GetWindow().SetCursor(Cursor::ARROW);
 		}
 		else if (selectCircle.IsClicked())
 		{
 			m_ColorCircle = { 0.0f,0.0f,0.0f,1.0f }; GameLayer::isBox = false;
+			app.GetWindow().SetCursor(Cursor::ARROW);
 		}
 		else
 		{

@@ -42,10 +42,13 @@ void WindowsWindow::OnUpdate()
 
 void WindowsWindow::SetCursor(Cursor cursor)
 {
-	if (cursor == Cursor::HAND)
+	if (cursor == Cursor::HAND && m_Cursor != (GLFWcursor*)GLFW_HAND_CURSOR)
 		m_Cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-	if (cursor == Cursor::ARROW)
+	if (cursor == Cursor::ARROW&& m_Cursor != (GLFWcursor*)GLFW_ARROW_CURSOR)
 		m_Cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	if (cursor == Cursor::IBEAM && m_Cursor != (GLFWcursor*)GLFW_IBEAM_CURSOR)
+		m_Cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+
 }
 
 void WindowsWindow::SetVSync(bool enabled)

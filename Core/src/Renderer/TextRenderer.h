@@ -5,6 +5,7 @@
 #include "Texture.h"
 
 
+
 struct TextData
 {
 	std::vector<glm::vec4> Vertices;
@@ -18,7 +19,5 @@ public:
 
 	static void StartBatch();
 	static void Flush();
-	static TextData RenderText(const std::string& text, glm::vec2 position, const float& scale);
-
-private:
+	static TextData RenderText(const std::string& text, glm::vec3 position, const float& scale,const glm::vec4& color);
 };
