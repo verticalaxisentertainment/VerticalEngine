@@ -18,7 +18,7 @@ IncludeDir["glm"]="Core/vendor/glm"
 IncludeDir["stb"]="Core/vendor/stb"
 IncludeDir["freetype"]="Core/vendor/freetype/include"
 IncludeDir["box2d"]="Core/vendor/box2d/include"
-IncludeDir["ImGuizmo"]="Core/vendor/ImGuizmo"
+IncludeDir["entt"]="Core/vendor/entt/include"
 
 group "Dependencies"
 	include "Core/vendor/GLFW"
@@ -46,9 +46,6 @@ project "Core"
 		"%{prj.name}/src/**.cpp",
 		"%{IncludeDir.stb}/**.h",
 		"%{IncludeDir.stb}/**.cpp",
-		
-		-- "%{IncludeDir.ImGuizmo}/ImGuizmo.h",
-		-- "%{IncludeDir.ImGuizmo}/ImGuizmo.cpp",
 	}
 
 	includedirs{
@@ -61,7 +58,7 @@ project "Core"
 		"%{IncludeDir.imgui}/backends",
 		"%{IncludeDir.box2d}",
 		"%{IncludeDir.freetype}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -74,8 +71,6 @@ project "Core"
 		"freetype",
 	}
 
-	-- filter "files:Core/vendor/ImGuizmo/**.cpp"
-	-- 	flags { "NoPCH" }
 	
 	postbuildcommands
 	{
@@ -90,7 +85,6 @@ project "Core"
 			"GLFW_INCLUDE_NONE",
 			"PLATFORM_WINDOWS",
 			"DLL_BUILD",
-			-- "USE_IMGUI_API"
 		}
 
 		filter "configurations:Debug"
@@ -127,7 +121,7 @@ project "ProjectInvasion"
 		"Core/src",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.imgui}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.entt}"
 	}
 
 	links

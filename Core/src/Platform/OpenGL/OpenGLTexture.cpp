@@ -3,6 +3,7 @@
 
 #include <stb_image.h>
 
+
 GLint GetTextureOption(TextureOption option)
 {
     switch (option)
@@ -43,10 +44,10 @@ GLenum GetTextureSlot(int slot)
 
 
 
-OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, TextureOption MinMagFilter, TextureOption Wrap,TextureFormat Format,unsigned char* Buffer)
+OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, TextureSpecification Specification,unsigned char* Buffer)
 	:m_Width(width),m_Height(height)
 {
-    switch (Format)
+    switch (Specification.Format)
     {
         case RED_INTEGER:
             m_InternalFormat = GL_RED;
@@ -74,11 +75,11 @@ OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, TextureOption 
     );
 
     // set texture options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetTextureOption(Wrap));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetTextureOption(Wrap));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GetTextureOption(Specification.MinFilter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GetTextureOption(Specification.MagFilter));
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GetTextureOption(MinMagFilter));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GetTextureOption(MinMagFilter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetTextureOption(Specification.WrapSFilter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetTextureOption(Specification.WrapTFilter));
 
     glBindTexture(GL_TEXTURE_2D, 0);
 

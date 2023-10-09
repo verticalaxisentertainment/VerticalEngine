@@ -13,6 +13,3 @@
 [submodule "Core/vendor/yaml-cpp"]
 	path = Core/vendor/yaml-cpp
 	url = https://github.com/rifkikesepara/yaml-cpp.git
-[submodule "Core/vendor/ImGuizmo"]
-	path = Core/vendor/ImGuizmo
-	url = https://github.com/rifkikesepara/ImGuizmo.git

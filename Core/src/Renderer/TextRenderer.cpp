@@ -136,7 +136,7 @@ void TextRenderer::Init()
 		}
 
 		std::shared_ptr<Texture> testTexture;
-		testTexture.reset(Texture2D::Create(face->glyph->bitmap.width, face->glyph->bitmap.rows, LINEAR, CLAMPTOEDGE, RED_INTEGER, face->glyph->bitmap.buffer));
+		testTexture.reset(Texture2D::Create(face->glyph->bitmap.width, face->glyph->bitmap.rows, { LINEAR,LINEAR,CLAMPTOEDGE,CLAMPTOEDGE,RED_INTEGER }, face->glyph->bitmap.buffer));
 		
 		// now store character for later use
 		Character character = {
@@ -213,7 +213,7 @@ TextData TextRenderer::RenderText(const std::string& text, glm::vec3 position, c
 
 		textData.Texture.push_back(ch.Texture);
 
-		if (s_Data.Textures.size() == 0)
+		if (s_Data.Textures.empty())
 		{
 			s_Data.Textures.push_back(ch.Texture);
 			letterIndexes.push_back(texIndex + 1);
@@ -236,6 +236,7 @@ TextData TextRenderer::RenderText(const std::string& text, glm::vec3 position, c
 			}
 
 		}
+
 
 
 		for(auto vertex:vertices)

@@ -78,8 +78,6 @@ OpenGLFramebuffer::~OpenGLFramebuffer()
 void OpenGLFramebuffer::Bind()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-	glActiveTexture(GL_TEXTURE20);
-	glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
 }
 
 void OpenGLFramebuffer::BindVertexArray()
@@ -140,5 +138,7 @@ int OpenGLFramebuffer::ReadPixelInt(uint32_t attachmentIndex, int x, int y)
 
 void OpenGLFramebuffer::UnBind()
 {
+	glActiveTexture(GL_TEXTURE20);
+	glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

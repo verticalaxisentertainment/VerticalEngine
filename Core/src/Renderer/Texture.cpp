@@ -4,12 +4,12 @@
 #include "Platform/OpenGL/OpenGLTexture.h"
 #include "Renderer/Renderer.h"
 
-Texture2D* Texture2D::Create(uint32_t width, uint32_t height, TextureOption minmagFilter, TextureOption wrap,TextureFormat format, unsigned char* buffer)
+Texture2D* Texture2D::Create(uint32_t width, uint32_t height, TextureSpecification specification, unsigned char* buffer)
 {
 	switch (Renderer::GetAPI())
 	{
 		case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
-		case RendererAPI::API::OpenGL: return new OpenGLTexture2D(width, height, minmagFilter, wrap, format, buffer);
+		case RendererAPI::API::OpenGL: return new OpenGLTexture2D(width, height, specification, buffer);
 	}
 
 	ERROR("Unknown RendererAPI");
