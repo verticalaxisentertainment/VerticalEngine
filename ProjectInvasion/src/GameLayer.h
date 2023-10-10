@@ -7,6 +7,9 @@
 #include "MouseCode.h"
 #include "Renderer/RenderCommand.h"
 
+#include "Scene/Scene.h"
+#include "Scene/Entity.h"
+
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
 bool translate = false;
@@ -25,6 +28,7 @@ public:
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 		m_TextureTest.reset(Texture2D::Create("assets/textures/red.jpg"));
 		m_newTexture.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
+		m_ActiveScene.reset(new Scene());
 
 		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
 	}
@@ -35,6 +39,11 @@ public:
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_FrameBuffer.reset(FrameBuffer::Create(fbSpec));
+
+		m_ActiveScene->CreateEntity();
+
+		auto& entity = m_ActiveScene->CreateEntity();
+		entity.GetComponent<TransformComponent>().Translation = { 1.0f,0.0f,0.0f };
 	}
 
 	void OnUpdate() override
@@ -58,6 +67,13 @@ public:
 		Application& app = Application::Get();
 
 
+		auto view= m_ActiveScene->m_Registry.view<TransformComponent>();
+
+		for (auto entity : view)
+		{
+			auto transform = view.get<TransformComponent>(entity);
+			Renderer::DrawQuad(transform.GetTranform(), { 0.0f,0.0f,0.0f,1.0f });
+		}
 
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
 
@@ -133,6 +149,7 @@ public:
 	inline static bool onUI = false, isBox = true, m_LockCamera = false, m_Move = false;
 	static char m_Text[128];
 private:
+	std::shared_ptr<Scene> m_ActiveScene;
 	std::shared_ptr<Texture2D> m_newTexture;
 	std::shared_ptr<Texture2D> m_TextureTest;
 	std::vector<glm::vec2> positions;

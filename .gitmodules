@@ -10,3 +10,6 @@
 [submodule "Core/vendor/yaml-cpp"]
 	path = Core/vendor/yaml-cpp
 	url = https://github.com/rifkikesepara/yaml-cpp.git
+[submodule "Core/vendor/glfw"]
+	path = Core/vendor/glfw
+	url = https://github.com/rifkikesepara/glfw.git

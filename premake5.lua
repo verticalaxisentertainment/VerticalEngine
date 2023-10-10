@@ -11,7 +11,7 @@ workspace "ProjectInvasion"
 
 
 IncludeDir={}
-IncludeDir["GLFW"]="Core/vendor/GLFW/include"
+IncludeDir["GLFW"]="Core/vendor/glfw/include"
 IncludeDir["Glad"]="Core/vendor/Glad/include"
 IncludeDir["imgui"]="Core/vendor/imgui"
 IncludeDir["glm"]="Core/vendor/glm"
@@ -21,7 +21,7 @@ IncludeDir["box2d"]="Core/vendor/box2d/include"
 IncludeDir["entt"]="Core/vendor/entt/include"
 
 group "Dependencies"
-	include "Core/vendor/GLFW"
+	include "Core/vendor/glfw"
 	include "Core/vendor/Glad"
 	include "Core/vendor/imgui"
 	include "Core/vendor/box2d"
