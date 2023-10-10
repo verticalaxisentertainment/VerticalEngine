@@ -3,6 +3,7 @@
 #include "DebugLayer.h"
 #include "TestLayer.h"
 #include "ShadowTestLayer.h"
+#include "PickerLayer.h"
 
 class SandBox:public Application
 {
@@ -12,6 +13,7 @@ public:
 		//PushLayer(new ShadowLayer());
 		PushLayer(new GameLayer());
 		PushLayer(new TestLayer());
+		//PushLayer(new PickerLayer());
 		PushOverlay(new DebugLayer());
 	}
 	~SandBox()

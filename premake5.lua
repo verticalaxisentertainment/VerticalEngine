@@ -11,18 +11,21 @@ workspace "ProjectInvasion"
 
 
 IncludeDir={}
-IncludeDir["GLFW"]="Core/vendor/GLFW/include"
+IncludeDir["GLFW"]="Core/vendor/glfw/include"
 IncludeDir["Glad"]="Core/vendor/Glad/include"
 IncludeDir["imgui"]="Core/vendor/imgui"
 IncludeDir["glm"]="Core/vendor/glm"
 IncludeDir["stb"]="Core/vendor/stb"
+IncludeDir["freetype"]="Core/vendor/freetype/include"
 IncludeDir["box2d"]="Core/vendor/box2d/include"
+IncludeDir["entt"]="Core/vendor/entt/include"
 
 group "Dependencies"
-	include "Core/vendor/GLFW"
+	include "Core/vendor/glfw"
 	include "Core/vendor/Glad"
 	include "Core/vendor/imgui"
 	include "Core/vendor/box2d"
+	include "Core/vendor/freetype"
 
 group ""
 
@@ -42,7 +45,7 @@ project "Core"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
 		"%{IncludeDir.stb}/**.h",
-		"%{IncludeDir.stb}/**.cpp"
+		"%{IncludeDir.stb}/**.cpp",
 	}
 
 	includedirs{
@@ -53,7 +56,9 @@ project "Core"
 		"%{IncludeDir.stb}",
 		"%{prj.name}/src",
 		"%{IncludeDir.imgui}/backends",
-		"%{IncludeDir.box2d}"
+		"%{IncludeDir.box2d}",
+		"%{IncludeDir.freetype}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -62,8 +67,10 @@ project "Core"
 		"Glad",
 		"imgui",
 		"opengl32",
-		"box2d"
+		"box2d",
+		"freetype",
 	}
+
 	
 	postbuildcommands
 	{
@@ -77,7 +84,7 @@ project "Core"
 		defines{
 			"GLFW_INCLUDE_NONE",
 			"PLATFORM_WINDOWS",
-			"DLL_BUILD"
+			"DLL_BUILD",
 		}
 
 		filter "configurations:Debug"
@@ -113,7 +120,8 @@ project "ProjectInvasion"
 	includedirs{
 		"Core/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.imgui}"
+		"%{IncludeDir.imgui}",
+		"%{IncludeDir.entt}"
 	}
 
 	links
@@ -128,7 +136,8 @@ project "ProjectInvasion"
 
 		defines{
 			"GLFW_INCLUDE_NONE",
-			"PLATFORM_WINDOWS"
+			"PLATFORM_WINDOWS",
+			"USE_IMGUI_API",
 		}
 
 		filter "configurations:Debug"

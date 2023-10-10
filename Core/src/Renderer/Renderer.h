@@ -11,6 +11,7 @@
 
 
 class Shader;
+struct RendererData;
 
 class _API Renderer
 {
@@ -27,28 +28,30 @@ public:
 
 	//Primitives
 	static void DrawTriangle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
-	static void DrawTriangle(const glm::mat4& transform, const glm::vec4& color);
+	static void DrawTriangle(const glm::mat4& transform, const glm::vec4& color,int id = 1);
 
-	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int id = 1);
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture);
 	//static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 
-	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
-	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture);
+	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color,int id = 1);
+	static void DrawQuad(const glm::mat4& transform, std::shared_ptr<Texture2D>& texture,int id = 1);
 
 
 	static void DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 	static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 
-	static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f);
+	static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f,int id = 2);
 	static void DrawCircleLight(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f);
 
-	static void DrawLine(const glm::vec3& p0,const glm::vec3& p1, const glm::vec4& color);
+	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color,int id = 1);
 
 	static void DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 	static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
 
 	static void DrawFrameBuffer(std::shared_ptr<FrameBuffer> buffer);
+
+	static void RenderText(const std::string& text,const glm::vec3& position,float scale,const glm::vec4& color);
 
 	struct Statistics
 	{
@@ -60,9 +63,14 @@ public:
 	};
 
 	static void ResetStats();
-	static Statistics GetStats();
+	static Statistics& GetStats();
 
 	static void WireframeMode(bool on);
+	static void SetDepthTest(bool on);
+
+	static RendererData GetData();
+
+	friend class TextRenderer;
 private:
 	struct SceneData
 	{
@@ -76,7 +84,4 @@ private:
 	static void NextBatch();
 
 	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-
-	static std::shared_ptr<Texture2D> m_TextureTest;
-	static std::shared_ptr<Texture2D> m_TextureTest1;
 };

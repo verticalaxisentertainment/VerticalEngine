@@ -9,6 +9,8 @@
 
 #include "imgui_internal.h"
 
+#include "ImGuizmo/ImGuizmo.h"
+
 ImGUILayer::ImGUILayer()
 	:Layer("ImGuiLayer")
 {
@@ -29,13 +31,15 @@ void ImGUILayer::OnAttach()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		style.WindowRounding = 0.0f;
+		style.WindowRounding = 5.0f;
+		style.FrameRounding = 5.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
@@ -71,6 +75,7 @@ void ImGUILayer::Begin()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 }
 
 void ImGUILayer::End()

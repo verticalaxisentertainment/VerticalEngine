@@ -14,6 +14,7 @@
 #include "Renderer/OrthographicCameraController.h"
 #include "Core.h"
 #include "Renderer/Physics.h"
+#include "Input.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -34,9 +35,13 @@ public:
 	inline Window& GetWindow() const{ return *m_Window; }
 
 	inline const std::shared_ptr<FrameBuffer>& GetFrameBuffer() const { return m_FrameBuffer; }
+	inline float* GetPixelData() const 
+	{
+		return m_FrameBuffer->ReadPixel(0,Input::GetMouseX(),Input::GetMouseY());
+	}
 
 	ImGUILayer* m_ImGuiLayer;
-	inline static bool showPostProcessing = false;
+	inline static bool showPostProcessing = true;
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	bool OnWindowResize(WindowResizeEvent& e);

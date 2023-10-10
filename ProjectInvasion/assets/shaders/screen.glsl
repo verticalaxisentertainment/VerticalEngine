@@ -16,13 +16,14 @@ void main()
 
 $fragmentshader
 #version 330 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+// layout(location = 1) out int color2;
   
 in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 uniform vec2 resoulation;
-const float offset = 1.0 / 300.0;  
+const float offset = 1.0 / 300.0;
 
 vec4 applyVignette(vec4 color)
 {
@@ -71,5 +72,6 @@ void main()
 
     
     FragColor = vec4(vig)*texture(screenTexture, TexCoords);
+    // color2=50;
     // FragColor=texture(screenTexture,TexCoords); 
 }

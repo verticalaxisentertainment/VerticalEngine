@@ -25,6 +25,7 @@ public:
 
 	virtual void Resize(float width, float height) = 0;
 	virtual float* ReadPixel(uint32_t attachmentIndex,int x, int y) = 0;
+	virtual int ReadPixelInt(uint32_t attachmentIndex, int x, int y)=0;
 
 	virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const = 0;
 

@@ -5,6 +5,7 @@
 #include "Events/ApplicationEvent.h"
 #include "Events/MouseEvent.h"
 #include <glad/glad.h>
+#include <stb_image.h>
 
 static bool s_GLFWInitialized = false;
 static void GLFWErrorCallback(int error,const char* description)
@@ -41,10 +42,13 @@ void WindowsWindow::OnUpdate()
 
 void WindowsWindow::SetCursor(Cursor cursor)
 {
-	if (cursor == Cursor::HAND)
+	if (cursor == Cursor::HAND && m_Cursor != (GLFWcursor*)GLFW_HAND_CURSOR)
 		m_Cursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-	if (cursor == Cursor::ARROW)
+	if (cursor == Cursor::ARROW&& m_Cursor != (GLFWcursor*)GLFW_ARROW_CURSOR)
 		m_Cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	if (cursor == Cursor::IBEAM && m_Cursor != (GLFWcursor*)GLFW_IBEAM_CURSOR)
+		m_Cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+
 }
 
 void WindowsWindow::SetVSync(bool enabled)
@@ -68,7 +72,7 @@ void WindowsWindow::Init(const WindowProps& props)
 	m_Data.Height = props.Height;
 	m_Data.Width = props.Width;
 
-	if(!s_GLFWInitialized)
+	if (!s_GLFWInitialized)
 	{
 		int success = glfwInit();
 		glfwSetErrorCallback(GLFWErrorCallback);
@@ -80,6 +84,15 @@ void WindowsWindow::Init(const WindowProps& props)
 	glfwMakeContextCurrent(m_Window);
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 	SetVSync(true);
+
+	GLFWimage icons;
+	//icons.pixels = stbi_load("assets/textures/container.jpg", &icons.width, &icons.height, 0, 4);
+	/*icons.pixels = props.Icon.GetProps().pixels;
+	icons.width = props.Icon.GetProps().width;
+	icons.height = props.Icon.GetProps().height;*/
+	glfwSetWindowIcon(m_Window, 1, static_cast<GLFWimage*>(props.Icon.GetProps()));
+	//stbi_image_free(icons.pixels);
+
 
 	//set GLFW callbacks
 	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)

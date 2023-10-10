@@ -37,6 +37,26 @@ float Input::GetMouseY()
 	return GetMousePosition().y;
 }
 
+float Input::GetLocalMouseX()
+{
+	unsigned int width = Application::Get().GetWindow().GetWidth();
+	if (GetMousePosition().x <= 0)
+		return 0;
+	if (GetMousePosition().x >= width)
+		return width;
+	return GetMousePosition().x;
+}
+
+float Input::GetLocalMouseY()
+{
+	unsigned int height = Application::Get().GetWindow().GetHeight();
+	if (GetMousePosition().y <= 0)
+		return 0;
+	if (GetMousePosition().y >= height)
+		return height;
+	return GetMousePosition().y;
+}
+
 
 
 

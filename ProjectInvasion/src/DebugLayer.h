@@ -5,10 +5,14 @@
 #include "Utils/PlatformUtils.h"
 #include "Math/Mathematics.h"
 #include "UUID.h"
-#include <imgui.h>
 #include "GameLayer.h"
+#include "Renderer/Shader.h"
+#include "TestLayer.h"
 
-class DebugLayer:public Layer
+#include <imgui.h>
+#include "ImGuizmo/ImGuizmo.h"
+
+class DebugLayer :public Layer
 {
 public:
 	DebugLayer()
@@ -23,7 +27,9 @@ public:
 		static bool show = true;
 		static bool vsync = true;
 		Application& app = Application::Get();
+
 		ImGui::Begin("Debug", &show);
+
 		ImGui::Checkbox("ShowDemoWindow", &ImGUILayer::show);
 		ImGui::Checkbox("Show Stats", &showStats);
 		ImGui::Checkbox("Post Process", &Application::showPostProcessing);
@@ -42,7 +48,7 @@ public:
 		{
 			Physics::Clear();
 		}
-		{
+		/*{
 			ImGui::DragInt2("", values, 1, -100, 100);
 			ImGui::SameLine();
 			if (ImGui::Button("Generate Number"))
@@ -51,12 +57,26 @@ public:
 			}
 
 			ImGui::Text("%d", result);
+		}*/
+		if (ImGui::Button("ReCompile Shaders"))
+		{
+			Shader::ReCompileShaders();
 		}
 		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
-		
-		//ImGui::Text("%f", GameLayer::m_CameraController->GetCamera().GetPosition().x);
-		//ImGui::Text("%f", Physics::GetLastObjectsPos().x);
+		ImGui::InputText("Text", GameLayer::m_Text, IM_ARRAYSIZE(TestLayer::m_Text));
+		if (ImGui::IsItemHovered())
+		{
+			app.GetWindow().SetCursor(Cursor::IBEAM);
+		}
 
+		ImGuiIO& io = ImGui::GetIO();
+
+		ImGuizmo::SetOrthographic(true);
+
+		ImGuizmo::SetDrawlist();
+		
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+		ImGuizmo::Manipulate(glm::value_ptr(GameLayer::m_CameraController->GetCamera().GetViewMatrix()), glm::value_ptr(GameLayer::m_CameraController->GetCamera().GetProjectionMatrix()), ImGuizmo::TRANSLATE, ImGuizmo::WORLD,const_cast<float*>(glm::value_ptr(glm::mat4(1.0f))), NULL, NULL, NULL, NULL);
 
 
 		ImGui::End();
@@ -104,6 +124,12 @@ public:
 			}
 			ImGui::End();
 		}
+	}
+
+	void OnEvent(Event& e) override
+	{
+		EventDispatcher dispatcher(e);
+		GameLayer::m_Move = false;
 	}
 
 private:

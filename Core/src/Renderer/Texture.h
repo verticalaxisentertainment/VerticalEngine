@@ -1,6 +1,25 @@
 ﻿#pragma once
 #include "Core.h"
 
+enum TextureOption
+{
+	LINEAR = 0, REPEAT, CLAMPTOEDGE
+};
+
+enum TextureFormat
+{
+	RED_INTEGER,RGBA
+};
+
+struct TextureSpecification
+{
+	TextureOption MinFilter;
+	TextureOption MagFilter;
+	TextureOption WrapSFilter;
+	TextureOption WrapTFilter;
+	TextureFormat Format;
+};
+
 class Texture
 {
 public:
@@ -25,6 +44,6 @@ public:
 class _API Texture2D :public Texture
 {
 public:
-	static Texture2D* Create(uint32_t width, uint32_t height);
+	static Texture2D* Create(uint32_t width, uint32_t height, TextureSpecification specification = { LINEAR, LINEAR, REPEAT, REPEAT,RGBA }, unsigned char* buffer = nullptr);
 	static Texture2D* Create(const std::string& path);
 };

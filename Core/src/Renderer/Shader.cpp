@@ -7,6 +7,63 @@
 
 Shader::Shader(const std::string& shaderPath)
 {
+	m_RendererID = glCreateProgram();
+	CompileShader(shaderPath, m_RendererID);
+	s_Shaders.push_back({ shaderPath, m_RendererID });
+}
+
+Shader::~Shader()
+{
+	glDeleteProgram(m_RendererID);
+}
+
+void Shader::Bind() const
+{
+	glUseProgram(m_RendererID);
+}
+
+void Shader::UnBind() const
+{
+	glUseProgram(0);
+}
+
+void Shader::SetInt(const std::string& name, int value) const
+{
+	glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
+}
+
+void Shader::SetIntArray(const std::string& name, int* value) const
+{
+	glUniform1iv(glGetUniformLocation(m_RendererID, name.c_str()), sizeof(value) / 4, value);
+}
+
+void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void Shader::SetVec2(const std::string& name, const glm::vec2& value) const
+{
+	glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+}
+
+void Shader::SetVec3(const std::string& name, const glm::vec3& value) const
+{
+	glUniform3fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+}
+
+void Shader::SetVec4(const std::string& name, const glm::vec4& value) const
+{
+	glUniform4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+}
+
+void Shader::SetFloat(const std::string& name, const float& value) const
+{
+	glUniform1f(glGetUniformLocation(m_RendererID, name.c_str()), value);
+}
+
+void Shader::CompileShader(const std::string& shaderPath, const uint32_t RendererID)
+{
 	// 1. retrieve the vertex/fragment source code from filePath
 	std::string shaderCode;
 	std::ifstream ShaderFile;
@@ -111,8 +168,7 @@ Shader::Shader(const std::string& shaderPath)
 		return;
 	}
 
-	m_RendererID = glCreateProgram();
-	GLuint program = m_RendererID;
+	GLuint program = RendererID;
 
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
@@ -139,49 +195,13 @@ Shader::Shader(const std::string& shaderPath)
 
 	glDetachShader(program, vertexShader);
 	glDetachShader(program, fragmentShader);
+
 }
 
-Shader::~Shader()
+void Shader::ReCompileShaders()
 {
-	glDeleteProgram(m_RendererID);
-}
-
-void Shader::Bind() const
-{
-	glUseProgram(m_RendererID);
-}
-
-void Shader::UnBind() const
-{
-	glUseProgram(0);
-}
-
-void Shader::SetInt(const std::string& name, int value) const
-{
-	glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
-}
-
-void Shader::SetIntArray(const std::string& name, int* value) const
-{
-	glUniform1iv(glGetUniformLocation(m_RendererID, name.c_str()), sizeof(value)/4, value);
-}
-
-void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
-{
-	glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-}
-
-void Shader::SetVec2(const std::string& name, const glm::vec2& value) const
-{
-	glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
-}
-
-void Shader::SetVec3(const std::string& name, const glm::vec3& value) const
-{
-	glUniform3fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
-}
-
-void Shader::SetFloat(const std::string& name, const float& value) const
-{
-	glUniform1f(glGetUniformLocation(m_RendererID, name.c_str()), value);
+	for (auto shader : s_Shaders)
+	{
+		CompileShader(shader.ShaderPath, shader.RendererID);
+	}
 }

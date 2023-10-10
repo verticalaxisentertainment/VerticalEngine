@@ -132,11 +132,23 @@
     <ClInclude Include="src\Renderer\Shader.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\TextRenderer.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\Texture.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\UIRenderer.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\VertexArray.h">
       <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Components.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Entity.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
       <Filter>src\Scene</Filter>
@@ -146,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="src\UUID.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\Image.h">
+      <Filter>src\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\PlatformUtils.h">
       <Filter>src\Utils</Filter>
@@ -224,17 +239,29 @@
     <ClCompile Include="src\Renderer\Shader.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\TextRenderer.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\Texture.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\UIRenderer.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\VertexArray.cpp">
       <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Entity.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Scene.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\UUID.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\Image.cpp">
+      <Filter>src\Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\Utils\PlatformUtils.cpp">
       <Filter>src\Utils</Filter>

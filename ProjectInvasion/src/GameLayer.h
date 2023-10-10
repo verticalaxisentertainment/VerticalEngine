@@ -7,6 +7,9 @@
 #include "MouseCode.h"
 #include "Renderer/RenderCommand.h"
 
+#include "Scene/Scene.h"
+#include "Scene/Entity.h"
+
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
 bool translate = false;
@@ -17,11 +20,15 @@ public:
 	GameLayer()
 		:Layer("GameLayer")
 	{
+		std::string startText = "Lorem Upsulum";
+		for (int i = 0; i < startText.size(); i++)
+			m_Text[i] = startText[i];
+
 		m_CameraController.reset(new OrthographicCameraController(1280.0f / 720.0f, true));
 		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
 		m_TextureTest.reset(Texture2D::Create("assets/textures/red.jpg"));
-		tiles[0] = 0;
-		tiles[1] = 0;
+		m_newTexture.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
+		m_ActiveScene.reset(new Scene());
 
 		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
 	}
@@ -32,17 +39,25 @@ public:
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_FrameBuffer.reset(FrameBuffer::Create(fbSpec));
+
+		m_ActiveScene->CreateEntity();
+
+		auto& entity = m_ActiveScene->CreateEntity();
+		entity.GetComponent<TransformComponent>().Translation = { 1.0f,0.0f,0.0f };
 	}
 
 	void OnUpdate() override
 	{
+		m_X = Input::GetLocalMouseX();
+		m_Y = Input::GetLocalMouseY();
+
 		float time = Math::Time();
 		Timestep timestep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 
 		auto& pos = m_CameraController->GetCamera().GetPosition();
 		RenderCommand::Clear();
-		if (!m_LockCamera)
+		if (!m_LockCamera && m_Move)
 		{
 			m_CameraController->SetPosition(pos);
 			m_CameraController->OnUpdate(timestep);
@@ -51,69 +66,97 @@ public:
 		Renderer::BeginScene(m_CameraController->GetCamera());
 		Application& app = Application::Get();
 
+
+		auto view= m_ActiveScene->m_Registry.view<TransformComponent>();
+
+		for (auto entity : view)
+		{
+			auto transform = view.get<TransformComponent>(entity);
+			Renderer::DrawQuad(transform.GetTranform(), { 0.0f,0.0f,0.0f,1.0f });
+		}
+
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0, 5.0f, -0.1f));
 
 		Renderer::DrawQuad(model, m_Texture);
-		model = glm::translate(model, glm::vec3(0, 5, -0.5f));
-		model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(1.0f, 5, 0.0f));
+		//model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
 		Renderer::DrawQuad(model, m_TextureTest);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(2.0f, 5, 0.0f));
+		Renderer::DrawQuad(model, m_newTexture);
 
 		if (m_LockCamera)
 		{
-			pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep*2);
-			pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep*2);
+			pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep * 2);
+			pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep * 2);
 			m_CameraController->GetCamera().SetPosition(pos);
 		}
 
 		//Renderer::DrawLine({ test.x,test.y,0.5f }, {0.0f,5.0f,0.5f}, { 1.0f,1.0f,1.0f,1.0f });
 
 		if (isBox)
-			Renderer::DrawQuad({ test.x,test.y ,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+		{
+			Renderer::DrawQuad({ test.x,test.y ,0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f });
+		}
 		else
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(test.x, test.y, 0.1f));
-			Renderer::DrawCircleLight(model, { 1.0f,1.0f,1.0f,1.0f });
+			Renderer::DrawCircle(model, { 1.0f,1.0f,1.0f,0.5f });
 		}
 
 		for (int i = 0; i < tiles[0]; i++)
 		{
 			for (int k = 0; k < tiles[1]; k++)
-				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,0.0f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
+				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,-0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
 		}
 		
-
 		Physics::Simulate(timestep);
+
+		Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
+		Renderer::DrawLine({ -0.5f,0.0f,1.0f }, { 0.5f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
+		Renderer::DrawLine({ 0.0f,-0.5f,1.0f }, { 0.0f,0.5f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
+
+		Renderer::RenderText(m_Text, { -5.0f,2.0f,-0.8f }, 0.01f, { 0.0f,1.0f,0.5f,1.0f });
+
 		Renderer::EndScene();
 	}
 
 	void OnEvent(Event& e) override
 	{
 		EventDispatcher dispatcher(e);
-		m_CameraController->OnEvent(e);
-		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::onKeyPressed));
-		dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(GameLayer::onKeyReleased));
-		if(!e.Handled&&e.IsInCategory(EventCategoryMouse))
+		if (!e.Handled)
 		{
-			dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(GameLayer::onMouseMoved));
+			m_Move = true;
+			m_CameraController->OnEvent(e);
+			//m_CameraController->CanMove(true);
+			dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(GameLayer::onKeyReleased));
+			dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::onKeyPressed));
+			//dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(GameLayer::onMouseMoved));
 			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(GameLayer::onMouseClicked));
 		}
+
 	}
 
 	inline static int tiles[2];
 	static std::shared_ptr<Texture2D> m_Texture;
 	static std::shared_ptr<OrthographicCameraController> m_CameraController;
 	static std::shared_ptr<FrameBuffer> m_FrameBuffer;
-	inline static bool onUI = false, isBox = true, m_LockCamera = false;
+	inline static bool onUI = false, isBox = true, m_LockCamera = false, m_Move = false;
+	static char m_Text[128];
 private:
+	std::shared_ptr<Scene> m_ActiveScene;
+	std::shared_ptr<Texture2D> m_newTexture;
 	std::shared_ptr<Texture2D> m_TextureTest;
 	std::vector<glm::vec2> positions;
 	float m_X, m_Y;
 	float m_LastFrameTime;
 	float* pixelData;
+
 
 	bool onKeyPressed(KeyPressedEvent& e)
 	{
@@ -172,3 +215,4 @@ private:
 std::shared_ptr<Texture2D> GameLayer::m_Texture;
 std::shared_ptr<OrthographicCameraController> GameLayer::m_CameraController;
 std::shared_ptr<FrameBuffer> GameLayer::m_FrameBuffer;
+char GameLayer::m_Text[128];
