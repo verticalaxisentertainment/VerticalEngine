@@ -13,4 +13,4 @@ This a game programming framework with OpenGL for the actual game engine of Vert
 
 ### Screenshots:
 
-![Demo](Resources/Screenshots/1.png)
+![Demo](https://user-images.githubusercontent.com/74590423/273901156-0cdcb791-6cea-4abf-8c7b-fbcc8b8669c4.png)
