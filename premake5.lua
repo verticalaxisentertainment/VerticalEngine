@@ -19,6 +19,8 @@ IncludeDir["stb"]="Core/vendor/stb"
 IncludeDir["freetype"]="Core/vendor/freetype/include"
 IncludeDir["box2d"]="Core/vendor/box2d/include"
 IncludeDir["entt"]="Core/vendor/entt/include"
+IncludeDir["optick"]="Core/vendor/optick/include"
+IncludeDir["spdlog"]="Core/vendor/spdlog/include"
 
 group "Dependencies"
 	include "Core/vendor/glfw"
@@ -26,6 +28,7 @@ group "Dependencies"
 	include "Core/vendor/imgui"
 	include "Core/vendor/box2d"
 	include "Core/vendor/freetype"
+	include "Core/vendor/optick"
 
 group ""
 
@@ -58,7 +61,9 @@ project "Core"
 		"%{IncludeDir.imgui}/backends",
 		"%{IncludeDir.box2d}",
 		"%{IncludeDir.freetype}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.optick}",
+		"%{IncludeDir.spdlog}"
 	}
 
 	links
@@ -69,6 +74,7 @@ project "Core"
 		"opengl32",
 		"box2d",
 		"freetype",
+		"optick"
 	}
 
 	
@@ -121,7 +127,8 @@ project "ProjectInvasion"
 		"Core/src",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.imgui}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.spdlog}"
 	}
 
 	links

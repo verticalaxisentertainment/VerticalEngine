@@ -40,14 +40,28 @@ public:
 		fbSpec.Height = 720;
 		m_FrameBuffer.reset(FrameBuffer::Create(fbSpec));
 
-		m_ActiveScene->CreateEntity();
+		Entity entity;
+		entity = m_ActiveScene->CreateEntity();
 
-		auto& entity = m_ActiveScene->CreateEntity();
-		entity.GetComponent<TransformComponent>().Translation = { 1.0f,0.0f,0.0f };
+		entity.GetComponent<TransformComponent>().Translation = { 0.0f,15.0f,0.0f };
+		entity.AddComponent<BoxCollider2DComponent>();
+		entity.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Dynamic;
+		entity.AddComponent<SpriteRendererComponent>().Color = { 1.0f,0.0f,0.0f,0.5 };
+
+		entity = m_ActiveScene->CreateEntity();
+		entity.GetComponent<TransformComponent>().Translation = { 0.0f,0.0f,0.0f };
+		entity.GetComponent<TransformComponent>().Scale = { 20.0f,1.0f,1.0f };
+		entity.AddComponent<BoxCollider2DComponent>();
+		entity.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Static;
+		entity.AddComponent<SpriteRendererComponent>().Color = { 0.2f,0.2f,0.2f,0.5f };
+
+		//m_ActiveScene->OnPhysics2DStart();
 	}
+
 
 	void OnUpdate() override
 	{
+		Application& app = Application::Get();
 		m_X = Input::GetLocalMouseX();
 		m_Y = Input::GetLocalMouseY();
 
@@ -63,16 +77,24 @@ public:
 			m_CameraController->OnUpdate(timestep);
 		}
 
+
 		Renderer::BeginScene(m_CameraController->GetCamera());
-		Application& app = Application::Get();
 
-
-		auto view= m_ActiveScene->m_Registry.view<TransformComponent>();
-
-		for (auto entity : view)
+		auto view = m_ActiveScene->m_Registry.view<TransformComponent>();
+		
+		for (auto e : view)
 		{
-			auto transform = view.get<TransformComponent>(entity);
-			Renderer::DrawQuad(transform.GetTranform(), { 0.0f,0.0f,0.0f,1.0f });
+			Entity entity = { e,m_ActiveScene.get() };
+
+			auto transform = entity.GetComponent<TransformComponent>();
+			glm::vec4 Color = { 1.0f,1.0f,1.0f,1.0f };
+			if(entity.HasComponent<SpriteRendererComponent>())
+				Color = entity.GetComponent<SpriteRendererComponent>().Color;
+
+			if(entity.HasComponent<BoxCollider2DComponent>())
+				Renderer::DrawQuad(transform.GetTranform(), Color);
+			if(entity.HasComponent<CircleCollider2DComponent>())
+				Renderer::DrawCircle(transform.GetTranform(), Color);
 		}
 
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
@@ -117,6 +139,7 @@ public:
 		
 		Physics::Simulate(timestep);
 
+
 		Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
 		Renderer::DrawLine({ -0.5f,0.0f,1.0f }, { 0.5f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
 		Renderer::DrawLine({ 0.0f,-0.5f,1.0f }, { 0.0f,0.5f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
@@ -124,6 +147,7 @@ public:
 		Renderer::RenderText(m_Text, { -5.0f,2.0f,-0.8f }, 0.01f, { 0.0f,1.0f,0.5f,1.0f });
 
 		Renderer::EndScene();
+		m_ActiveScene->Simulate(timestep);
 	}
 
 	void OnEvent(Event& e) override
@@ -154,7 +178,7 @@ private:
 	std::shared_ptr<Texture2D> m_TextureTest;
 	std::vector<glm::vec2> positions;
 	float m_X, m_Y;
-	float m_LastFrameTime;
+	float m_LastFrameTime = 0.0f;
 	float* pixelData;
 
 
@@ -193,17 +217,30 @@ private:
 			if (e.GetMouseButton() == Mouse::Button0)
 			{
 				translate = true;
+				glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
 
 				if(isBox)
 				{
-					glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
-					Physics::CreateDynamicBox({ position.x,position.y,1.0f }, { 1.0f,1.0f });
+					//Physics::CreateDynamicBox({ position.x,position.y,1.0f }, { 1.0f,1.0f });
+					auto e = m_ActiveScene->CreateEntity();
+					e.GetComponent<TransformComponent>().Translation = { position.x,position.y,0.0f };
+					e.AddComponent<BoxCollider2DComponent>();
+					e.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Dynamic;
+					e.AddComponent<SpriteRendererComponent>().Color = { 1.0f,0.0f,0.0f,0.5 };
+					auto& rb = e.GetComponent<RigidBody2DComponent>();
+
+
 					return true;
 				}
 				else
 				{
-					glm::vec3 position = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
-					Physics::CreateDynamicCircle({ position.x,position.y,1.0f }, 1.0f);
+					auto e = m_ActiveScene->CreateEntity();
+					e.GetComponent<TransformComponent>().Translation = { position.x,position.y,0.0f };
+					e.AddComponent<CircleCollider2DComponent>();
+					e.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Dynamic;
+					e.AddComponent<SpriteRendererComponent>().Color = { 0.0f,1.0f,0.0f,0.5 };
+					auto& rb = e.GetComponent<RigidBody2DComponent>();
+					//Physics::CreateDynamicCircle({ position.x,position.y,1.0f }, 1.0f);
 					return true;
 				}
 			}

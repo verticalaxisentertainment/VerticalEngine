@@ -5,13 +5,13 @@
 #include "ShadowTestLayer.h"
 #include "PickerLayer.h"
 
-class SandBox:public Application
+class SandBox :public Application
 {
 public:
 	SandBox()
 	{
-		//PushLayer(new ShadowLayer());
 		PushLayer(new GameLayer());
+		//PushLayer(new ShadowLayer());
 		PushLayer(new TestLayer());
 		//PushLayer(new PickerLayer());
 		PushOverlay(new DebugLayer());

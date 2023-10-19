@@ -31,6 +31,9 @@ public:
 	void PushLayer(Layer* layer);
 	void PushOverlay(Layer* overlay);
 
+	void PopLayer(Layer* layer);
+	void PopOverlay(Layer* overlay);
+
 	inline static Application& Get() { return *s_Instance; }
 	inline Window& GetWindow() const{ return *m_Window; }
 
@@ -48,6 +51,7 @@ private:
 	bool OnMouseMoved(MouseMovedEvent& e);
 
 	LayerStack m_LayerStack;
+	int m_LayerCount;
 
 	glm::vec2 mousePos;
 

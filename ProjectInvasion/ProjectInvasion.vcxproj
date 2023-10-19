@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;USE_IMGUI_API;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Core\src;..\Core\vendor\glm;..\Core\vendor\imgui;..\Core\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Core\src;..\Core\vendor\glm;..\Core\vendor\imgui;..\Core\vendor\entt\include;..\Core\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;USE_IMGUI_API;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Core\src;..\Core\vendor\glm;..\Core\vendor\imgui;..\Core\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Core\src;..\Core\vendor\glm;..\Core\vendor\imgui;..\Core\vendor\entt\include;..\Core\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -115,7 +115,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;USE_IMGUI_API;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Core\src;..\Core\vendor\glm;..\Core\vendor\imgui;..\Core\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Core\src;..\Core\vendor\glm;..\Core\vendor\imgui;..\Core\vendor\entt\include;..\Core\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\AcitveScene.h" />
     <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\GameLayer.h" />
     <ClInclude Include="src\PickerLayer.h" />

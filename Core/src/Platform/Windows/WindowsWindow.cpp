@@ -10,7 +10,7 @@
 static bool s_GLFWInitialized = false;
 static void GLFWErrorCallback(int error,const char* description)
 {
-	ERROR(error << ": " << description);
+	ERROR("{}: {}",error ,description);
 }
 
 Window* Window::Create(const WindowProps& props)
@@ -86,12 +86,7 @@ void WindowsWindow::Init(const WindowProps& props)
 	SetVSync(true);
 
 	GLFWimage icons;
-	//icons.pixels = stbi_load("assets/textures/container.jpg", &icons.width, &icons.height, 0, 4);
-	/*icons.pixels = props.Icon.GetProps().pixels;
-	icons.width = props.Icon.GetProps().width;
-	icons.height = props.Icon.GetProps().height;*/
 	glfwSetWindowIcon(m_Window, 1, static_cast<GLFWimage*>(props.Icon.GetProps()));
-	//stbi_image_free(icons.pixels);
 
 
 	//set GLFW callbacks

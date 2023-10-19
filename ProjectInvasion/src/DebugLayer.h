@@ -21,6 +21,15 @@ public:
 		result = 0;
 		values[0] = 0; values[1] = 0;
 	}
+	
+	void OnAttach()
+	{
+		scenes[0] = "1";
+		scenes[1] = "2";
+		scenes[2] = "3";
+		scenes[3] = "4";
+		scenes[4] = "5";
+	}
 
 	void OnImGuiRender()
 	{
@@ -29,6 +38,22 @@ public:
 		Application& app = Application::Get();
 
 		ImGui::Begin("Debug", &show);
+
+		if (ImGui::Button("Scene"))
+			ImGui::OpenPopup("scene_popup");
+		ImGui::SameLine();
+		ImGui::TextUnformatted(selectedScene == -1 ? "<None>" : scenes[selectedScene]);
+		if (ImGui::BeginPopup("scene_popup"))
+		{
+			ImGui::Text("Game");
+			ImGui::Separator();
+			for (int i = 0; i < IM_ARRAYSIZE(scenes); i++)
+				if (ImGui::Selectable(scenes[i]))
+				{
+					selectedScene = i;
+				}
+			ImGui::EndPopup();
+		}
 
 		ImGui::Checkbox("ShowDemoWindow", &ImGUILayer::show);
 		ImGui::Checkbox("Show Stats", &showStats);
@@ -48,16 +73,6 @@ public:
 		{
 			Physics::Clear();
 		}
-		/*{
-			ImGui::DragInt2("", values, 1, -100, 100);
-			ImGui::SameLine();
-			if (ImGui::Button("Generate Number"))
-			{
-				result = Math::RandomInt(values[0], values[1]);
-			}
-
-			ImGui::Text("%d", result);
-		}*/
 		if (ImGui::Button("ReCompile Shaders"))
 		{
 			Shader::ReCompileShaders();
@@ -132,8 +147,15 @@ public:
 		GameLayer::m_Move = false;
 	}
 
+
+	inline static Layer* GetActiveScene() { return activeScene; }
 private:
 	int values[2], result;
     inline static bool showStats = true;
     id::UUID uuid;
+	const char* scenes[5];
+	int selectedScene = -1;
+	static Layer* activeScene;
 };
+
+Layer* DebugLayer::activeScene;

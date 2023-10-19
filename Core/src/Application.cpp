@@ -8,7 +8,8 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
 #include "Input.h"
-//#include "Layer/DebugLayer.h"
+
+#include "optick.h"
 
 Application* Application::s_Instance = nullptr;
 
@@ -33,18 +34,16 @@ Application::Application()
     }
 #endif
 
-    INFO(glGetString(GL_VERSION) <<" | " << glGetString(GL_RENDERER));
+    Log::Init();
+    INFO("{} | {}", (char*)fmt::ptr(glGetString(GL_VERSION)), (char*)fmt::ptr(glGetString(GL_RENDERER)));
 
     //Imgui Stuff
     m_ImGuiLayer = new ImGUILayer();
     PushOverlay(m_ImGuiLayer);
-    //PushOverlay(new DebugLayer());
 
 
     RenderCommand::Init();
     Renderer::Init();
-    //PushLayer(new GameLayer());
-
 
     FrameBufferSpecification spec;
     spec.Width = m_Window->GetWidth();
@@ -74,11 +73,12 @@ void Application::OnEvent(Event& e)
 
 void Application::Run()
 {
-
     while (m_Running)
     {
+        OPTICK_FRAME("Main Thread");
+
         Renderer::ResetStats();
-        std::string title = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: "+(const char*)glGetString(GL_RENDERER);
+        std::string title = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " + (const char*)glGetString(GL_RENDERER);
         glfwSetWindowTitle(static_cast<GLFWwindow*>(GetWindow().GetNativeWindow()), title.c_str());
 
         glEnable(GL_DEPTH_TEST);
@@ -91,7 +91,9 @@ void Application::Run()
         //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (Layer* layer : m_LayerStack)
+        {
             layer->OnUpdate();
+        }
 
         if(showPostProcessing)
         {
@@ -101,12 +103,17 @@ void Application::Run()
 
             Renderer::DrawFrameBuffer(m_FrameBuffer);
         }
+
         m_ImGuiLayer->Begin();
         for (Layer* layer : m_LayerStack)
+        {
             layer->OnImGuiRender();
+        }
         m_ImGuiLayer->End();
 
         m_Window->OnUpdate();
+
+
     }
 
 }
@@ -121,6 +128,18 @@ void Application::PushOverlay(Layer* overlay)
 {
     m_LayerStack.PushOverlay(overlay);
     overlay->OnAttach();
+}
+
+void Application::PopLayer(Layer* layer)
+{
+    m_LayerStack.PopLayer(layer);
+    layer->OnDetach();
+}
+
+void Application::PopOverlay(Layer* overlay)
+{
+    m_LayerStack.PopLayer(overlay);
+    overlay->OnDetach();
 }
 
 bool Application::OnWindowClose(WindowCloseEvent& e)
