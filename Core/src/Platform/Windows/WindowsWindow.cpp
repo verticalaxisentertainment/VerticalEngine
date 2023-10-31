@@ -33,6 +33,8 @@ void WindowsWindow::OnUpdate()
 {
 	glViewport(0, 0, GetWidth(), GetHeight());
 
+	glfwSetWindowTitle(m_Window, m_Title.c_str());
+
 	glfwSetCursor(m_Window, m_Cursor);
 
 	glfwPollEvents();

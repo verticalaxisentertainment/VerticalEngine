@@ -37,6 +37,23 @@ struct TransformComponent
 	}
 };
 
+struct UITransformComponent
+{
+	glm::vec3 Translation = { 0.0f,0.0f,0.0f };
+	glm::vec3 Rotation = { 0.0f,0.0f,0.0f };
+	glm::vec3 Scale = { 1.0f,1.0f,1.0f };
+
+	UITransformComponent() = default;
+	UITransformComponent(const UITransformComponent&) = default;
+
+	glm::mat4 GetTranform() const
+	{
+		glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
+
+		return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
+	}
+};
+
 struct SpriteRendererComponent
 {
 	glm::vec4 Color = { 0.0f,0.0f,0.0f,1.0f };
@@ -56,6 +73,17 @@ struct CircleRendererComponent
 	CircleRendererComponent() = default;
 	CircleRendererComponent(const CircleRendererComponent&) = default;
 	CircleRendererComponent(const glm::vec4& color) :Color(color) {}
+};
+
+struct LineRendererComponent
+{
+	glm::vec3 Point1Position = { -0.5,0.0f,1.0f };
+	glm::vec3 Point2Position = { 0.5,0.0f,1.0f };
+	glm::vec4 Color = { 0.0f,0.0f,0.0f,1.0f };
+
+	LineRendererComponent() = default;
+	LineRendererComponent(const LineRendererComponent&) = default;
+	LineRendererComponent(const glm::vec4& color) :Color(color) {}
 };
 
 struct RigidBody2DComponent
@@ -80,6 +108,7 @@ struct BoxCollider2DComponent
 	BoxCollider2DComponent() = default;
 	BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 };
+
 struct CircleCollider2DComponent
 {
 	glm::vec2 Offset = { 0.0f,0.0f };
@@ -90,4 +119,14 @@ struct CircleCollider2DComponent
 
 	CircleCollider2DComponent() = default;
 	CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
+};
+
+struct TextRendererComponent
+{
+	std::string Text = "Text";
+	glm::vec4 Color = { 1.0f,1.0f,1.0f,1.0f };
+	float Scale = 0.01f;
+
+	TextRendererComponent() = default;
+	TextRendererComponent(const TextRendererComponent&) = default;
 };

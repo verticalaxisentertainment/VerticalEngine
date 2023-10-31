@@ -4,9 +4,6 @@
 #include <GLFW/glfw3.h>
 
 #include "Application.h"
-#include "Application.h"
-#include "Application.h"
-#include "Application.h"
 #include "Renderer/OrthographicCameraController.h"
 #include "Renderer/OrthographicCamera.h"
 

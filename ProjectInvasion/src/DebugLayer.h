@@ -24,11 +24,12 @@ public:
 	
 	void OnAttach()
 	{
-		scenes[0] = "1";
-		scenes[1] = "2";
-		scenes[2] = "3";
-		scenes[3] = "4";
-		scenes[4] = "5";
+		scenes.push_back(std::make_shared<Scene>("deneme"));
+		scenes.push_back(std::make_shared<Scene>("test"));
+		scenes.push_back(std::make_shared<Scene>("Sandbox"));
+		scenes.push_back(std::make_shared<Scene>("zaa"));
+		scenes.push_back(std::make_shared<Scene>("efe"));
+
 	}
 
 	void OnImGuiRender()
@@ -42,15 +43,18 @@ public:
 		if (ImGui::Button("Scene"))
 			ImGui::OpenPopup("scene_popup");
 		ImGui::SameLine();
-		ImGui::TextUnformatted(selectedScene == -1 ? "<None>" : scenes[selectedScene]);
+		ImGui::TextUnformatted(selectedScene == -1 ? "<None>" : scenes[selectedScene]->m_SceneName.c_str());
 		if (ImGui::BeginPopup("scene_popup"))
 		{
 			ImGui::Text("Game");
 			ImGui::Separator();
-			for (int i = 0; i < IM_ARRAYSIZE(scenes); i++)
-				if (ImGui::Selectable(scenes[i]))
+			for (int i = 0; i < scenes.size(); i++)
+				if (ImGui::Selectable(scenes[i]->m_SceneName.c_str()))
 				{
 					selectedScene = i;
+					std::string temp = scenes[i]->m_SceneName;
+					scenes[i].reset(new Scene(temp));
+					SceneSerializer::Read(scenes[i]->m_SceneName, scenes[i]);
 				}
 			ImGui::EndPopup();
 		}
@@ -59,25 +63,24 @@ public:
 		ImGui::Checkbox("Show Stats", &showStats);
 		ImGui::Checkbox("Post Process", &Application::showPostProcessing);
 		ImGui::Checkbox("VSYNC", &vsync);
-		ImGui::Checkbox("Lock Camera", &GameLayer::m_LockCamera);
+		//ImGui::Checkbox("Lock Camera", &GameLayer::m_LockCamera);
 		Application::Get().GetWindow().SetVSync(vsync);
 		if (ImGui::Button("Texture"))
 		{
 			std::string path = FileDialogs::OpenFile(".jpg");
 			if (!path.empty())
 			{
-				GameLayer::m_Texture->UpdateTexture(path);
+				//GameLayer::m_Texture->UpdateTexture(path);
 			}
 		}
 		if (ImGui::Button("Clear PhysicObjects"))
 		{
-			Physics::Clear();
 		}
 		if (ImGui::Button("ReCompile Shaders"))
 		{
 			Shader::ReCompileShaders();
 		}
-		ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
+		//ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
 		ImGui::InputText("Text", GameLayer::m_Text, IM_ARRAYSIZE(TestLayer::m_Text));
 		if (ImGui::IsItemHovered())
 		{
@@ -91,7 +94,7 @@ public:
 		ImGuizmo::SetDrawlist();
 		
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-		ImGuizmo::Manipulate(glm::value_ptr(GameLayer::m_CameraController->GetCamera().GetViewMatrix()), glm::value_ptr(GameLayer::m_CameraController->GetCamera().GetProjectionMatrix()), ImGuizmo::TRANSLATE, ImGuizmo::WORLD,const_cast<float*>(glm::value_ptr(glm::mat4(1.0f))), NULL, NULL, NULL, NULL);
+		//ImGuizmo::Manipulate(glm::value_ptr(GameLayer::m_CameraController->GetCamera().GetViewMatrix()), glm::value_ptr(GameLayer::m_CameraController->GetCamera().GetProjectionMatrix()), ImGuizmo::TRANSLATE, ImGuizmo::WORLD,const_cast<float*>(glm::value_ptr(glm::mat4(1.0f))), NULL, NULL, NULL, NULL);
 
 
 		ImGui::End();
@@ -153,9 +156,11 @@ private:
 	int values[2], result;
     inline static bool showStats = true;
     id::UUID uuid;
-	const char* scenes[5];
-	int selectedScene = -1;
+	inline static std::vector<std::shared_ptr<Scene>> scenes;
+	inline static int selectedScene = 0;
 	static Layer* activeScene;
+
+	friend class SceneInit;
 };
 
 Layer* DebugLayer::activeScene;

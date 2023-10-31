@@ -42,10 +42,12 @@ public:
 
 	virtual unsigned int GetWidth() const = 0;
 	virtual unsigned int GetHeight() const = 0;
+	virtual unsigned int GetAspectRatio() const = 0;
 
 	virtual void SetCursor(Cursor cursor) = 0;
 
 	virtual void* GetNativeWindow() = 0;
+	virtual std::string& GetTitle() = 0;
 
 	virtual void SetEventCallBack(const EventCallbakcFn& callback) = 0;
 	virtual void SetVSync(bool enabled) = 0;

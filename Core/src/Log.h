@@ -6,7 +6,7 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 
-class Log
+class _API Log
 {
 public:
 	static void Init()

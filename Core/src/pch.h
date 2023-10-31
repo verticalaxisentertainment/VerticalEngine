@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <random>
 #include <map>
+#include <fstream>
 
 #ifdef PLATFORM_WINDOWS
 #include <Windows.h>

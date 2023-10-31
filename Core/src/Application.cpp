@@ -8,6 +8,7 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/RenderCommand.h"
 #include "Input.h"
+#include "Scene/Scene.h"
 
 #include "optick.h"
 
@@ -16,7 +17,7 @@ Application* Application::s_Instance = nullptr;
 Application::Application()
 {
     s_Instance = this;
-    m_Window = std::unique_ptr<Window>(Window::Create({"Project Invasion | Renderer: " +RendererAPI::GetAPIString()+" | GPU: " }));
+    m_Window = std::unique_ptr<Window>(Window::Create({ "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " }));
     m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 
 #ifdef MOBILE
@@ -49,6 +50,8 @@ Application::Application()
     spec.Width = m_Window->GetWidth();
     spec.Height = m_Window->GetHeight();
     m_FrameBuffer.reset(FrameBuffer::Create(spec));
+
+    GetWindow().GetTitle() = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " + (const char*)glGetString(GL_RENDERER);
 }
 
 Application::~Application()
@@ -78,8 +81,6 @@ void Application::Run()
         OPTICK_FRAME("Main Thread");
 
         Renderer::ResetStats();
-        std::string title = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " + (const char*)glGetString(GL_RENDERER);
-        glfwSetWindowTitle(static_cast<GLFWwindow*>(GetWindow().GetNativeWindow()), title.c_str());
 
         glEnable(GL_DEPTH_TEST);
         if (showPostProcessing)
@@ -112,8 +113,6 @@ void Application::Run()
         m_ImGuiLayer->End();
 
         m_Window->OnUpdate();
-
-
     }
 
 }
@@ -156,6 +155,5 @@ bool Application::OnWindowResize(WindowResizeEvent& e)
 
 bool Application::OnMouseMoved(MouseMovedEvent& e)
 {
-    mousePos = glm::vec2(e.GetX(), e.GetY());
     return false;
 }

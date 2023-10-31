@@ -1,14 +1,7 @@
 #pragma once
-#include "Layer/Layer.h"
-#include "Events/KeyEvent.h"
-#include "Renderer/Renderer.h"
 #include "Math/Mathematics.h"
 #include "KeyCode.h"
 #include "MouseCode.h"
-#include "Renderer/RenderCommand.h"
-
-#include "Scene/Scene.h"
-#include "Scene/Entity.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -25,16 +18,13 @@ public:
 			m_Text[i] = startText[i];
 
 		m_CameraController.reset(new OrthographicCameraController(1280.0f / 720.0f, true));
-		m_Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
-		m_TextureTest.reset(Texture2D::Create("assets/textures/red.jpg"));
-		m_newTexture.reset(Texture2D::Create("assets/textures/rifki.jpeg"));
-		m_ActiveScene.reset(new Scene());
-
-		Physics::CreateStaticBody({ 0.0f,0.0f,1.0f }, { 50.0f,1.0f });
+		m_ActiveScene.reset(new Scene("Sandbox"));
 	}
 
 	void OnAttach() override
 	{
+		auto& window = Application::Get().GetWindow();
+
 		FrameBufferSpecification fbSpec;
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
@@ -55,9 +45,66 @@ public:
 		entity.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Static;
 		entity.AddComponent<SpriteRendererComponent>().Color = { 0.2f,0.2f,0.2f,0.5f };
 
+		textEntity = m_ActiveScene->CreateEntity();
+		textEntity.GetComponent<TransformComponent>().Translation = { -5.0f,2.0f,-0.8f };
+		auto& text = textEntity.AddComponent<TextRendererComponent>();
+		text.Color = { 0.0f,1.0f,0.5f,1.0f };
+		text.Text = m_Text;
+
+		entity = m_ActiveScene->CreateEntity();
+		entity.GetComponent<TransformComponent>().Translation = { 0.0f, 5.0f, -0.1f };
+		entity.AddComponent<SpriteRendererComponent>().Texture.reset(Texture2D::Create("assets/textures/container.jpg"));
+
+		entity = m_ActiveScene->CreateEntity();
+		entity.GetComponent<TransformComponent>().Translation = { 1.0f, 5.0f, 0.0f };
+		entity.AddComponent<SpriteRendererComponent>().Texture.reset(Texture2D::Create("assets/textures/red.jpg"));
+
+		quadUI = m_ActiveScene->CreateEntity();
+		auto& ui = quadUI.AddComponent<UITransformComponent>();
+		ui.Translation = { window.GetWidth() / 2 - 180.0f ,window.GetHeight() / 2 - 80.0f ,1.0f };
+		ui.Scale = { 100 ,100 ,1 };
+		quadUI.AddComponent<SpriteRendererComponent>().Color = { 1.0,0.0f,0.0f,1.0f };
+
+		circleUI = m_ActiveScene->CreateEntity();
+		auto& circleui = circleUI.AddComponent<UITransformComponent>();
+		circleui.Translation = { window.GetWidth() / 2 - 60.0f ,window.GetHeight() / 2 - 80.0f ,1.0f };
+		circleui.Scale = { 100 ,100 ,1 };
+		circleUI.AddComponent<CircleRendererComponent>().Color = { 0.0,1.0f,0.0f,1.0f };
+
+		backgroundEntity = m_ActiveScene->CreateEntity();
+		auto& backgroundUI = backgroundEntity.AddComponent<UITransformComponent>();
+		backgroundUI.Scale = { 250.0f  ,150.0f ,1.0f };
+		backgroundUI.Translation = { window.GetWidth() / 2 - (backgroundUI.Scale.x / 2) ,window.GetHeight() / 2 - (backgroundUI.Scale.y / 2) ,0.6f };
+		backgroundEntity.AddComponent<SpriteRendererComponent>().Color = { 0.38f,0.38f,0.38f,0.5f };
+
+		entity = m_ActiveScene->CreateEntity();
+		entity.AddComponent<UITransformComponent>().Translation = { window.GetWidth() / 2 - 240.0f,window.GetHeight() / 2 - 180.0f,1.0f };
+		auto& textUI = entity.AddComponent<TextRendererComponent>();
+		textUI.Text = "Select a Shape";
+		textUI.Scale = 0.7f;
+
+		pickingShape = m_ActiveScene->CreateEntity();
+		pickingShape.AddComponent<SpriteRendererComponent>().Color = { 1.0f, 1.0f, 1.0f, 0.5f };
+
+		/*debugShape = m_ActiveScene->CreateEntity();
+		auto& tr = debugShape.AddComponent<UITransformComponent>();
+		tr.Translation = {ui.Translation.x,ui.Translation.y,1.0f };
+		tr.Scale = { 50.0f,50.0f,1.0f };
+		debugShape.AddComponent<CircleRendererComponent>().Color = { 1.0f,1.0f,0.0f,1.0f };
+		*/
+		
+		SceneSerializer::Create(m_ActiveScene->m_SceneName);
+		auto view = m_ActiveScene->m_Registry.view<TransformComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e,m_ActiveScene.get() };
+			SceneSerializer::InitEntity(entity, m_ActiveScene->m_SceneName);
+		}
+
 		//m_ActiveScene->OnPhysics2DStart();
 	}
 
+	
 
 	void OnUpdate() override
 	{
@@ -77,76 +124,51 @@ public:
 			m_CameraController->OnUpdate(timestep);
 		}
 
-
-		Renderer::BeginScene(m_CameraController->GetCamera());
-
-		auto view = m_ActiveScene->m_Registry.view<TransformComponent>();
-		
-		for (auto e : view)
-		{
-			Entity entity = { e,m_ActiveScene.get() };
-
-			auto transform = entity.GetComponent<TransformComponent>();
-			glm::vec4 Color = { 1.0f,1.0f,1.0f,1.0f };
-			if(entity.HasComponent<SpriteRendererComponent>())
-				Color = entity.GetComponent<SpriteRendererComponent>().Color;
-
-			if(entity.HasComponent<BoxCollider2DComponent>())
-				Renderer::DrawQuad(transform.GetTranform(), Color);
-			if(entity.HasComponent<CircleCollider2DComponent>())
-				Renderer::DrawCircle(transform.GetTranform(), Color);
-		}
+		//OrthographicCameraController cam(1280.0f / 720.0f, true);
 
 		glm::vec3 test = Math::ScreenToWorldPoint(glm::vec3(m_X, m_Y, 1.0f), m_CameraController->GetCamera().GetViewProjectionMatrix());
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0, 5.0f, -0.1f));
+		pickingShape.GetComponent<TransformComponent>().Translation = { test.x,test.y,0.5f };
+		textEntity.GetComponent<TextRendererComponent>().Text = m_Text;
+		
+		m_ActiveScene->RenderScene(m_CameraController->GetCamera());
 
-		Renderer::DrawQuad(model, m_Texture);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(1.0f, 5, 0.0f));
-		//model = glm::scale(model, glm::vec3(100.0f, 100.0f, 1.0f));
-		Renderer::DrawQuad(model, m_TextureTest);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 5, 0.0f));
-		Renderer::DrawQuad(model, m_newTexture);
+		///*Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
+		//Renderer::DrawLine({ -0.5f,0.0f,1.0f }, { 0.5f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
+		//Renderer::DrawLine({ 0.0f,-0.5f,1.0f }, { 0.0f,0.5f,1.0f }, { 0.0f,1.0,0.0f,1.0f });*/
 
-		if (m_LockCamera)
+		if (circleUI.IsHovered()||quadUI.IsHovered())
+			app.GetWindow().SetCursor(Cursor::HAND);
+		else
+			app.GetWindow().SetCursor(Cursor::ARROW);
+
+		if (circleUI.IsClicked())
 		{
-			pos.x = Math::Lerp(pos.x, Physics::GetLastObjectsPos().x, (float)timestep * 2);
-			pos.y = Math::Lerp(pos.y, Physics::GetLastObjectsPos().y, (float)timestep * 2);
-			m_CameraController->GetCamera().SetPosition(pos);
+			circleUI.GetComponent<CircleRendererComponent>().Color = { 0.0f,0.0f,0.0f,1.0f };
+			if (pickingShape.HasComponent<SpriteRendererComponent>() && !pickingShape.HasComponent<CircleRendererComponent>())
+			{
+				pickingShape.RemoveComponent<SpriteRendererComponent>();
+				pickingShape.AddComponent<CircleRendererComponent>().Color = { 1.0f,1.0f,1.0f,0.5f };
+				isBox = false;
+			}
 		}
-
-		//Renderer::DrawLine({ test.x,test.y,0.5f }, {0.0f,5.0f,0.5f}, { 1.0f,1.0f,1.0f,1.0f });
-
-		if (isBox)
+		else if (quadUI.IsClicked())
 		{
-			Renderer::DrawQuad({ test.x,test.y ,0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,0.5f });
+			quadUI.GetComponent<SpriteRendererComponent>().Color = { 0.0f,0.0f,0.0f,1.0f };
+			if (pickingShape.HasComponent<CircleRendererComponent>() && !pickingShape.HasComponent<SpriteRendererComponent>())
+			{
+				pickingShape.RemoveComponent<CircleRendererComponent>();
+				pickingShape.AddComponent<SpriteRendererComponent>().Color = { 1.0f,1.0f,1.0f,0.5f };
+				isBox = true;
+			}
+
 		}
 		else
 		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(test.x, test.y, 0.1f));
-			Renderer::DrawCircle(model, { 1.0f,1.0f,1.0f,0.5f });
+			quadUI.GetComponent<SpriteRendererComponent>().Color = { 1.0f,0.0f,0.0f,1.0f };
+			circleUI.GetComponent<CircleRendererComponent>().Color = { 0.0f,1.0f,0.0f,1.0f };
 		}
 
-		for (int i = 0; i < tiles[0]; i++)
-		{
-			for (int k = 0; k < tiles[1]; k++)
-				Renderer::DrawQuad({ 5.0f + i * 1.5f,3.0f + k * 1.5f,-0.1f }, { 1.0f,1.0f }, { 1.0f,1.0f,1.0f,1.0f });
-		}
-		
-		Physics::Simulate(timestep);
-
-
-		Renderer::DrawLine({ glm::sin(Math::Time()) / 2,-glm::cos(Math::Time()) / 2,1.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,0.0f,1.0f,1.0f });
-		Renderer::DrawLine({ -0.5f,0.0f,1.0f }, { 0.5f,0.0f,1.0f }, { 1.0f,0.0,0.0f,1.0f });
-		Renderer::DrawLine({ 0.0f,-0.5f,1.0f }, { 0.0f,0.5f,1.0f }, { 0.0f,1.0,0.0f,1.0f });
-
-		Renderer::RenderText(m_Text, { -5.0f,2.0f,-0.8f }, 0.01f, { 0.0f,1.0f,0.5f,1.0f });
-
-		Renderer::EndScene();
 		m_ActiveScene->Simulate(timestep);
 	}
 
@@ -157,6 +179,8 @@ public:
 		{
 			m_Move = true;
 			m_CameraController->OnEvent(e);
+			UIRenderer::OnEvent(e);
+			m_ActiveScene->OnEvent(e);
 			//m_CameraController->CanMove(true);
 			dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(GameLayer::onKeyReleased));
 			dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::onKeyPressed));
@@ -167,19 +191,17 @@ public:
 	}
 
 	inline static int tiles[2];
-	static std::shared_ptr<Texture2D> m_Texture;
 	static std::shared_ptr<OrthographicCameraController> m_CameraController;
-	static std::shared_ptr<FrameBuffer> m_FrameBuffer;
-	inline static bool onUI = false, isBox = true, m_LockCamera = false, m_Move = false;
+	inline static bool isBox = true, m_LockCamera = false, m_Move = false;
 	static char m_Text[128];
 private:
+	float m_Width = 1200.0f, m_Height = 720.0f;
+	glm::vec2 m_ScaleFactor;
+	std::shared_ptr<FrameBuffer> m_FrameBuffer;
+	Entity quadUI, circleUI, textEntity, backgroundEntity, pickingShape,debugShape;
 	std::shared_ptr<Scene> m_ActiveScene;
-	std::shared_ptr<Texture2D> m_newTexture;
-	std::shared_ptr<Texture2D> m_TextureTest;
-	std::vector<glm::vec2> positions;
 	float m_X, m_Y;
 	float m_LastFrameTime = 0.0f;
-	float* pixelData;
 
 
 	bool onKeyPressed(KeyPressedEvent& e)
@@ -212,7 +234,7 @@ private:
 
 	bool onMouseClicked(MouseButtonPressedEvent& e)
 	{
-		if(!onUI)
+		if(!e.Handled)
 		{
 			if (e.GetMouseButton() == Mouse::Button0)
 			{
@@ -221,14 +243,12 @@ private:
 
 				if(isBox)
 				{
-					//Physics::CreateDynamicBox({ position.x,position.y,1.0f }, { 1.0f,1.0f });
 					auto e = m_ActiveScene->CreateEntity();
-					e.GetComponent<TransformComponent>().Translation = { position.x,position.y,0.0f };
+					e.GetComponent<TransformComponent>().Translation = { position.x,position.y,-0.1f };
 					e.AddComponent<BoxCollider2DComponent>();
 					e.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Dynamic;
 					e.AddComponent<SpriteRendererComponent>().Color = { 1.0f,0.0f,0.0f,0.5 };
 					auto& rb = e.GetComponent<RigidBody2DComponent>();
-
 
 					return true;
 				}
@@ -238,9 +258,9 @@ private:
 					e.GetComponent<TransformComponent>().Translation = { position.x,position.y,0.0f };
 					e.AddComponent<CircleCollider2DComponent>();
 					e.AddComponent<RigidBody2DComponent>().BodyType = RigidBody2DComponent::Type::Dynamic;
-					e.AddComponent<SpriteRendererComponent>().Color = { 0.0f,1.0f,0.0f,0.5 };
+					e.AddComponent<CircleRendererComponent>().Color = { 0.0f,1.0f,0.0f,0.5 };
 					auto& rb = e.GetComponent<RigidBody2DComponent>();
-					//Physics::CreateDynamicCircle({ position.x,position.y,1.0f }, 1.0f);
+
 					return true;
 				}
 			}
@@ -249,7 +269,5 @@ private:
 	}
 };
 
-std::shared_ptr<Texture2D> GameLayer::m_Texture;
 std::shared_ptr<OrthographicCameraController> GameLayer::m_CameraController;
-std::shared_ptr<FrameBuffer> GameLayer::m_FrameBuffer;
 char GameLayer::m_Text[128];

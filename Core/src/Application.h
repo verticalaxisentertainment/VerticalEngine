@@ -6,14 +6,10 @@
 #include "Events/ApplicationEvent.h"
 #include "Events/MouseEvent.h"
 
-#include "Renderer/Shader.h"
 #include "Renderer/FrameBuffer.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
-#include "Renderer/Texture.h"
-#include "Renderer/OrthographicCameraController.h"
 #include "Core.h"
-#include "Renderer/Physics.h"
 #include "Input.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
@@ -53,11 +49,9 @@ private:
 	LayerStack m_LayerStack;
 	int m_LayerCount;
 
-	glm::vec2 mousePos;
 
 	std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	std::unique_ptr<Window> m_Window;
-	std::shared_ptr<Shader> m_ScreenShader;
 	inline static bool m_Running = true;
 	static Application* s_Instance;
 };

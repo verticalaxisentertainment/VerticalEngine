@@ -1,8 +1,10 @@
 #pragma once
 
 #include <random>
-#include "Application.h"
 #include "Core.h"
+#include "Timestep.h"
+#include <glm/glm.hpp>
+
 
 class _API Math
 {

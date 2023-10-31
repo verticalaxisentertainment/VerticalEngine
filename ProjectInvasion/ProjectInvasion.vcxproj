@@ -131,11 +131,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\SceneInit.h" />
     <ClInclude Include="src\AcitveScene.h" />
     <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\GameLayer.h" />
-    <ClInclude Include="src\PickerLayer.h" />
-    <ClInclude Include="src\ShadowTestLayer.h" />
     <ClInclude Include="src\TestLayer.h" />
   </ItemGroup>
   <ItemGroup>

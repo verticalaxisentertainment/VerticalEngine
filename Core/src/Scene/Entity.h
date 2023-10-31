@@ -40,6 +40,9 @@ public:
 		m_Scene->m_Registry.remove<T>(m_EntityHandle);
 	}
 
+	bool IsHovered();
+	bool IsClicked();
+
 	id::UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 
 	operator bool() const { return m_EntityHandle != entt::null; }

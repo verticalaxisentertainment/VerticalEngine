@@ -2,19 +2,18 @@
 #include "GameLayer.h"
 #include "DebugLayer.h"
 #include "TestLayer.h"
-#include "ShadowTestLayer.h"
-#include "PickerLayer.h"
+#include "SceneInit.h"
 
 class SandBox :public Application
 {
 public:
 	SandBox()
 	{
-		PushLayer(new GameLayer());
-		//PushLayer(new ShadowLayer());
-		PushLayer(new TestLayer());
-		//PushLayer(new PickerLayer());
+		//PushLayer(new GameLayer());
+		//PushLayer(new TestLayer());
+		PushLayer(new SceneInit());
 		PushOverlay(new DebugLayer());
+
 	}
 	~SandBox()
 	{

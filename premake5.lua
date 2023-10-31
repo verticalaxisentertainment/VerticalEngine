@@ -21,6 +21,7 @@ IncludeDir["box2d"]="Core/vendor/box2d/include"
 IncludeDir["entt"]="Core/vendor/entt/include"
 IncludeDir["optick"]="Core/vendor/optick/include"
 IncludeDir["spdlog"]="Core/vendor/spdlog/include"
+IncludeDir["yaml"]="Core/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "Core/vendor/glfw"
@@ -29,6 +30,7 @@ group "Dependencies"
 	include "Core/vendor/box2d"
 	include "Core/vendor/freetype"
 	include "Core/vendor/optick"
+	include "Core/vendor/yaml-cpp"
 
 group ""
 
@@ -63,7 +65,8 @@ project "Core"
 		"%{IncludeDir.freetype}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.optick}",
-		"%{IncludeDir.spdlog}"
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.yaml}"
 	}
 
 	links
@@ -74,7 +77,8 @@ project "Core"
 		"opengl32",
 		"box2d",
 		"freetype",
-		"optick"
+		"optick",
+		"yaml-cpp"
 	}
 
 	

@@ -13,12 +13,15 @@ public:
 
 	inline unsigned int GetWidth() const override { return m_Data.Width; }
 	inline unsigned int GetHeight() const override { return m_Data.Height; }
+	inline unsigned int GetAspectRatio() const override { return m_Data.Width / m_Data.Height; }
 
 	inline void* GetNativeWindow() override { return m_Window; }
 
 	virtual void SetCursor(Cursor cursor);
+	virtual std::string& GetTitle() override { return m_Title; }
 
 	inline void SetEventCallBack(const EventCallbakcFn& callback) override { m_Data.EventCallback = callback; }
+
 	void SetVSync(bool enabled) override;
 	bool IsVSync() const override;
 private:
@@ -26,6 +29,7 @@ private:
 	virtual void Shutdown();
 private:
 	GLFWwindow* m_Window;
+	std::string m_Title;
 
 	struct WindowData
 	{

@@ -1,17 +1,16 @@
 ﻿#pragma once
 
 #include "RendererAPI.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "Texture.h"
 #include "OrthographicCamera.h"
 #include "Core.h"
 #include "FrameBuffer.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader;
-struct RendererData;
 
 class _API Renderer
 {
@@ -21,8 +20,8 @@ public:
 	static void Init();
 	static void Shutdown();
 
-	static void BeginScene();
 	static void BeginScene(OrthographicCamera& camera);
+	static void BeginScene();
 	static void EndScene();
 	static void Flush();
 
@@ -42,7 +41,6 @@ public:
 	static void DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);
 
 	static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f,int id = 2);
-	static void DrawCircleLight(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f);
 
 	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color,int id = 1);
 
@@ -68,17 +66,19 @@ public:
 	static void WireframeMode(bool on);
 	static void SetDepthTest(bool on);
 
-	static RendererData GetData();
 
-	friend class TextRenderer;
 private:
 	struct SceneData
 	{
 		glm::mat4 ViewProjectionMatrix;
+		glm::mat4 UIViewProjectionMatrix;
 	};
 
 
 	static std::unique_ptr<SceneData> s_SceneData;
+	static std::unique_ptr<SceneData>& GetSceneData() { return s_SceneData; }
+	friend class TextRenderer;
+	friend class UIRenderer;
 private:
 	static void StartBatch();
 	static void NextBatch();
