@@ -34,10 +34,6 @@ public:
 	inline Window& GetWindow() const{ return *m_Window; }
 
 	inline const std::shared_ptr<FrameBuffer>& GetFrameBuffer() const { return m_FrameBuffer; }
-	inline float* GetPixelData() const 
-	{
-		return m_FrameBuffer->ReadPixel(0,Input::GetMouseX(),Input::GetMouseY());
-	}
 
 	ImGUILayer* m_ImGuiLayer;
 	inline static bool showPostProcessing = true;

@@ -18,7 +18,6 @@ Application::Application()
 {
     s_Instance = this;
     m_Window = std::unique_ptr<Window>(Window::Create({ "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " }));
-    m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 
 #ifdef MOBILE
     //Win32Menu::OpenMenu();
@@ -52,6 +51,7 @@ Application::Application()
     m_FrameBuffer.reset(FrameBuffer::Create(spec));
 
     GetWindow().GetTitle() = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " + (const char*)glGetString(GL_RENDERER);
+    m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 }
 
 Application::~Application()
@@ -81,6 +81,8 @@ void Application::Run()
         OPTICK_FRAME("Main Thread");
 
         Renderer::ResetStats();
+
+        m_Window->SetCurrentContext(m_Window->GetNativeWindow());
 
         glEnable(GL_DEPTH_TEST);
         if (showPostProcessing)

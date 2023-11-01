@@ -159,7 +159,7 @@ void SceneSerializer::Read(const std::string& sceneFile,const std::shared_ptr<Sc
 	for (YAML::const_iterator it = entities.begin(); it != entities.end(); it++)
 	{
 		const YAML::Node& entityNode = *it;
-		auto entity = scene->CreateEntity();
+		auto entity = scene->CreateEntityWithUUID(entityNode["Entity"].as<uint64_t>());
 		//INFO("Entity: {}", entity["TransformComponent"].as<std::string>());
 		//auto test = entityNode["TransformComponent"]["Translition"].as<glm::vec3>();
 

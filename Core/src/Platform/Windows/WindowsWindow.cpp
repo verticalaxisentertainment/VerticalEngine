@@ -7,6 +7,8 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 
+#define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
+
 static bool s_GLFWInitialized = false;
 static void GLFWErrorCallback(int error,const char* description)
 {
@@ -39,7 +41,10 @@ void WindowsWindow::OnUpdate()
 
 	glfwPollEvents();
 	glfwSwapBuffers(m_Window);
+}
 
+void WindowsWindow::OnEvent(Event& e)
+{
 }
 
 void WindowsWindow::SetCursor(Cursor cursor)
@@ -51,6 +56,16 @@ void WindowsWindow::SetCursor(Cursor cursor)
 	if (cursor == Cursor::IBEAM && m_Cursor != (GLFWcursor*)GLFW_IBEAM_CURSOR)
 		m_Cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
 
+}
+
+void WindowsWindow::SetPos(float x, float y)
+{
+	glfwSetWindowPos((GLFWwindow*)GetNativeWindow(), x, y);
+}
+
+void WindowsWindow::SetCurrentContext(void* window)
+{
+	glfwMakeContextCurrent((GLFWwindow*)window);
 }
 
 void WindowsWindow::SetVSync(bool enabled)
@@ -81,11 +96,13 @@ void WindowsWindow::Init(const WindowProps& props)
 		s_GLFWInitialized = true;
 	}
 
-	m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+	m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, (GLFWwindow*)props.Parent);
 
 	glfwMakeContextCurrent(m_Window);
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 	SetVSync(true);
+
+	glfwWindowHint(GLFW_RESIZABLE, false);
 
 	GLFWimage icons;
 	glfwSetWindowIcon(m_Window, 1, static_cast<GLFWimage*>(props.Icon.GetProps()));
@@ -172,6 +189,8 @@ void WindowsWindow::Init(const WindowProps& props)
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.EventCallback(event);
 		});
+
+	SetEventCallBack(BIND_EVENT_FN(WindowsWindow::OnEvent));
 }
 
 void WindowsWindow::Shutdown()

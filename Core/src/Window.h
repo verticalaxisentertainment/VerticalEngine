@@ -22,11 +22,12 @@ struct WindowProps
 	unsigned int Width;
 	unsigned int Height;
 	Image Icon;
+	void* Parent;
 
 	WindowProps(const std::string& title = "Project Invasion",
 		unsigned int width = 1200,
-		unsigned int height = 720)
-		:Title(title), Width(width), Height(height), Icon("assets/icon/verticalaxis.jpg") {}
+		unsigned int height = 720, void* parent = nullptr)
+		:Title(title), Width(width), Height(height), Icon("assets/icon/verticalaxis.jpg"), Parent(parent) {}
 };
 
 
@@ -39,19 +40,22 @@ public:
 
 	virtual void OnUpdate() = 0;
 
-
 	virtual unsigned int GetWidth() const = 0;
 	virtual unsigned int GetHeight() const = 0;
 	virtual unsigned int GetAspectRatio() const = 0;
 
 	virtual void SetCursor(Cursor cursor) = 0;
+	virtual void SetPos(float x, float y) = 0;
 
 	virtual void* GetNativeWindow() = 0;
 	virtual std::string& GetTitle() = 0;
 
 	virtual void SetEventCallBack(const EventCallbakcFn& callback) = 0;
+	virtual EventCallbakcFn GetEventCallBack() = 0;
 	virtual void SetVSync(bool enabled) = 0;
 	virtual bool IsVSync() const = 0;
+
+	virtual void SetCurrentContext(void* window) = 0;
 
 	static Window* Create(const WindowProps& props = WindowProps());
 };

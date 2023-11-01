@@ -18,8 +18,6 @@ public:
 	DebugLayer()
 		:Layer("Debug Layer")
 	{
-		result = 0;
-		values[0] = 0; values[1] = 0;
 	}
 	
 	void OnAttach()
@@ -30,6 +28,7 @@ public:
 		scenes.push_back(std::make_shared<Scene>("zaa"));
 		scenes.push_back(std::make_shared<Scene>("efe"));
 
+		m_TitleTemp = Application::Get().GetWindow().GetTitle();
 	}
 
 	void OnImGuiRender()
@@ -55,6 +54,12 @@ public:
 					std::string temp = scenes[i]->m_SceneName;
 					scenes[i].reset(new Scene(temp));
 					SceneSerializer::Read(scenes[i]->m_SceneName, scenes[i]);
+					app.GetWindow().GetTitle() = m_TitleTemp + " | Scene: " + scenes[i]->m_SceneName;
+
+					if (scenes[i]->m_SceneName == "Sandbox")
+					{
+						m_Quad = scenes[i]->GetEntityWithUUID(4476274);
+					}
 				}
 			ImGui::EndPopup();
 		}
@@ -73,8 +78,9 @@ public:
 				//GameLayer::m_Texture->UpdateTexture(path);
 			}
 		}
-		if (ImGui::Button("Clear PhysicObjects"))
+		if (ImGui::Button("Progress Bar"))
 		{
+			Win32::CreateProgressBar();
 		}
 		if (ImGui::Button("ReCompile Shaders"))
 		{
@@ -150,17 +156,14 @@ public:
 		GameLayer::m_Move = false;
 	}
 
-
-	inline static Layer* GetActiveScene() { return activeScene; }
 private:
-	int values[2], result;
     inline static bool showStats = true;
+	inline static Entity m_Quad, m_Circle;
     id::UUID uuid;
 	inline static std::vector<std::shared_ptr<Scene>> scenes;
 	inline static int selectedScene = 0;
-	static Layer* activeScene;
+	std::string m_TitleTemp;
 
 	friend class SceneInit;
 };
 
-Layer* DebugLayer::activeScene;
