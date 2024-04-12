@@ -15,10 +15,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8377C033-EF02-2EF8-F813-B1EC641E8AF8}</ProjectGuid>
+    <ProjectGuid>{1514C7DA-01E2-BAE0-EA75-2B07D6E29645}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ProjectInvasion</RootNamespace>
+    <RootNamespace>VerticalEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -55,23 +55,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug-windows-x86_64\ProjectInvasion\</OutDir>
-    <IntDir>..\bin-int\Debug-windows-x86_64\ProjectInvasion\</IntDir>
-    <TargetName>ProjectInvasion</TargetName>
+    <OutDir>..\bin\Debug-windows-x86_64\VerticalEngine\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\VerticalEngine\</IntDir>
+    <TargetName>VerticalEngine</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Release-windows-x86_64\ProjectInvasion\</OutDir>
-    <IntDir>..\bin-int\Release-windows-x86_64\ProjectInvasion\</IntDir>
-    <TargetName>ProjectInvasion</TargetName>
+    <OutDir>..\bin\Release-windows-x86_64\VerticalEngine\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\VerticalEngine\</IntDir>
+    <TargetName>VerticalEngine</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Dist-windows-x86_64\ProjectInvasion\</OutDir>
-    <IntDir>..\bin-int\Dist-windows-x86_64\ProjectInvasion\</IntDir>
-    <TargetName>ProjectInvasion</TargetName>
+    <OutDir>..\bin\Dist-windows-x86_64\VerticalEngine\</OutDir>
+    <IntDir>..\bin-int\Dist-windows-x86_64\VerticalEngine\</IntDir>
+    <TargetName>VerticalEngine</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -131,10 +131,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\SceneInit.h" />
     <ClInclude Include="src\AcitveScene.h" />
     <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\GameLayer.h" />
+    <ClInclude Include="src\SceneInit.h" />
     <ClInclude Include="src\TestLayer.h" />
   </ItemGroup>
   <ItemGroup>

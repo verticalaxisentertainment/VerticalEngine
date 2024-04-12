@@ -226,7 +226,6 @@ private:
 
 	bool onMouseMoved(MouseMovedEvent& e)
 	{
-		Application& app = Application::Get();
 		m_X = e.GetX();
 		m_Y = e.GetY();
 		return true;

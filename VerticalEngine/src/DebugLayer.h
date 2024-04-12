@@ -59,6 +59,8 @@ public:
 					if (scenes[i]->m_SceneName == "Sandbox")
 					{
 						m_Quad = scenes[i]->GetEntityWithUUID(4476274);
+						m_Picker = scenes[i]->GetEntityWithUUID(6506980);
+						m_Circle = scenes[i]->GetEntityWithUUID(2433082);
 					}
 				}
 			ImGui::EndPopup();
@@ -80,13 +82,14 @@ public:
 		}
 		if (ImGui::Button("Progress Bar"))
 		{
-			Win32::CreateProgressBar();
+			Win32::Assert("An error has been occured!");
 		}
 		if (ImGui::Button("ReCompile Shaders"))
 		{
 			Shader::ReCompileShaders();
 		}
 		//ImGui::DragInt2("Tiles", GameLayer::tiles, 0.5f, 0, 100);
+		ImGui::DragFloat("Progress", &m_Progress, 0.05f, 0.0f, 1.0f);
 		ImGui::InputText("Text", GameLayer::m_Text, IM_ARRAYSIZE(TestLayer::m_Text));
 		if (ImGui::IsItemHovered())
 		{
@@ -148,21 +151,23 @@ public:
 			}
 			ImGui::End();
 		}
+
 	}
 
 	void OnEvent(Event& e) override
 	{
-		EventDispatcher dispatcher(e);
 		GameLayer::m_Move = false;
 	}
 
 private:
     inline static bool showStats = true;
-	inline static Entity m_Quad, m_Circle;
+	inline static Entity m_Quad, m_Circle, m_Picker;
     id::UUID uuid;
 	inline static std::vector<std::shared_ptr<Scene>> scenes;
 	inline static int selectedScene = 0;
 	std::string m_TitleTemp;
+
+	float m_Progress = 0.0f;
 
 	friend class SceneInit;
 };

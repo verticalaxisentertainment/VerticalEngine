@@ -9,9 +9,9 @@ class SandBox :public Application
 public:
 	SandBox()
 	{
-		//PushLayer(new GameLayer());
+		PushLayer(new GameLayer());
 		//PushLayer(new TestLayer());
-		PushLayer(new SceneInit());
+		//PushLayer(new SceneInit());
 		PushOverlay(new DebugLayer());
 
 	}

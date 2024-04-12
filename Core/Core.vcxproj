@@ -93,7 +93,7 @@
       <ImportLibrary>..\bin\Debug-windows-x86_64\Core\Core.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\ProjectInvasion\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\ProjectInvasion\" &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\VerticalEngine\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,7 +119,7 @@
       <ImportLibrary>..\bin\Release-windows-x86_64\Core\Core.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\ProjectInvasion\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\ProjectInvasion\" &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Release-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\VerticalEngine\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -145,7 +145,7 @@
       <ImportLibrary>..\bin\Dist-windows-x86_64\Core\Core.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Dist-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\ProjectInvasion\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\ProjectInvasion\" &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Dist-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\VerticalEngine\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -188,10 +188,10 @@
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Timestep.h" />
-    <ClInclude Include="src\Utils\YAMLOverloading.h" />
     <ClInclude Include="src\UUID.h" />
     <ClInclude Include="src\Utils\Image.h" />
     <ClInclude Include="src\Utils\PlatformUtils.h" />
+    <ClInclude Include="src\Utils\YAMLOverloading.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="vendor\stb\stb_image.h" />

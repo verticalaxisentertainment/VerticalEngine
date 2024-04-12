@@ -1,6 +1,6 @@
-workspace "ProjectInvasion"
+workspace "VerticalEngine"
 	architecture "x64"
-	startproject "ProjectInvasion"
+	startproject "VerticalEngine"
 	configurations{
 		"Debug",
 		"Release",
@@ -84,7 +84,7 @@ project "Core"
 	
 	postbuildcommands
 	{
-		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/ProjectInvasion/\"")
+		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/VerticalEngine/\"")
 	}
 
 	filter "system:windows"
@@ -113,8 +113,8 @@ project "Core"
 			optimize "On"
 
 
-project "ProjectInvasion"
-	location "ProjectInvasion"
+project "VerticalEngine"
+	location "VerticalEngine"
 	kind "ConsoleApp"
 	language "C++"
 	staticruntime "off"

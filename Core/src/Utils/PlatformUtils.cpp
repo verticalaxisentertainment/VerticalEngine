@@ -59,16 +59,23 @@ void* Win32::CreateProgressBar()
 
 		::SendMessage(progress, PBM_SETSTEP, (WPARAM)(INT)2, 0);
 		::SendMessage(progress, PBM_SETBARCOLOR, 0, RGB(0, 180, 0));
-		::SendMessage(progress, PBS_MARQUEE, 10, 0);
 		auto a= ::SendMessage(progress, PBM_GETPOS, 0, 0);
 	while (a!=100)
 	{
+		::SendMessage(progress, PBM_SETMARQUEE, true, 0);
 		::SendMessage(progress, PBM_STEPIT, 0, 0);
 		a = ::SendMessage(progress, PBM_GETPOS, 0, 0);
-		Sleep(20);
+		Sleep(50);
 	}
 	delete windowNew;
 	return windowNew;
+}
+
+void Win32::Assert(const std::string& msg)
+{
+	Application& app = Application::Get();
+	std::wstring temp = std::wstring(msg.begin(), msg.end());
+	MessageBoxW(glfwGetWin32Window((GLFWwindow*)app.GetWindow().GetNativeWindow()), temp.c_str(), L"Assert", MB_OK | MB_ICONERROR);
 }
 
 void Win32::OpenMenu()
