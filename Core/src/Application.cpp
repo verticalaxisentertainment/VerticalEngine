@@ -10,7 +10,7 @@
 #include "Input.h"
 #include "Scene/Scene.h"
 
-#include "optick.h"
+//#include "optick.h"
 
 Application* Application::s_Instance = nullptr;
 
@@ -41,14 +41,13 @@ Application::Application()
     m_ImGuiLayer = new ImGUILayer();
     PushOverlay(m_ImGuiLayer);
 
-
+    FrameBufferSpecification fbSpec;
+    fbSpec.Width = 338;
+    fbSpec.Height = 466.;
+    m_IMGUIFrameBuffer.reset(FrameBuffer::Create(fbSpec));
+    texture.reset(Texture2D::Create(m_IMGUIFrameBuffer.get()));
     RenderCommand::Init();
     Renderer::Init();
-
-    FrameBufferSpecification spec;
-    spec.Width = m_Window->GetWidth();
-    spec.Height = m_Window->GetHeight();
-    m_FrameBuffer.reset(FrameBuffer::Create(spec));
 
     GetWindow().GetTitle() = "Project Invasion | Renderer: " + RendererAPI::GetAPIString() + " | GPU: " + (const char*)glGetString(GL_RENDERER);
     m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
@@ -74,45 +73,42 @@ void Application::OnEvent(Event& e)
 }
 
 
+
 void Application::Run()
 {
     while (m_Running)
     {
-        OPTICK_FRAME("Main Thread");
+        //OPTICK_FRAME("Main Thread");
 
         Renderer::ResetStats();
 
         m_Window->SetCurrentContext(m_Window->GetNativeWindow());
 
         glEnable(GL_DEPTH_TEST);
-        if (showPostProcessing)
-        {
-            m_FrameBuffer->Bind();
-        }
-		
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (Layer* layer : m_LayerStack)
         {
             layer->OnUpdate();
         }
 
-        if(showPostProcessing)
-        {
-	        m_FrameBuffer->UnBind();
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            Renderer::DrawFrameBuffer(m_FrameBuffer);
-        }
-
+        //m_IMGUIFrameBuffer->Bind();
+        //RenderCommand::Clear();
         m_ImGuiLayer->Begin();
         for (Layer* layer : m_LayerStack)
         {
             layer->OnImGuiRender();
         }
         m_ImGuiLayer->End();
+        //m_IMGUIFrameBuffer->UnBind();
+        
+
+        //RenderCommand::Clear();
+       /* Renderer::BeginScene();
+        glm::mat4 model(1.0f);
+        model = glm::translate(model, { -600.0f+ m_IMGUIFrameBuffer->GetSpecification().Width/2,-360.0f+ m_IMGUIFrameBuffer->GetSpecification().Height/2,0.0f });
+        model = glm::scale(model, { m_IMGUIFrameBuffer->GetSpecification().Width,m_IMGUIFrameBuffer->GetSpecification().Height,1.0f });
+        Renderer::DrawQuad(model, texture);
+        Renderer::EndScene();*/
 
         m_Window->OnUpdate();
     }

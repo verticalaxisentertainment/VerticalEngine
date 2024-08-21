@@ -16,8 +16,10 @@ bool Entity::IsHovered()
 		UIRenderer::m_onUI = true;
 		return true;
 	}
+	else
+		UIRenderer::m_onUI = false;
 
-	UIRenderer::m_onUI = false;
+
 	return false;
 }
 

@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "OpenGLTexture.h"
+#include "Renderer/FrameBuffer.h"
 
 #include <stb_image.h>
 
@@ -109,6 +110,11 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
         ERROR("Failed to load texture");
     }
     stbi_image_free(data);
+}
+
+OpenGLTexture2D::OpenGLTexture2D(FrameBuffer* framebuffer)
+    :m_RendererID(framebuffer->GetColorAttachmentRendererID())
+{
 }
 
 OpenGLTexture2D::~OpenGLTexture2D()

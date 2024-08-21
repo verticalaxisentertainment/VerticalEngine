@@ -131,14 +131,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\AcitveScene.h" />
-    <ClInclude Include="src\DebugLayer.h" />
     <ClInclude Include="src\GameLayer.h" />
-    <ClInclude Include="src\SceneInit.h" />
-    <ClInclude Include="src\TestLayer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\SandBox.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">

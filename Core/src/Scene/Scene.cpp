@@ -102,8 +102,6 @@ void Scene::RenderScene(OrthographicCamera& camera)
 
 	Renderer::EndScene();
 
-	auto& window = Application::Get().GetWindow();
-
 	Renderer::BeginScene();
 	for (auto e : view)
 	{
@@ -112,9 +110,6 @@ void Scene::RenderScene(OrthographicCamera& camera)
 		if (entity.HasComponent<UITransformComponent>())
 		{
 			auto& transform = entity.GetComponent<UITransformComponent>();
-			/*glm::vec3 pos = transform.Translation;
-			transform.Translation *= window.GetAspectRatio();
-			transform.Translation = { -(pos.x - (window.GetWidth() / 2)),-(pos.y - (window.GetHeight() / 2)),pos.z };*/
 
 			if (entity.HasComponent<SpriteRendererComponent>())
 			{

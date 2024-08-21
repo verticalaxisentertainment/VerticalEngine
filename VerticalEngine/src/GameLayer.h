@@ -2,6 +2,7 @@
 #include "Math/Mathematics.h"
 #include "KeyCode.h"
 #include "MouseCode.h"
+#include "DLL.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -194,12 +195,12 @@ public:
 	static std::shared_ptr<OrthographicCameraController> m_CameraController;
 	inline static bool isBox = true, m_LockCamera = false, m_Move = false;
 	static char m_Text[128];
+	static std::shared_ptr<Scene> m_ActiveScene;
 private:
 	float m_Width = 1200.0f, m_Height = 720.0f;
 	glm::vec2 m_ScaleFactor;
 	std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	Entity quadUI, circleUI, textEntity, backgroundEntity, pickingShape,debugShape;
-	std::shared_ptr<Scene> m_ActiveScene;
 	float m_X, m_Y;
 	float m_LastFrameTime = 0.0f;
 
@@ -270,3 +271,4 @@ private:
 
 std::shared_ptr<OrthographicCameraController> GameLayer::m_CameraController;
 char GameLayer::m_Text[128];
+std::shared_ptr<Scene> GameLayer::m_ActiveScene;

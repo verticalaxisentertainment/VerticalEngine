@@ -20,6 +20,8 @@ public:
 
 	static void DrawUICircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f, int id = 2);
 
+	static void DrawProgressBar(const float& progress);
+
 	static int GetPickedID();
 
 	static void OnEvent(Event& e);

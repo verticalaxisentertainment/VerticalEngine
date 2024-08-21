@@ -9,6 +9,11 @@
 
 #define BIND_EVENT_FN(x) std::bind(&x,std::placeholders::_1)
 
+void UIRenderer::DrawProgressBar(const float& progress)
+{
+
+}
+
 int UIRenderer::GetPickedID()
 {
 	Application& app = Application::Get();
@@ -27,18 +32,12 @@ void UIRenderer::OnEvent(Event& e)
 
 bool UIRenderer::IsHovered(const int& ID)
 {
-	Application& app = Application::Get();
-	int pickedID = app.GetFrameBuffer()->ReadPixelInt(2, Input::GetLocalMouseX(), app.GetWindow().GetHeight() - Input::GetLocalMouseY());
-
-	INFO(m_onUI);
+	int pickedID = GetPickedID();
 
 	if (pickedID == ID)
 	{
-		m_onUI = true;
 		return true;
 	}
-
-	m_onUI = false;
 	return false;
 	
 }

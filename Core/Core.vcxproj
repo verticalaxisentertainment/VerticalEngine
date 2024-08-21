@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;DLL_BUILD;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\glfw\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;vendor\entt\include;vendor\optick\include;vendor\spdlog\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\glfw\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;vendor\entt\include;vendor\spdlog\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -93,7 +93,8 @@
       <ImportLibrary>..\bin\Debug-windows-x86_64\Core\Core.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\VerticalEngine\" &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Debug-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\VerticalEngine\" &gt; nul)
+IF EXIST ..\bin\Debug-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\SandBox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Core\Core.dll "..\bin\Debug-windows-x86_64\SandBox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,7 +103,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;DLL_BUILD;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\glfw\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;vendor\entt\include;vendor\optick\include;vendor\spdlog\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\glfw\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;vendor\entt\include;vendor\spdlog\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -119,7 +120,8 @@
       <ImportLibrary>..\bin\Release-windows-x86_64\Core\Core.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\VerticalEngine\" &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Release-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\VerticalEngine\" &gt; nul)
+IF EXIST ..\bin\Release-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\SandBox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-windows-x86_64\Core\Core.dll "..\bin\Release-windows-x86_64\SandBox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -128,7 +130,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;PLATFORM_WINDOWS;DLL_BUILD;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\glfw\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;vendor\entt\include;vendor\optick\include;vendor\spdlog\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\glfw\include;vendor\Glad\include;vendor\imgui;vendor\glm;vendor\stb;src;vendor\imgui\backends;vendor\box2d\include;vendor\freetype\include;vendor\entt\include;vendor\spdlog\include;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -145,7 +147,8 @@
       <ImportLibrary>..\bin\Dist-windows-x86_64\Core\Core.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Dist-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\VerticalEngine\" &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Dist-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\VerticalEngine\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\VerticalEngine\" &gt; nul)
+IF EXIST ..\bin\Dist-windows-x86_64\Core\Core.dll\ (xcopy /Q /E /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\SandBox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Dist-windows-x86_64\Core\Core.dll "..\bin\Dist-windows-x86_64\SandBox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -247,9 +250,6 @@
     </ProjectReference>
     <ProjectReference Include="vendor\freetype\freetype.vcxproj">
       <Project>{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\optick\optick.vcxproj">
-      <Project>{CFC2F712-BB64-22E9-A41F-363D9060A939}</Project>
     </ProjectReference>
     <ProjectReference Include="vendor\yaml-cpp\yaml-cpp.vcxproj">
       <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>

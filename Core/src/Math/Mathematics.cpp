@@ -23,6 +23,21 @@ glm::vec3 Math::ScreenToWorldPoint(const glm::vec3& pos, const glm::mat4& eye)
 	return test;
 }
 
+glm::vec2 Math::WorldToScreenPoint(const glm::vec3& pos, const glm::mat4& eye)
+{
+	glm::vec4 temp(1.0f);
+	temp.x = pos.x;
+	temp.y = pos.y;
+
+	glm::vec4 postProjectivePos = eye * temp;
+
+	postProjectivePos /= postProjectivePos.w;
+
+	return glm::vec2({ postProjectivePos.x,postProjectivePos.y });
+}
+
+
+
 float Math::RandomFloat(float range1, float range2)
 {
 	std::mt19937 s_RandomEngine;

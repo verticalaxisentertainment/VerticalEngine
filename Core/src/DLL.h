@@ -12,7 +12,16 @@
 #include "Renderer/UIRenderer.h"
 #include "Renderer/OrthographicCameraController.h"
 #include "Renderer/RenderCommand.h"
+#include "Renderer/Shader.h"
 
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
 #include "Scene/SceneSerializer.h"
+
+#include "Math/Mathematics.h"
+#include "KeyCode.h"
+#include "MouseCode.h"
+
+#include "Utils/PlatformUtils.h"
+#include "UUID.h"
+

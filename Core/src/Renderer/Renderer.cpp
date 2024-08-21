@@ -291,8 +291,8 @@ void Renderer::BeginScene()
 
 void Renderer::EndScene()
 {
-	TextRenderer::Flush();
 	Flush();
+	TextRenderer::Flush();
 }
 
 void Renderer::Flush()
@@ -427,11 +427,11 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const 
 	DrawQuad(transform, color, id);
 }
 
-void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture)
+void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture,int id)
 {
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, position.z)) * glm::scale(glm::mat4(1.0f), { size.x,size.y,1.0f });
 
-	DrawQuad(transform, texture);
+	DrawQuad(transform, texture, id);
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,int id)

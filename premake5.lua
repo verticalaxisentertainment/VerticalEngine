@@ -1,6 +1,6 @@
 workspace "VerticalEngine"
 	architecture "x64"
-	startproject "VerticalEngine"
+	startproject "SandBox"
 	configurations{
 		"Debug",
 		"Release",
@@ -29,7 +29,7 @@ group "Dependencies"
 	include "Core/vendor/imgui"
 	include "Core/vendor/box2d"
 	include "Core/vendor/freetype"
-	include "Core/vendor/optick"
+	-- include "Core/vendor/optick"
 	include "Core/vendor/yaml-cpp"
 
 group ""
@@ -64,7 +64,7 @@ project "Core"
 		"%{IncludeDir.box2d}",
 		"%{IncludeDir.freetype}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.optick}",
+		-- "%{IncludeDir.optick}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.yaml}"
 	}
@@ -77,14 +77,15 @@ project "Core"
 		"opengl32",
 		"box2d",
 		"freetype",
-		"optick",
+		-- "optick",
 		"yaml-cpp"
 	}
 
 	
 	postbuildcommands
 	{
-		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/VerticalEngine/\"")
+		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/VerticalEngine/\""),
+		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/SandBox/\"")
 	}
 
 	filter "system:windows"
@@ -165,3 +166,58 @@ project "VerticalEngine"
 			defines "DIST"
 			runtime "Release"
 			optimize "On"
+
+
+
+project "SandBox"
+location "SandBox"
+kind "ConsoleApp"
+language "C++"
+staticruntime "off"
+
+targetdir("bin/" .. outputdir .."/%{prj.name}")
+objdir("bin-int/" .. outputdir .."/%{prj.name}")
+
+files{
+	"%{prj.name}/src/**.h",
+	"%{prj.name}/src/**.cpp"
+}
+
+includedirs{
+	"Core/src",
+	"%{IncludeDir.glm}",
+	"%{IncludeDir.imgui}",
+	"%{IncludeDir.entt}",
+	"%{IncludeDir.spdlog}"
+}
+
+links
+{
+	"Core"
+}
+
+
+filter "system:windows"
+	cppdialect "C++17"
+	systemversion "latest"
+
+	defines{
+		"GLFW_INCLUDE_NONE",
+		"PLATFORM_WINDOWS",
+		"USE_IMGUI_API",
+	}
+
+	filter "configurations:Debug"
+		defines "DEBUG"
+		runtime "Debug"
+		symbols "On"
+
+	filter "configurations:Release"
+		defines "RELEASE"
+		runtime "Release"
+		optimize "On"
+
+	filter "configurations:Dist"
+		defines "DIST"
+		runtime "Release"
+		optimize "On"

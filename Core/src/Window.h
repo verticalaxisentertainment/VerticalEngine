@@ -31,7 +31,7 @@ struct WindowProps
 };
 
 
-class Window
+class _API Window
 {
 public:
 	using EventCallbakcFn = std::function<void(Event&)>;

@@ -96,15 +96,17 @@ void WindowsWindow::Init(const WindowProps& props)
 		s_GLFWInitialized = true;
 	}
 
+	//hints for window customizations
+	glfwWindowHint(GLFW_RESIZABLE, false);
+	//glfwWindowHint(GLFW_TITLEBAR, false);
+
 	m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, (GLFWwindow*)props.Parent);
 
 	glfwMakeContextCurrent(m_Window);
 	glfwSetWindowUserPointer(m_Window, &m_Data);
+
 	SetVSync(true);
 
-	glfwWindowHint(GLFW_RESIZABLE, false);
-
-	GLFWimage icons;
 	glfwSetWindowIcon(m_Window, 1, static_cast<GLFWimage*>(props.Icon.GetProps()));
 
 

@@ -11,6 +11,7 @@
 #include "Renderer/VertexArray.h"
 #include "Core.h"
 #include "Input.h"
+#include "Renderer/Texture.h"
 
 #define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
 
@@ -33,10 +34,12 @@ public:
 	inline static Application& Get() { return *s_Instance; }
 	inline Window& GetWindow() const{ return *m_Window; }
 
-	inline const std::shared_ptr<FrameBuffer>& GetFrameBuffer() const { return m_FrameBuffer; }
+	inline std::shared_ptr<FrameBuffer>& GetFrameBuffer() { return m_FrameBuffer; }
 
 	ImGUILayer* m_ImGuiLayer;
-	inline static bool showPostProcessing = true;
+	inline static bool showPostProcessing = false;
+	std::shared_ptr<Texture2D> texture = nullptr;
+	std::shared_ptr<FrameBuffer> m_IMGUIFrameBuffer;
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	bool OnWindowResize(WindowResizeEvent& e);
@@ -46,8 +49,9 @@ private:
 	int m_LayerCount;
 
 
-	std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	std::unique_ptr<Window> m_Window;
+	std::shared_ptr<FrameBuffer> m_FrameBuffer;
+		
 	inline static bool m_Running = true;
 	static Application* s_Instance;
 };

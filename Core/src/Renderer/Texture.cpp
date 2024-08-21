@@ -27,3 +27,16 @@ Texture2D* Texture2D::Create(const std::string& path)
 	ERROR("Unknown RendererAPI");
 	return nullptr;
 }
+
+Texture2D* Texture2D::Create(FrameBuffer* framebuffer)
+{
+	switch (Renderer::GetAPI())
+	{
+		case RendererAPI::API::None: INFO("Currently not supported RendererAPI"); return nullptr;
+		case RendererAPI::API::OpenGL: return new OpenGLTexture2D(framebuffer);
+	}
+
+	ERROR("Unknown RendererAPI");
+	return nullptr;
+	return nullptr;
+}

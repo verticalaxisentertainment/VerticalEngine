@@ -1,21 +1,22 @@
 #include "DLL.h"
 #include "GameLayer.h"
 #include "DebugLayer.h"
-#include "TestLayer.h"
 #include "SceneInit.h"
+#include "TestLayer.h"
 
-class SandBox :public Application
+class Engine :public Application
 {
 public:
-	SandBox()
+	Engine()
 	{
 		PushLayer(new GameLayer());
-		//PushLayer(new TestLayer());
 		//PushLayer(new SceneInit());
 		PushOverlay(new DebugLayer());
+		//PushLayer(new TestLayer());
+
 
 	}
-	~SandBox()
+	~Engine()
 	{
 		
 	}
@@ -24,5 +25,5 @@ public:
 
 Application* CreateApplication()
 {
-	return new SandBox();
+	return new Engine();
 }
