@@ -20,6 +20,8 @@ struct TextureSpecification
 	TextureFormat Format;
 };
 
+class FrameBuffer;
+
 class Texture
 {
 public:
@@ -46,4 +48,5 @@ class _API Texture2D :public Texture
 public:
 	static Texture2D* Create(uint32_t width, uint32_t height, TextureSpecification specification = { LINEAR, LINEAR, REPEAT, REPEAT,RGBA }, unsigned char* buffer = nullptr);
 	static Texture2D* Create(const std::string& path);
+	static Texture2D* Create(FrameBuffer* framebuffer);
 };

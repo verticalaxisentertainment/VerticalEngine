@@ -9,8 +9,10 @@ public:
 	static std::string SaveFile(const char* filter);
 };
 
-class Win32Menu
+class _API Win32
 {
 public:
 	static void OpenMenu();
+	static void* CreateProgressBar();
+	static void Assert(const std::string& msg);
 };

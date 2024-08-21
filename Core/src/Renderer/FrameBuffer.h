@@ -18,6 +18,7 @@ class _API FrameBuffer
 public:
 	virtual const FrameBufferSpecification& GetSpecification() const = 0;
 	virtual uint32_t GetColorAttachmentRendererID() const = 0;
+	virtual uint32_t GetDepthAttachmentRendererID() const = 0;
 
 	virtual void Bind() = 0;
 	virtual void UnBind() = 0;

@@ -162,7 +162,6 @@ void TextRenderer::StartBatch()
 
 void TextRenderer::Flush()
 {
-
 	if (s_Data.TextVertexCount)
 	{
 		//binding textures
@@ -234,7 +233,6 @@ TextData TextRenderer::RenderText(const std::string& text, glm::vec3 position, c
 				s_Data.Textures.push_back(ch.Texture);
 				letterIndexes.push_back(s_Data.Textures.size() - 1);
 			}
-
 		}
 
 
