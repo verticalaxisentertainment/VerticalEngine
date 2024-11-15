@@ -9,7 +9,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-
 struct IDComponent
 {
 	id::UUID ID;
@@ -35,6 +34,7 @@ struct TransformComponent
 
 		return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
 	}
+
 };
 
 struct UITransformComponent
@@ -62,6 +62,7 @@ struct SpriteRendererComponent
 	SpriteRendererComponent() = default;
 	SpriteRendererComponent(const SpriteRendererComponent&) = default;
 	SpriteRendererComponent(const glm::vec4& color) :Color(color) {}
+
 };
 
 struct CircleRendererComponent
@@ -121,7 +122,7 @@ struct CircleCollider2DComponent
 	CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
 };
 
-struct TextRendererComponent
+struct TextRendererComponent 
 {
 	std::string Text = "Text";
 	glm::vec4 Color = { 1.0f,1.0f,1.0f,1.0f };

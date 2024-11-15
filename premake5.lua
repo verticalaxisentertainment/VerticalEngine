@@ -75,6 +75,8 @@ project "Core"
 		"Glad",
 		"imgui",
 		"opengl32",
+		"gdi32",
+		"comdlg32",
 		"box2d",
 		"freetype",
 		-- "optick",
@@ -82,16 +84,17 @@ project "Core"
 	}
 
 	
-	postbuildcommands
-	{
-		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/VerticalEngine/\""),
-		("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/SandBox/\"")
-	}
-
+	
 	filter "system:windows"
-		cppdialect "C++17"
-		systemversion "latest"
-
+	cppdialect "C++17"
+	systemversion "latest"
+	
+		postbuildcommands
+		{
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/VerticalEngine/\""),
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" ..outputdir .."/SandBox/\"")
+		}
+		
 		defines{
 			"GLFW_INCLUDE_NONE",
 			"PLATFORM_WINDOWS",

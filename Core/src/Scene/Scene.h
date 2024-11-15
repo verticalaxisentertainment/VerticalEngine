@@ -29,6 +29,7 @@ public:
 	entt::registry m_Registry;
 	void RenderScene(OrthographicCamera& camera);
 	Entity& GetEntityWithUUID(const uint32_t& id);
+	inline b2World* GetPhysicsWorld() const { return m_PhysicsWorld; }
 
 	std::string m_SceneName;
 	glm::mat4 UIViewProjectionMatrix;
@@ -44,10 +45,10 @@ private:
 	friend class Entity;
 private:
 	bool OnWindowResize(WindowResizeEvent& e);
-private:
-	template<typename T> void OnComponentAdded(Entity entity, T& component){}
-	template<> void OnComponentAdded<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component);
-private:
-	template<typename T> void OnComponentChanged(Entity entity, T& component) { /*m_Registry.patch<T>(entity);*/ }
-	template<> void Scene::OnComponentChanged<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component);
+//private:
+//	template<typename T> void OnComponentAdded(Entity entity, T& component){}
+//	template<> void OnComponentAdded<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component);
+//private:
+//	template<typename T> void OnComponentChanged(Entity entity, T& component) { /*m_Registry.patch<T>(entity);*/ }
+//	template<> void Scene::OnComponentChanged<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component);
 };

@@ -4,6 +4,7 @@
 #include "Scene.h"
 
 #include "entt.hpp"
+#include "Events/ComponentEvent.h"
 
 class _API Entity
 {
@@ -16,7 +17,7 @@ public:
 	T& AddComponent(Args&&...args)
 	{
 		T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
-		m_Scene->OnComponentAdded(*this, component);
+		ComponentEvent<T>::OnComponentAdded(*this, component);
 		return component;
 	}
 
@@ -24,7 +25,7 @@ public:
 	T& GetComponent()
 	{
 		T& component = m_Scene->m_Registry.get<T>(m_EntityHandle);
-		m_Scene->OnComponentChanged(*this, component);
+		ComponentEvent<T>::OnComponentChanged(*this, component);
 		return component;
 	}
 	
@@ -42,6 +43,8 @@ public:
 
 	bool IsHovered();
 	bool IsClicked();
+
+	inline Scene* GetScene() const { return m_Scene; }
 
 	id::UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 

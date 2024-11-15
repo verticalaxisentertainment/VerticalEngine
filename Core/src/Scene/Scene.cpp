@@ -239,58 +239,58 @@ void Scene::Simulate(const float& timestep)
 
 }
 
-template<>
-void Scene::OnComponentAdded<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component)
-{
-	auto& transform = entity.GetComponent<TransformComponent>();
-
-	b2BodyDef bodyDef;
-	bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
-	switch (component.BodyType)
-	{
-		case RigidBody2DComponent::Type::Dynamic: bodyDef.type = b2BodyType::b2_dynamicBody; break;
-		case RigidBody2DComponent::Type::Static: bodyDef.type = b2BodyType::b2_staticBody; break;
-	}
-
-	component.Body = m_PhysicsWorld->CreateBody(&bodyDef);
-
-	if (entity.HasComponent<BoxCollider2DComponent>())
-	{
-		auto& collider = entity.GetComponent<BoxCollider2DComponent>();
-		b2PolygonShape boxShape;
-		boxShape.SetAsBox(transform.Scale.x / 2, transform.Scale.y / 2);
-
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &boxShape;
-		fixtureDef.density = collider.Density;
-		fixtureDef.friction = collider.Friction;
-		static_cast<b2Body*>(component.Body)->CreateFixture(&fixtureDef);
-	}
-
-	if (entity.HasComponent<CircleCollider2DComponent>())
-	{
-		auto& collider = entity.GetComponent<CircleCollider2DComponent>();
-
-		b2CircleShape circleShape;
-		circleShape.m_p.SetZero();
-		circleShape.m_radius = collider.Radius;
-
-		b2FixtureDef fixtureDef;
-		fixtureDef.shape = &circleShape;
-		fixtureDef.density = collider.Density;
-		fixtureDef.friction = collider.Friction;
-		static_cast<b2Body*>(component.Body)->CreateFixture(&fixtureDef);
-	}
-
-	auto bodylist=m_PhysicsWorld->GetBodyList();
-}
-
-template<>
-void Scene::OnComponentChanged(Entity entity, RigidBody2DComponent& component)
-{
-	switch (component.BodyType)
-	{
-		case RigidBody2DComponent::Type::Dynamic: static_cast<b2Body*>(component.Body)->SetType(b2BodyType::b2_dynamicBody); break;
-		case RigidBody2DComponent::Type::Static: static_cast<b2Body*>(component.Body)->SetType(b2BodyType::b2_staticBody); break;
-	}
-}
+//template<>
+//void Scene::OnComponentAdded<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component)
+//{
+//	auto& transform = entity.GetComponent<TransformComponent>();
+//
+//	b2BodyDef bodyDef;
+//	bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
+//	switch (component.BodyType)
+//	{
+//		case RigidBody2DComponent::Type::Dynamic: bodyDef.type = b2BodyType::b2_dynamicBody; break;
+//		case RigidBody2DComponent::Type::Static: bodyDef.type = b2BodyType::b2_staticBody; break;
+//	}
+//
+//	component.Body = m_PhysicsWorld->CreateBody(&bodyDef);
+//
+//	if (entity.HasComponent<BoxCollider2DComponent>())
+//	{
+//		auto& collider = entity.GetComponent<BoxCollider2DComponent>();
+//		b2PolygonShape boxShape;
+//		boxShape.SetAsBox(transform.Scale.x / 2, transform.Scale.y / 2);
+//
+//		b2FixtureDef fixtureDef;
+//		fixtureDef.shape = &boxShape;
+//		fixtureDef.density = collider.Density;
+//		fixtureDef.friction = collider.Friction;
+//		static_cast<b2Body*>(component.Body)->CreateFixture(&fixtureDef);
+//	}
+//
+//	if (entity.HasComponent<CircleCollider2DComponent>())
+//	{
+//		auto& collider = entity.GetComponent<CircleCollider2DComponent>();
+//
+//		b2CircleShape circleShape;
+//		circleShape.m_p.SetZero();
+//		circleShape.m_radius = collider.Radius;
+//
+//		b2FixtureDef fixtureDef;
+//		fixtureDef.shape = &circleShape;
+//		fixtureDef.density = collider.Density;
+//		fixtureDef.friction = collider.Friction;
+//		static_cast<b2Body*>(component.Body)->CreateFixture(&fixtureDef);
+//	}
+//
+//	auto bodylist=m_PhysicsWorld->GetBodyList();
+//}
+//
+//template<>
+//void Scene::OnComponentChanged(Entity entity, RigidBody2DComponent& component)
+//{
+//	switch (component.BodyType)
+//	{
+//		case RigidBody2DComponent::Type::Dynamic: static_cast<b2Body*>(component.Body)->SetType(b2BodyType::b2_dynamicBody); break;
+//		case RigidBody2DComponent::Type::Static: static_cast<b2Body*>(component.Body)->SetType(b2BodyType::b2_staticBody); break;
+//	}
+//}
