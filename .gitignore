@@ -100,6 +100,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.vcxproj
+*.vcxproj.filters
 
 # Chutzpah Test files
 _Chutzpah*
@@ -399,3 +401,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#Build Files
+Makefile
