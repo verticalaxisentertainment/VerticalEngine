@@ -140,7 +140,7 @@ void Shader::CompileShader(const std::string& shaderPath, const uint32_t Rendere
 
 		glDeleteShader(vertexShader);
 
-		ERROR("VertexShader Compilation Error: " << infoLog.data());
+		ERROR("VertexShader Compilation Error: {}", infoLog.data());
 		return;
 	}
 
@@ -164,7 +164,7 @@ void Shader::CompileShader(const std::string& shaderPath, const uint32_t Rendere
 		glDeleteShader(fragmentShader);
 		glDeleteShader(vertexShader);
 
-		ERROR("FragmentShader Compilation Error: " << infoLog.data());
+		ERROR("FragmentShader Compilation Error: {}" , infoLog.data());
 		return;
 	}
 

@@ -16,6 +16,7 @@
 #include "Texture.h"
 #include "Application.h"
 #include "TextRenderer.h"
+#include "UIRenderer.h"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 
@@ -109,6 +110,9 @@ static RendererData s_Data;
 
 void Renderer::Init()
 {
+	auto& window = Application::Get().GetWindow();
+	s_SceneData->UIViewProjectionMatrix = glm::ortho(-static_cast<float>(window.GetWidth()) / 2, static_cast<float>(window.GetWidth()) / 2, -static_cast<float>(window.GetHeight()) / 2, static_cast<float>(window.GetHeight()) / 2);
+
 	for (int i = 0; i < 32; i++)
 	{
 		s_Data.texs[i] = i + 1;
@@ -266,15 +270,10 @@ void Renderer::Init()
 	s_Data.TriangleVertexPositions[2] = { 0.0f,0.5f,0.0f,1.0f };
 }
 
-void Renderer::BeginScene()
+void Renderer::Shutdown()
 {
-	Application& app = Application::Get();
-	OrthographicCameraController cam(1280.0f / 720.0f, true);
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(app.GetWindow().GetWidth()), 0.0f, static_cast<float>(app.GetWindow().GetHeight()));
-	s_SceneData->ViewProjectionMatrix = projection;
-
-	StartBatch();
 }
+
 
 void Renderer::BeginScene(OrthographicCamera& camera)
 {
@@ -283,10 +282,17 @@ void Renderer::BeginScene(OrthographicCamera& camera)
 	StartBatch();
 }
 
+void Renderer::BeginScene()
+{
+	s_SceneData->ViewProjectionMatrix = s_SceneData->UIViewProjectionMatrix;
+
+	StartBatch();
+}
+
 void Renderer::EndScene()
 {
-	TextRenderer::Flush();
 	Flush();
+	TextRenderer::Flush();
 }
 
 void Renderer::Flush()
@@ -303,9 +309,8 @@ void Renderer::Flush()
 		s_Data.QuadVertexBuffer->SetData(s_Data.TriangleVertexBufferBase, dataSize);
 
 		s_Data.QuadShaderFlat->Bind();
-		s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
 		s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
-		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		s_Data.QuadShaderFlat->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawIndexed(s_Data.TriangleVertexArray, s_Data.TriangleIndexCount);
 
 		s_Data.stats.DrawCalls++;
@@ -318,7 +323,7 @@ void Renderer::Flush()
 
 		RenderCommand::SetLineWidth(2);
 		s_Data.LineShader->Bind();
-		s_Data.LineShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		s_Data.LineShader->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount);
 		s_Data.stats.DrawCalls++;
 	}
@@ -330,9 +335,8 @@ void Renderer::Flush()
 
 		s_Data.QuadShaderFlat->Bind();
 		s_Data.QuadShaderFlat->SetVec4("pickingColor", glm::vec4(s_Data.QuadVertexBufferPtr->EntityID));
-		s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
 		s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
-		s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		s_Data.QuadShaderFlat->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 
 		s_Data.stats.DrawCalls++;
@@ -344,7 +348,7 @@ void Renderer::Flush()
 		s_Data.CircleVertexBuffer->SetData(s_Data.CircleVertexBufferBase, dataSize);
 
 		s_Data.CircleShader->Bind();
-		s_Data.CircleShader->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
+		s_Data.CircleShader->SetMat4("projection", s_SceneData->ViewProjectionMatrix);
 		RenderCommand::DrawIndexed(s_Data.CircleVertexArray, s_Data.CircleIndexCount);
 		s_Data.stats.DrawCalls++;
 	}
@@ -378,13 +382,6 @@ void Renderer::DrawTriangle(const glm::mat4& transform, const glm::vec4& color, 
 	s_Data.TriangleIndexCount+= 3;
 
 	s_Data.stats.QuadCount++;
-
-	/*s_Data.TriangleVertexArray->Bind();
-	s_Data.QuadShaderFlat->Bind();
-	s_Data.QuadShaderFlat->SetVec3("lightPos", s_Data.LightPos);
-	s_Data.QuadShaderFlat->SetIntArray("u_Textures", s_Data.texs);
-	s_Data.QuadShaderFlat->SetMat4("projection", Renderer::s_SceneData->ViewProjectionMatrix);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);*/
 }
 
 void Renderer::StartBatch()
@@ -430,11 +427,11 @@ void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const 
 	DrawQuad(transform, color, id);
 }
 
-void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture)
+void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, std::shared_ptr<Texture2D>& texture,int id)
 {
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, position.z)) * glm::scale(glm::mat4(1.0f), { size.x,size.y,1.0f });
 
-	DrawQuad(transform, texture);
+	DrawQuad(transform, texture, id);
 }
 
 void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color,int id)
@@ -517,32 +514,6 @@ void Renderer::DrawCircle(const glm::mat4& transform, const glm::vec4& color, fl
 	s_Data.stats.QuadCount++;
 }
 
-void Renderer::DrawCircleLight(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade)
-{
-	glm::vec3 pos, a, b, c;
-	glm::vec4 d;
-	glm::quat rotation;
-
-	
-	glm::decompose(transform, a, rotation, pos, c, d);
-	s_Data.LightPos = pos;
-		
-
-	for (size_t i = 0; i < 4; i++)
-	{
-		s_Data.CircleVertexBufferPtr->WorldPosition = transform * s_Data.QuadVertexPositions[i];
-		s_Data.CircleVertexBufferPtr->LocalPosition = s_Data.QuadVertexPositions[i] * 2.0f;
-		s_Data.CircleVertexBufferPtr->Color = color;
-		s_Data.CircleVertexBufferPtr->Thickness = thickness;
-		s_Data.CircleVertexBufferPtr->Fade = fade;
-		s_Data.CircleVertexBufferPtr++;
-	}
-
-	s_Data.CircleIndexCount += 6;
-
-	s_Data.stats.QuadCount++;
-}
-
 void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int id)
 {
 	s_Data.LineVertexBufferPtr->Position = p0;
@@ -595,9 +566,4 @@ void Renderer::WireframeMode(bool on)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
-RendererData Renderer::GetData()
-{
-	return s_Data;
 }

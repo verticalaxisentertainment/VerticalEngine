@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "OpenGLFramebuffer.h"
+#include "Renderer/RenderCommand.h"
 
 #include <glad/glad.h>
 #include "Application.h"
@@ -77,7 +78,9 @@ OpenGLFramebuffer::~OpenGLFramebuffer()
 
 void OpenGLFramebuffer::Bind()
 {
+	glEnable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+	//RenderCommand::Clear();
 }
 
 void OpenGLFramebuffer::BindVertexArray()

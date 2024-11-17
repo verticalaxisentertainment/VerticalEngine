@@ -5,108 +5,75 @@
 #include "Input.h"
 #include "UUID.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include "RenderCommand.h"
 
-static float* s_PixelData;
+#define BIND_EVENT_FN(x) std::bind(&x,std::placeholders::_1)
 
-void UI::SetPixelData(float* pixelData)
+void UIRenderer::DrawProgressBar(const float& progress)
 {
-	s_PixelData = pixelData;
+
 }
 
-float* UI::GetPixelData()
+int UIRenderer::GetPickedID()
 {
-	return s_PixelData;
+	Application& app = Application::Get();
+	int pickedID = app.GetFrameBuffer()->ReadPixelInt(2, Input::GetLocalMouseX(), app.GetWindow().GetHeight() - Input::GetLocalMouseY());
+	return pickedID;
 }
 
-
-
-//---------------------------------- QUAD ---------------------------------------------------
-UIQuad::UIQuad()
+void UIRenderer::OnEvent(Event& e)
 {
-	int r = (id::UUID().id() & 0x000000FF) >> 0;
-	int g = (id::UUID().id() & 0x0000FF00) >> 8;
-	int b = (id::UUID().id() & 0x00FF0000) >> 16;
+	EventDispatcher dispathcer(e);
 
-	m_ID = r + g + b;
+	dispathcer.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(UIRenderer::OnMouseClicked));
+	dispathcer.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(UIRenderer::OnMouseReleased));
+	dispathcer.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(UIRenderer::OnWindowResize));
 }
 
-UIQuad::~UIQuad() 
+bool UIRenderer::IsHovered(const int& ID)
 {
-	
-}
+	int pickedID = GetPickedID();
 
-void UIQuad::Render(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color)
-{
-	
-	Renderer::DrawQuad(position, scale, color, m_ID);
-	m_Color = color;
-}
-
-bool UIQuad::IsClicked()
-{
-	if (IsHovered())
+	if (pickedID == ID)
 	{
-		if (Input::IsMouseButtonPressed(Mouse::Button0))
+		return true;
+	}
+	return false;
+	
+}
+
+bool UIRenderer::IsClicked(const int& ID)
+{
+	if (IsHovered(ID))
+	{
+		if (m_MouseClicked)
+		{
+			//m_MouseClicked = false;
 			return true;
+		}
 	}
 	return false;
 }
 
-bool UIQuad::IsHovered()
+bool UIRenderer::OnMouseClicked(MouseButtonPressedEvent& e)
 {
-	Application& app = Application::Get();
-	int pickedID = app.GetFrameBuffer()->ReadPixelInt(2, Input::GetLocalMouseX(), app.GetWindow().GetHeight() - Input::GetLocalMouseY());
-	
-	if (pickedID == m_ID)
+	m_MouseClicked = true;
+	if (m_onUI)
 		return true;
+	else
+		return false;
+}
+
+bool UIRenderer::OnMouseReleased(MouseButtonReleasedEvent& e)
+{
+	m_MouseClicked = false;
+	return true;
+}
+
+bool UIRenderer::OnWindowResize(WindowResizeEvent& e)
+{
+	Renderer::GetSceneData()->UIViewProjectionMatrix = glm::ortho(-static_cast<float>(e.GetWidth()) / 2, static_cast<float>(e.GetWidth()) / 2, -static_cast<float>(e.GetHeight()) / 2, static_cast<float>(e.GetHeight()) / 2);
+	//auto test = glm::clamp((int)e.GetWidth() / 10, -100, 100);
+	//INFO("Resized {}", test);
 	return false;
 }
-//---------------------------------------------------------------------------------------------------
-
-
-
-//---------------------------------------CIRCLE------------------------------------------------------
-UICircle::UICircle()
-{
-	int r = (id::UUID().id() & 0x000000FF) >> 0;
-	int g = (id::UUID().id() & 0x0000FF00) >> 8;
-	int b = (id::UUID().id() & 0x00FF0000) >> 16;
-
-	m_ID = r + g + b;
-}
-
-UICircle::~UICircle() 
-{
-}
-
-void UICircle::Render(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color)
-{
-	glm::mat4 obj(1.0f);
-	obj = glm::translate(obj, position);
-	obj = glm::scale(obj, glm::vec3(scale, 1.0f));
-	Renderer::DrawCircle(obj, color, 1.0f, 0.005f, m_ID);
-}
-
-bool UICircle::IsClicked()
-{
-	if (IsHovered())
-	{
-		if (Input::IsMouseButtonPressed(Mouse::Button0))
-			return true;
-	}
-	return false;
-}
-
-bool UICircle::IsHovered()
-{
-	Application& app = Application::Get();
-	int pickedID = app.GetFrameBuffer()->ReadPixelInt(2, Input::GetLocalMouseX(), app.GetWindow().GetHeight() - Input::GetLocalMouseY());
-
-
-	if (pickedID == m_ID)
-		return true;
-	return false;
-}
-//---------------------------------------------------------------------------------------------------

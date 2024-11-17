@@ -7,7 +7,7 @@ struct ImageProps
 	unsigned char* pixels;
 };
 
-class Image
+class _API Image
 {
 public:
 	Image(const char* path);

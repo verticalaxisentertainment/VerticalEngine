@@ -24,6 +24,7 @@ public:
 
 	virtual const FrameBufferSpecification& GetSpecification() const override { return m_Specification; }
 	virtual uint32_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; }
+	virtual uint32_t GetDepthAttachmentRendererID() const override { return m_DepthAttachment; }
 private:
 	uint32_t m_RendererID;
 

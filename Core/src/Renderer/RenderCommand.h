@@ -21,6 +21,11 @@ public:
 		s_RendererAPI->SetClearColor(color);
 	}
 
+	static void SetDepthTest(const bool& enable)
+	{
+		s_RendererAPI->SetDepthTest(enable);
+	}
+
 	static void Clear()
 	{
 		s_RendererAPI->Clear();

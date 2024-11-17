@@ -7,10 +7,12 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 
+#define BIND_EVENT_FN(x) std::bind(&x,this,std::placeholders::_1)
+
 static bool s_GLFWInitialized = false;
 static void GLFWErrorCallback(int error,const char* description)
 {
-	ERROR(error << ": " << description);
+	ERROR("{}: {}",error ,description);
 }
 
 Window* Window::Create(const WindowProps& props)
@@ -33,11 +35,16 @@ void WindowsWindow::OnUpdate()
 {
 	glViewport(0, 0, GetWidth(), GetHeight());
 
+	glfwSetWindowTitle(m_Window, m_Title.c_str());
+
 	glfwSetCursor(m_Window, m_Cursor);
 
 	glfwPollEvents();
 	glfwSwapBuffers(m_Window);
+}
 
+void WindowsWindow::OnEvent(Event& e)
+{
 }
 
 void WindowsWindow::SetCursor(Cursor cursor)
@@ -49,6 +56,16 @@ void WindowsWindow::SetCursor(Cursor cursor)
 	if (cursor == Cursor::IBEAM && m_Cursor != (GLFWcursor*)GLFW_IBEAM_CURSOR)
 		m_Cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
 
+}
+
+void WindowsWindow::SetPos(float x, float y)
+{
+	glfwSetWindowPos((GLFWwindow*)GetNativeWindow(), x, y);
+}
+
+void WindowsWindow::SetCurrentContext(void* window)
+{
+	glfwMakeContextCurrent((GLFWwindow*)window);
 }
 
 void WindowsWindow::SetVSync(bool enabled)
@@ -79,19 +96,18 @@ void WindowsWindow::Init(const WindowProps& props)
 		s_GLFWInitialized = true;
 	}
 
-	m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+	//hints for window customizations
+	glfwWindowHint(GLFW_RESIZABLE, false);
+	//glfwWindowHint(GLFW_TITLEBAR, false);
+
+	m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, (GLFWwindow*)props.Parent);
 
 	glfwMakeContextCurrent(m_Window);
 	glfwSetWindowUserPointer(m_Window, &m_Data);
+
 	SetVSync(true);
 
-	GLFWimage icons;
-	//icons.pixels = stbi_load("assets/textures/container.jpg", &icons.width, &icons.height, 0, 4);
-	/*icons.pixels = props.Icon.GetProps().pixels;
-	icons.width = props.Icon.GetProps().width;
-	icons.height = props.Icon.GetProps().height;*/
 	glfwSetWindowIcon(m_Window, 1, static_cast<GLFWimage*>(props.Icon.GetProps()));
-	//stbi_image_free(icons.pixels);
 
 
 	//set GLFW callbacks
@@ -175,6 +191,8 @@ void WindowsWindow::Init(const WindowProps& props)
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.EventCallback(event);
 		});
+
+	SetEventCallBack(BIND_EVENT_FN(WindowsWindow::OnEvent));
 }
 
 void WindowsWindow::Shutdown()

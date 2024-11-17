@@ -14,10 +14,12 @@
 #include <unordered_set>
 #include <random>
 #include <map>
+#include <fstream>
+#include <cstdint>
 
 #ifdef PLATFORM_WINDOWS
 #include <Windows.h>
 #include <windows.h>
-inline HANDLE hcc = GetStdHandle(STD_OUTPUT_HANDLE);
+//inline HANDLE hcc = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 #include "Log.h"

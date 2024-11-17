@@ -4,9 +4,6 @@
 #include <GLFW/glfw3.h>
 
 #include "Application.h"
-#include "Application.h"
-#include "Application.h"
-#include "Application.h"
 #include "Renderer/OrthographicCameraController.h"
 #include "Renderer/OrthographicCamera.h"
 
@@ -25,6 +22,21 @@ glm::vec3 Math::ScreenToWorldPoint(const glm::vec3& pos, const glm::mat4& eye)
 	glm::vec3 test = obj;
 	return test;
 }
+
+glm::vec2 Math::WorldToScreenPoint(const glm::vec3& pos, const glm::mat4& eye)
+{
+	glm::vec4 temp(1.0f);
+	temp.x = pos.x;
+	temp.y = pos.y;
+
+	glm::vec4 postProjectivePos = eye * temp;
+
+	postProjectivePos /= postProjectivePos.w;
+
+	return glm::vec2({ postProjectivePos.x,postProjectivePos.y });
+}
+
+
 
 float Math::RandomFloat(float range1, float range2)
 {
